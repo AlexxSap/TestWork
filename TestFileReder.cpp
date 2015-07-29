@@ -2,7 +2,7 @@
 
 TestFileReder::TestFileReder(QObject *parent) : QObject(parent){}
 
-void TestFileReder::createFile(QString name, QStringList data){
+void TestFileReder::createFile(const QString &name, const QStringList &data){
     QFile file(name);
     if(file.open(QIODevice::WriteOnly)){
         foreach (QString temp, data) {
@@ -12,7 +12,7 @@ void TestFileReder::createFile(QString name, QStringList data){
     }
 }
 
-void TestFileReder::removeFile(QString name){
+void TestFileReder::removeFile(const QString &name){
     if(QFile::exists(name))
         QFile::remove(name);
 }
@@ -23,8 +23,10 @@ void TestFileReder::loadFile(){
     QFETCH(int, expected);
 
     createFile(name, data);
-    int actual=FileReader.readFromFile(name);
+    CsvFileReader csvFR;
+    int actual=static_cast<int>(csvFR.readFromFile(name));
     QCOMPARE(actual, expected);
+    removeFile(name);
 }
 
 void TestFileReder::loadFile_data(){
@@ -34,7 +36,7 @@ void TestFileReder::loadFile_data(){
 
     QTest::newRow("empty file") << QString("empFile.csv")
                                 << QStringList()
-                                << FileReader::EmptyFile;
+                                << static_cast<int>(FileReader::EmptyFile);
 
 }
 

@@ -5,14 +5,17 @@
 #include <QTest>
 #include <QStringList>
 
+#include "FileReader.h"
+#include "CsvFileReader.h"
+
 class TestFileReder : public QObject
 {
     Q_OBJECT
 public:
     explicit TestFileReder(QObject *parent = 0);
 private:
-    void createFile(QString name, QStringList data);
-    void removeFile(QString name);
+    void createFile(const QString &name, const QStringList &data);
+    void removeFile(const QString &name);
 private slots:
     void loadFile();
     void loadFile_data();

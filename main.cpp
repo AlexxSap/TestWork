@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    if(argc==2 && argv[2]=="-t"){
+    if(argc==2 && QString(argv[1])== "-t"){
         QTest::qExec(new TestFileReder);
         return 0;
     }

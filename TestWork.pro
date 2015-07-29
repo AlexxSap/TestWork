@@ -14,7 +14,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    TestFileReder.cpp
+    TestFileReder.cpp \
+    CsvFileReader.cpp
 
 HEADERS  += mainwindow.h \
-    TestFileReder.h
+    TestFileReder.h \
+    FileReader.h \
+    CsvFileReader.h
