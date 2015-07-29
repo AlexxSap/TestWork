@@ -2,7 +2,6 @@
 #define FILEREADER_H
 
 #include <QObject>
-#include <QAbstractItemModel>
 
 //базовый класс для загрузки файла в базу
 
@@ -19,7 +18,7 @@ public:
     FileReader(QObject *parent = 0):QObject(parent){}
     virtual ~FileReader(){}
 
-    virtual FileReader::Error readFromFile(const QString &)=0;
+    virtual FileReader::Error readFromFile(const QString &) const=0;
 
 signals:
     void started();

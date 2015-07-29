@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QTest>
 
-#include <TestFileReder.h>
+#include "TestFileReder.h"
 
 int main(int argc, char *argv[])
 {
