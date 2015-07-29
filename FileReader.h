@@ -16,7 +16,7 @@ public:
                 FileNotLoaded,
                 DBError};
 public:
-    explicit FileReader(QObject *parent = 0):QObject(parent){}
+    FileReader(QObject *parent = 0):QObject(parent){}
     virtual ~FileReader(){}
 
     virtual FileReader::Error readFromFile(const QString &)=0;
