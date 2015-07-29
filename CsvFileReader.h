@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include <QList>
 #include <QRegExp>
+#include <QDate>
 
 #include "FileReader.h"
 
