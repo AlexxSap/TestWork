@@ -10,6 +10,9 @@
 #include "CsvFileReader.h"
 #include "database.h"
 
+///notes опечатка в названии класса
+
+///notes не вижу в тестах мотивации для создания иерархии классов и моков, ну да ладно.
 class DBForTestFileReder: public DataBase{
 public:
     DBForTestFileReder(){}
@@ -39,6 +42,8 @@ private:
     void createFile(const QString &name, const QStringList &data);
     void removeFile(const QString &name);
 private slots:
+
+    ///notes тесты у нас принято называть с префикса Test, например, TestLoadFile
     void loadFile();
     void loadFile_data();
 };

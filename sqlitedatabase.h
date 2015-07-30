@@ -6,6 +6,8 @@
 
 #include "database.h"
 
+///notes не вижу об
+
 class SqliteDataBase : public DataBase
 {
 private:

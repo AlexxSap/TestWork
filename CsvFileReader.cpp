@@ -12,7 +12,19 @@ FileReader::Error CsvFileReader::watchFile(QFile &file) const{
 
     file.reset();
     QString dateFormat=QString("yyyy.MM.dd");
+
+    ///notes у нас принято оформлять тела циклов, условий, классов и тд и тп через
+    ///notes
+    /// if(false)
+    /// {
+    ///     код
+    /// }
+    ///
+    /// то есть открывающая фигурная скобка с новой строки.
+    /// скобками выделяем код даже, если он состоит из одной строки
+
     while(!file.atEnd()){
+        ///notes всё локальное, что может быть const должно быть const
         QString strBuffer=QString(file.readLine().trimmed());
 
         QString rxPattern=QString("(^[?a-zA-Z0-9_!]+)%1"

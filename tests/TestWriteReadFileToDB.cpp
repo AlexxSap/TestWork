@@ -103,6 +103,10 @@ void TestWriteReadFileToDB::writeReadFileToDB()
     QFETCH(int, expectedReaction);
     QFETCH(QStringList, expectedData);
 
+    ///notes для каждого data должне быть свой собственный файл, чтобы в определённых случаяъ после тестов можно было посмотреть
+    ///notes что там в нём понаписано
+
+    ///notes для создания тестовых файло и баз обычно используем макросы, что бы чётко было видно, в какой строчке тестов тест упал.
     removeFiles();
     createFile(data);
     createTestDB();
@@ -122,6 +126,9 @@ void TestWriteReadFileToDB::writeReadFileToDB()
 
     if(!(isWriteToDB && isWriteToFile && isDatasEqual)){
         QVERIFY(false);
+
+        ///notes лучше писать сразу в qWarning. например, я вообще дебаг не собираю никогда и не увижу таких сообщений.
+
         qDebug() << "Реакции при записи в БД совпадают?" << isWriteToDB;
         qDebug() << "Данные записались в файл? " << isWriteToFile;
         qDebug() << "Данные совпадают?" << isDatasEqual;

@@ -7,6 +7,7 @@
 class DataBase
 {
 public:
+    ///notes все реализации методов и конструкторов должны быть в cpp файле
     DataBase(){}
     virtual ~DataBase(){}
 
@@ -19,6 +20,9 @@ public:
     virtual bool endWrite()=0;
 
     virtual bool beginRead()=0;
+
+
+    ///notes не понимаю необходимость возвращать указатель
     virtual QSqlQuery* read(const QString &request="")=0;
     virtual bool endRead()=0;
 

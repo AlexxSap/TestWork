@@ -2,6 +2,8 @@
 
 TestFileReder::TestFileReder(QObject *parent) : QObject(parent){}
 
+///notes если у теста не получилось что-то создать или удалить, то он должен сразу падать
+
 void TestFileReder::createFile(const QString &name, const QStringList &data){
     QFile file(name);
     if(file.open(QIODevice::WriteOnly)){
@@ -72,5 +74,7 @@ void TestFileReder::loadFile_data(){
                                      << "good2;something else;2015.07.20,23.6;.5.1"
                                      << "56.5,wtf")
                                  << static_cast<int>(FileReader::FileNotLoaded);
+
+    ///notes для загрузки или выгрузки чего угодно текстового нужно обязательно тестировать utf-8 совместимость. или хотя бы совместимость с русским текстом
 }
 

@@ -21,6 +21,8 @@ public:
 
     virtual FileReader::Error readFromFile(const QString &fileName, DataBase &db)=0;
 
+
+///notes чем обосновано создание всех этих сигналов?
 signals:
     void started();
     void ended();
