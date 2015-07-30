@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui testlib
+QT       += core gui testlib sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,10 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    TestFileReder.cpp \
+    tests/TestFileReder.cpp \
     CsvFileReader.cpp
 
 HEADERS  += mainwindow.h \
-    TestFileReder.h \
+    tests/TestFileReder.h \
     FileReader.h \
-    CsvFileReader.h
+    CsvFileReader.h \
+    DataBase.h

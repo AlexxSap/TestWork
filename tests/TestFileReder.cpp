@@ -24,7 +24,8 @@ void TestFileReder::loadFile(){
 
     createFile(name, data);
     CsvFileReader csvFR;
-    int actual=static_cast<int>(csvFR.readFromFile(name));
+    DBForTestFileReder db;
+    int actual=static_cast<int>(csvFR.readFromFile(name, db));
     removeFile(name);
     QCOMPARE(actual, expected);
 }

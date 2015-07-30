@@ -10,6 +10,7 @@ FileReader::Error CsvFileReader::watchFile(QFile &file) const{
     if(file.size()==0)
         return FileReader::EmptyFile;
 
+    file.reset();
     while(!file.atEnd()){
         QString strBuffer=QString(file.readLine().trimmed());
 
@@ -32,21 +33,36 @@ FileReader::Error CsvFileReader::watchFile(QFile &file) const{
     return FileReader::NoError;
 }
 
-FileReader::Error CsvFileReader::readFromFile(const QString &fileName) const{
+FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase &db){
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly))
         return FileReader::FileNotOpen;
 
+    emit started();
     FileReader::Error error=watchFile(file);
     if(error!=FileReader::NoError){
         file.close();
+        emit canceled();
         return error;
     }
     else{
-        //work with file without error
+        if(!db.connect())
+            return FileReader::DBError;
 
+        db.beginWrite();
+
+        file.reset();
+//        while(!file.atEnd()){
+//            QStringList buffer=QString(file.readLine().trimmed()).split(SEPARATOR);
+
+//            db.write();
+
+//        }
+        db.endWrite();
+        db.disconnect();
     }
 
     file.close();
+    emit ended();
     return error;
 }

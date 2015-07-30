@@ -17,10 +17,10 @@ private:
     FileReader::Error watchFile(QFile &file) const;
 
 public:
-    CsvFileReader();
+    explicit CsvFileReader();
     ~CsvFileReader();
 
-    FileReader::Error readFromFile(const QString &fileName) const;
+    FileReader::Error readFromFile(const QString &fileName, DataBase &db);
 
 public:
     static const char SEPARATOR;
