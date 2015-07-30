@@ -19,10 +19,10 @@ public:
     virtual bool endWrite()=0;
 
     virtual bool beginRead()=0;
-    virtual QSqlQuery* read(const QString &request)=0;
+    virtual QSqlQuery* read(const QString &request="")=0;
     virtual bool endRead()=0;
 
-    virtual QSqlQueryModel* model(const QString &request)=0;
+    virtual QSqlQueryModel* model(const QString &request="")=0;
 };
 
 #endif // DATABASE_H

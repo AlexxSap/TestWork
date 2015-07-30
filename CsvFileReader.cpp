@@ -11,10 +11,10 @@ FileReader::Error CsvFileReader::watchFile(QFile &file) const{
         return FileReader::EmptyFile;
 
     file.reset();
+    QString dateFormat=QString("yyyy.MM.dd");
     while(!file.atEnd()){
         QString strBuffer=QString(file.readLine().trimmed());
 
-        QString dateFormat=QString("yyyy.MM.dd");
         QString rxPattern=QString("(^[?a-zA-Z0-9_!]+)%1"
                                   "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))%1"
                                   "(\\d+(\.\\d{0,})?)%1"
@@ -35,19 +35,23 @@ FileReader::Error CsvFileReader::watchFile(QFile &file) const{
 
 FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase &db){
     QFile file(fileName);
+    FileReader::Error error=FileReader::NoError;
     if(!file.open(QIODevice::ReadOnly))
         return FileReader::FileNotOpen;
 
     emit started();
-    FileReader::Error error=watchFile(file);
+    error=watchFile(file);
     if(error!=FileReader::NoError){
         file.close();
         emit canceled();
         return error;
     }
     else{
-        if(!db.connect())
+        if(!db.connect()){
+            file.close();
+            emit canceled();
             return FileReader::DBError;
+        }
 
         db.beginWrite();
 

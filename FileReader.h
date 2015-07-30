@@ -6,7 +6,6 @@
 #include "database.h"
 
 //базовый класс для загрузки файла в базу
-
 class FileReader : public QObject
 {
     Q_OBJECT
@@ -20,7 +19,7 @@ public:
     explicit FileReader(QObject *parent = 0):QObject(parent){}
     virtual ~FileReader(){}
 
-    virtual FileReader::Error readFromFile(const QString &, DataBase &db)=0;
+    virtual FileReader::Error readFromFile(const QString &fileName, DataBase &db)=0;
 
 signals:
     void started();

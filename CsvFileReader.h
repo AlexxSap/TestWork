@@ -17,7 +17,7 @@ private:
     FileReader::Error watchFile(QFile &file) const;
 
 public:
-    explicit CsvFileReader();
+    CsvFileReader();
     ~CsvFileReader();
 
     FileReader::Error readFromFile(const QString &fileName, DataBase &db);
