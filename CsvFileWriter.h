@@ -12,7 +12,6 @@ public:
     CsvFileWriter();
 
     bool writeToFileAllData(const QString &fileName, DataBase &db);
-    bool writeToFileByRequest(const QString &fileName, DataBase &db, const QString &request);
 
 public:
     static const char SEPARATOR;

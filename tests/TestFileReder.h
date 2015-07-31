@@ -10,10 +10,12 @@
 #include "CsvFileReader.h"
 #include "database.h"
 
-class DBForTestFileReder: public DataBase{
+//нужен для вызова CsvFileReader::readFromFile
+class DBForTestFileReader: public DataBase
+{
 public:
-    DBForTestFileReder(){}
-    ~DBForTestFileReder(){}
+    DBForTestFileReader(){}
+    ~DBForTestFileReader(){}
 
     bool connect(){return true;}
     bool disconnect(){return true;}
@@ -24,7 +26,7 @@ public:
     bool endWrite(){return true;}
 
     bool beginRead(){return true;}
-    QSqlQuery* read(const QString &request){Q_UNUSED(request); return new QSqlQuery();}
+    QSqlQuery read(const QString &request){Q_UNUSED(request); return QSqlQuery();}
     bool endRead(){return true;}
 
     QSqlQueryModel* model(const QString &request){Q_UNUSED(request); return new QSqlQueryModel();}
@@ -35,12 +37,14 @@ class TestFileReder : public QObject
     Q_OBJECT
 public:
     explicit TestFileReder(QObject *parent = 0);
+
 private:
     void createFile(const QString &name, const QStringList &data);
     void removeFile(const QString &name);
+
 private slots:
-    void loadFile();
-    void loadFile_data();
+    void testLoadFile();
+    void testLoadFile_data();
 };
 
 #endif // TESTFILEREDER_H

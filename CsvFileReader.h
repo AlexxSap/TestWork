@@ -8,6 +8,8 @@
 #include <QList>
 #include <QRegExp>
 #include <QDate>
+#include <QTextStream>
+#include <QTextCodec>
 
 #include "FileReader.h"
 

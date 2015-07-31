@@ -23,7 +23,7 @@ public:
     bool endWrite();
 
     bool beginRead();
-    QSqlQuery* read(const QString &request);
+    QSqlQuery read(const QString &request);
     bool endRead();
 
     QSqlQueryModel* model(const QString &request);

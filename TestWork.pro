@@ -18,7 +18,10 @@ SOURCES += main.cpp\
     CsvFileReader.cpp \
     tests/TestWriteReadFileToDB.cpp \
     SqliteDataBase.cpp \
-    CsvFileWriter.cpp
+    CsvFileWriter.cpp \
+    DataBase.cpp \
+    FileReader.cpp \
+    FileWriter.cpp
 
 HEADERS  += mainwindow.h \
     tests/TestFileReder.h \

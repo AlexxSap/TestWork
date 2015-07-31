@@ -3,31 +3,35 @@
 
 #include <QObject>
 
-#include "database.h"
+#include "DataBase.h"
 
 //базовый класс для загрузки файла в базу
 class FileReader : public QObject
 {
     Q_OBJECT
 public:
-    enum Error {NoError,
-                EmptyFile,
-                FileNotOpen,
-                FileNotLoaded,
-                DBError};
+    enum Error
+    {
+        NoError,
+        EmptyFile,
+        FileNotOpen,
+        FileNotLoaded,
+        DBError
+    };
+
 public:
-    explicit FileReader(QObject *parent = 0):QObject(parent){}
-    virtual ~FileReader(){}
+    explicit FileReader(QObject *parent = 0);
+    virtual ~FileReader();
 
     virtual FileReader::Error readFromFile(const QString &fileName, DataBase &db)=0;
 
-signals:
-    void started();
-    void ended();
-    void canceled();
-    void progressRangeChanged(int minimum, int maximum);
-    void progressTextChanged(const QString & progressText);
-    void progressValueChanged(int progressValue);
+//signals:
+//    void started();
+//    void ended();
+//    void canceled();
+//    void progressRangeChanged(int minimum, int maximum);
+//    void progressTextChanged(const QString & progressText);
+//    void progressValueChanged(int progressValue);
 };
 
 #endif // FILEREADER_H
