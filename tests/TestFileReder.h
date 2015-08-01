@@ -21,13 +21,8 @@ public:
     bool disconnect(){return true;}
     bool isConnected(){return true;}
 
-    bool beginWrite(){return true;}
     bool write(const QString &request){Q_UNUSED(request); return true;}
-    bool endWrite(){return true;}
-
-    bool beginRead(){return true;}
     QSqlQuery read(const QString &request){Q_UNUSED(request); return QSqlQuery();}
-    bool endRead(){return true;}
 
     QSqlQueryModel* model(const QString &request){Q_UNUSED(request); return new QSqlQueryModel();}
 };

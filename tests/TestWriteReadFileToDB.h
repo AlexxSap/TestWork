@@ -14,12 +14,9 @@
 #include "CsvFileReader.h"
 #include "CsvFileWriter.h"
 #include "sqlitedatabase.h"
+#include "DataSelector.h"
+#include "SqliteAllDataDataSelector.h"
 
-/*
-Пока не реализована структура хранения данных в памяти
-    тестирование идёт по считыванию всех данных из БД
-    и записи в файл.
-*/
 class TestWriteReadFileToDB : public QObject
 {
     Q_OBJECT

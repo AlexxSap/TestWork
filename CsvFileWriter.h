@@ -3,15 +3,18 @@
 
 #include <QFile>
 #include <QDate>
+#include <QVariant>
+#include <QTextStream>
 
 #include "FileWriter.h"
+#include "DataSelector.h"
 
 class CsvFileWriter : public FileWriter
 {
 public:
     CsvFileWriter();
 
-    bool writeToFileAllData(const QString &fileName, DataBase &db);
+    bool writeToFile(const QString &fileName, DataSelector &ds);
 
 public:
     static const char SEPARATOR;

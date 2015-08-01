@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "database.h"
+#include "DataSelector.h"
 
 //базовый класс для выгрузки в файл из базы
 class FileWriter : public QObject
@@ -13,7 +13,7 @@ public:
     explicit FileWriter(QObject *parent = 0);
     virtual ~FileWriter();
 
-    virtual bool writeToFileAllData(const QString &fileName, DataBase &db)=0;
+    virtual bool writeToFile(const QString &fileName, DataSelector &ds)=0;
 
 //signals:
 //    void started();

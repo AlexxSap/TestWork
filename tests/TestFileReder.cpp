@@ -64,12 +64,6 @@ void TestFileReder::testLoadFile_data()
                                     << QStringList()
                                     << static_cast<int>(FileReader::FileNotOpen);
 
-    QTest::newRow("correct simple file") << QString("simple.csv")
-                                         << (QStringList() << "товар1;2015.07.29;12.1;544.5"
-                                             << "product2;2015.07.29;23.6;54.1"
-                                             << "product2;2015.07.30;2;5.4")
-                                         << static_cast<int>(FileReader::NoError);
-
     QTest::newRow("file with ugly date") << QString("uglyDate.csv")
                                          << (QStringList() << "product1;2015.09.41;3;54.5"
                                              << "product2;29.12.2015;23.6;5.1"

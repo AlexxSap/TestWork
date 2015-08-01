@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui testlib sql
+QT       += core gui testlib sql widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = TestWork
 TEMPLATE = app
@@ -21,7 +21,9 @@ SOURCES += main.cpp\
     CsvFileWriter.cpp \
     DataBase.cpp \
     FileReader.cpp \
-    FileWriter.cpp
+    FileWriter.cpp \
+    DataSelector.cpp \
+    SqliteAllDataDataSelector.cpp
 
 HEADERS  += mainwindow.h \
     tests/TestFileReder.h \
@@ -31,4 +33,6 @@ HEADERS  += mainwindow.h \
     tests/TestWriteReadFileToDB.h \
     SqliteDataBase.h \
     FileWriter.h \
-    CsvFileWriter.h
+    CsvFileWriter.h \
+    DataSelector.h \
+    SqliteAllDataDataSelector.h

@@ -125,11 +125,12 @@ QStringList TestWriteReadFileToDB::readDataFromFile(const QString &fileName)
         return QStringList();
     }
 
-    file.reset();
+    QTextStream ts(&file);
+    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
     QStringList lst;
-    while(!file.atEnd())
+    while(!ts.atEnd())
     {
-        lst << QString(file.readLine().trimmed());
+        lst << ts.readLine().trimmed();
     }
 
     file.close();
@@ -142,10 +143,9 @@ void TestWriteReadFileToDB::testWriteReadFileToDB()
     QFETCH(QString, outFileName);
     QFETCH(QString, dbName);
     QFETCH(QStringList, data);
-    QFETCH(QString, request);
     QFETCH(int, expectedReaction);
+    QFETCH(bool, expectedWritedToFile);
     QFETCH(QStringList, expectedData);
-
 
     ///notes для создания тестовых файло и баз обычно используем макросы,
     /// что бы чётко было видно, в какой строчке тестов тест упал.
@@ -156,12 +156,21 @@ void TestWriteReadFileToDB::testWriteReadFileToDB()
     createFile(inFileName, data);
     createTestDB(dbName);
 
-    SqliteDataBase db(dbName);
     CsvFileReader csvFR;
     CsvFileWriter csvFW;
 
-    const int actualReaction=static_cast<int>(csvFR.readFromFile(inFileName, db));
-    const bool isWriteToFile=csvFW.writeToFileAllData(outFileName,db);
+    int actualReaction=0;
+    {
+        SqliteDataBase db(dbName);
+        actualReaction=static_cast<int>(csvFR.readFromFile(inFileName, db));
+    }
+
+    bool actualWritedToFile=false;
+    {
+        SqliteAllDataDataSelector request(dbName);
+        actualWritedToFile=csvFW.writeToFile(outFileName,request);
+    }
+
     QStringList actualData=readDataFromFile(outFileName);
 
     removeFile(inFileName);
@@ -169,12 +178,13 @@ void TestWriteReadFileToDB::testWriteReadFileToDB()
     removeFile(dbName);
 
     const bool isWriteToDB=compError(actualReaction,expectedReaction);
+    const bool isWritedToFile=(actualWritedToFile==expectedWritedToFile);
     const bool isDatasEqual=compData(actualData,expectedData);
 
-    if(!(isWriteToDB && isWriteToFile && isDatasEqual))
+    if(!(isWriteToDB && isWritedToFile && isDatasEqual))
     {
         qWarning() << "Реакции при записи в БД совпадают?" << isWriteToDB;
-        qWarning() << "Данные записались в файл? " << isWriteToFile;
+        qWarning() << "Реакции записи в файл совпадают? " << isWritedToFile;
         qWarning() << "Данные совпадают?" << isDatasEqual;
         QVERIFY(false);
     }
@@ -190,27 +200,27 @@ void TestWriteReadFileToDB::testWriteReadFileToDB_data()
     QTest::addColumn<QString>("outFileName");
     QTest::addColumn<QString>("dbName");
     QTest::addColumn<QStringList>("data");
-    QTest::addColumn<QString>("request");
     QTest::addColumn<int>("expectedReaction");
+    QTest::addColumn<bool>("expectedWritedToFile");
     QTest::addColumn<QStringList>("expectedData");
 
     QTest::newRow("empty file") << QString("inFileEmpty.csv")
                                 << QString("outFileEmpty.csv")
                                 << QString("dbEmpty.db")
                                 << QStringList()
-                                << QString()
                                 << static_cast<int>(FileReader::EmptyFile)
+                                << true
                                 << QStringList();
 
     QTest::newRow("correct simple file") << QString("inFileCorrect.csv")
                                          << QString("outFileCorrect.csv")
                                          << QString("dbCorrect.db")
-                                         << (QStringList() << "товар1_?;2015.07.29;12.1;544.5"
-                                             << "product2;2015.07.29;23.6;54.1"
-                                             << "product2;2015.07.30;2;5.4")
-                                         << ""
+                                         << (QStringList() << "товар1_?;2015.07.29;12.10;544.50"
+                                             << "product2;2015.07.29;23.60;54.10"
+                                             << "product2;2015.07.30;2.00;5.40")
                                          << static_cast<int>(FileReader::NoError)
-                                         << (QStringList() << "товар1;2015.07.29;12.1;544.5"
-                                             << "product2;2015.07.29;23.6;54.1"
-                                             << "product2;2015.07.30;2;5.4");
+                                         << true
+                                         << (QStringList() << "товар1_?;2015.07.29;12.10;544.50"
+                                             << "product2;2015.07.29;23.60;54.10"
+                                             << "product2;2015.07.30;2.00;5.40");
 }
