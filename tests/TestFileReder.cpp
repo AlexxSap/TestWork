@@ -47,6 +47,7 @@ void TestFileReder::testLoadFile()
     int actual=static_cast<int>(csvFR.readFromFile(name, db));
     removeFile(name);
 
+    data.clear();
     QCOMPARE(actual, expected);
 }
 

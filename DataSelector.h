@@ -3,7 +3,6 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
-#include <QMetaType>
 
 class DataSelector
 {
@@ -13,7 +12,5 @@ public:
 
     virtual QSqlQuery get();
 };
-
-Q_DECLARE_METATYPE(DataSelector)
 
 #endif // DATASELECTOR_H

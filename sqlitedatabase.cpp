@@ -18,15 +18,16 @@ bool SqliteDataBase::connect()
 
 bool SqliteDataBase::disconnect()
 {
+    const QString conName=_db.connectionName();
+    bool res=false;
     if(_db.isOpen())
     {
-        const QString conName=_db.connectionName();
         _db.close();
-        _db = QSqlDatabase();
-        _db.removeDatabase(conName);
-        return true;
+        res= true;
     }
-    return false;
+    _db = QSqlDatabase();
+    _db.removeDatabase(conName);
+    return res;
 }
 
 bool SqliteDataBase::isConnected()

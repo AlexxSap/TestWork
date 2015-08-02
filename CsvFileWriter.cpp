@@ -4,7 +4,10 @@ const char CsvFileWriter::SEPARATOR=';';
 
 CsvFileWriter::CsvFileWriter():FileWriter()
 {
+}
 
+CsvFileWriter::~CsvFileWriter()
+{
 }
 
 bool CsvFileWriter::writeToFile(const QString &fileName, DataSelector &ds)

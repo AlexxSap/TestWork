@@ -16,6 +16,8 @@
 #include "sqlitedatabase.h"
 #include "DataSelector.h"
 #include "SqliteAllDataDataSelector.h"
+#include "SqliteSelByProductDataSelector.h"
+#include "SqliteSelByDateDataSelector.h"
 
 class TestWriteReadFileToDB : public QObject
 {

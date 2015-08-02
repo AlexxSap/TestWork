@@ -5,8 +5,6 @@
 #include "tests/TestFileReder.h"
 #include "tests/TestWriteReadFileToDB.h"
 
-#include <QSqlDatabase>
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

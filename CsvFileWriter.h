@@ -13,6 +13,7 @@ class CsvFileWriter : public FileWriter
 {
 public:
     CsvFileWriter();
+    ~CsvFileWriter();
 
     bool writeToFile(const QString &fileName, DataSelector &ds);
 

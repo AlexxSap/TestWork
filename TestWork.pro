@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     FileReader.cpp \
     FileWriter.cpp \
     DataSelector.cpp \
-    SqliteAllDataDataSelector.cpp
+    SqliteAllDataDataSelector.cpp \
+    SqliteSelByProductDataSelector.cpp \
+    SqliteSelByDateDataSelector.cpp
 
 HEADERS  += mainwindow.h \
     tests/TestFileReder.h \
@@ -35,4 +37,6 @@ HEADERS  += mainwindow.h \
     FileWriter.h \
     CsvFileWriter.h \
     DataSelector.h \
-    SqliteAllDataDataSelector.h
+    SqliteAllDataDataSelector.h \
+    SqliteSelByProductDataSelector.h \
+    SqliteSelByDateDataSelector.h

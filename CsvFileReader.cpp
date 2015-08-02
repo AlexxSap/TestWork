@@ -53,8 +53,7 @@ int CsvFileReader::getProductId(DataBase &db, const QString productName) const
     request=request.arg(productName);
     QSqlQuery query=db.read(request);
     int id=-1;
-    query.next();
-    if(!query.value(0).isNull())
+    if(query.next())
     {
         id=query.value(0).toInt();
     }

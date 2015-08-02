@@ -4,7 +4,6 @@
 #include "DataSelector.h"
 #include "SqliteDataBase.h"
 
-
 class SqliteAllDataDataSelector : public DataSelector
 {
 private:
