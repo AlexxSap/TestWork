@@ -12,21 +12,18 @@ class SqliteDataBase : public DataBase
 {
 private:
     QString _dbName;
+    QSqlDatabase _db;
 
 public:
-    explicit SqliteDataBase(const QString &dbName);
+    SqliteDataBase(const QString &dbName);
+    ~SqliteDataBase();
 
     bool connect();
     bool disconnect();
     bool isConnected();
 
-    bool beginWrite();
     bool write(const QString &request);
-    bool endWrite();
-
-    bool beginRead();
-    QSqlQuery* read(const QString &request);
-    bool endRead();
+    QSqlQuery read(const QString &request);
 
     QSqlQueryModel* model(const QString &request);
 };

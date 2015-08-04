@@ -14,12 +14,10 @@
 #include "CsvFileReader.h"
 #include "CsvFileWriter.h"
 #include "sqlitedatabase.h"
-
-/*
-Пока не реализована структура хранения данных в памяти
-    тестирование идёт по считыванию всех данных из БД
-    и записи в файл.
-*/
+#include "DataSelector.h"
+#include "SqliteAllDataDataSelector.h"
+#include "SqliteSelByProductDataSelector.h"
+#include "SqliteSelByDateDataSelector.h"
 
 class TestWriteReadFileToDB : public QObject
 {
@@ -28,22 +26,19 @@ public:
     explicit TestWriteReadFileToDB(QObject *parent = 0);
 
 private:
-    void createFile(const QStringList &data);
-    void removeFiles();
-    bool createTestDB();
+    void createFile(const QString &fileName, const QStringList &data);
+    void removeFile(const QString &fileName);
+    void createTestDB(const QString &dbName);
     QStringList readDataFromFile(const QString &fileName);
+    bool createTestDbStructure(QSqlDatabase &db);
 
 private:
-    QString _testInFileName;
-    QString _testOutFileName;
-    QString _testDBName;
-
     bool compData(const QStringList &act, const QStringList &exp);
     bool compError(const int &act, const int &exp);
 
 private slots:
-    void writeReadFileToDB();
-    void writeReadFileToDB_data();
+    void testWriteReadFileToDB();
+    void testWriteReadFileToDB_data();
 };
 
 #endif // TESTWRITEREADFILETODB_H

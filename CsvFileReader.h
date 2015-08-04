@@ -8,6 +8,8 @@
 #include <QList>
 #include <QRegExp>
 #include <QDate>
+#include <QTextStream>
+#include <QTextCodec>
 
 #include "FileReader.h"
 
@@ -15,6 +17,7 @@ class CsvFileReader : public FileReader
 {
 private:
     FileReader::Error watchFile(QFile &file) const;
+    int getProductId(DataBase &db, const QString productName) const;
 
 public:
     CsvFileReader();

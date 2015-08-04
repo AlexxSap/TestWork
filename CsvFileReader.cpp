@@ -2,83 +2,137 @@
 
 const char CsvFileReader::SEPARATOR=';';
 
-CsvFileReader::CsvFileReader():FileReader(){}
+CsvFileReader::CsvFileReader():FileReader()
+{
 
-CsvFileReader::~CsvFileReader(){}
+}
 
-FileReader::Error CsvFileReader::watchFile(QFile &file) const{
+CsvFileReader::~CsvFileReader()
+{
+
+}
+
+FileReader::Error CsvFileReader::watchFile(QFile &file) const
+{
     if(file.size()==0)
+    {
         return FileReader::EmptyFile;
+    }
 
-    file.reset();
-    QString dateFormat=QString("yyyy.MM.dd");
+    const QString dateFormat=QString("yyyy.MM.dd");
+    QTextStream ts(&file);
+    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
 
-    ///notes у нас принято оформлять тела циклов, условий, классов и тд и тп через
-    ///notes
-    /// if(false)
-    /// {
-    ///     код
-    /// }
-    ///
-    /// то есть открывающая фигурная скобка с новой строки.
-    /// скобками выделяем код даже, если он состоит из одной строки
+    QString rxPattern=QString("(^[?а-яА-ЯёЁa-zA-Z0-9_!]+)%1"
+                              "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))%1"
+                              "(\\d+(\.\\d{0,})?)%1"
+                              "(\\d+(\.\\d{0,})?)");
+    rxPattern=rxPattern.arg(SEPARATOR);
+    const QRegExp rx(rxPattern);
 
-    while(!file.atEnd()){
-        ///notes всё локальное, что может быть const должно быть const
-        QString strBuffer=QString(file.readLine().trimmed());
-
-        QString rxPattern=QString("(^[?a-zA-Z0-9_!]+)%1"
-                                  "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))%1"
-                                  "(\\d+(\.\\d{0,})?)%1"
-                                  "(\\d+(\.\\d{0,})?)");
-
-        rxPattern=rxPattern.arg(SEPARATOR);
-
-        QRegExp rx(rxPattern);
-        if(!rx.exactMatch(strBuffer))
+    while(!ts.atEnd())
+    {
+        const QString buffer=ts.readLine().trimmed();
+        if(!rx.exactMatch(buffer))
+        {
             return FileReader::FileNotLoaded;
+        }
 
-        QString date=rx.cap(2);
+        const QString date=rx.cap(2);
         if(!QDate::fromString(date,dateFormat).isValid())
+        {
             return FileReader::FileNotLoaded;
+        }
     }
     return FileReader::NoError;
 }
 
-FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase &db){
+int CsvFileReader::getProductId(DataBase &db, const QString productName) const
+{
+    QString request="select f_id from t_products where f_name='%1';";
+    request=request.arg(productName);
+    QSqlQuery query=db.read(request);
+    int id=-1;
+    if(query.next())
+    {
+        id=query.value(0).toInt();
+    }
+    return id;
+}
+
+FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase &db)
+{
     QFile file(fileName);
     FileReader::Error error=FileReader::NoError;
     if(!file.open(QIODevice::ReadOnly))
+    {
         return FileReader::FileNotOpen;
+    }
 
-    emit started();
+    //    emit started();
     error=watchFile(file);
-    if(error!=FileReader::NoError){
+    if(error!=FileReader::NoError)
+    {
         file.close();
-        emit canceled();
+        //        emit canceled();
         return error;
     }
-    else{
-        if(!db.connect()){
+    else
+    {
+        if(!db.connect())
+        {
             file.close();
-            emit canceled();
+            //            emit canceled();
             return FileReader::DBError;
         }
 
-        db.beginWrite();
-
         file.reset();
-//        while(!file.atEnd()){
-//            QStringList buffer=QString(file.readLine().trimmed()).split(SEPARATOR);
+        QTextStream ts(&file);
+        ts.setCodec(QTextCodec::codecForName("Windows-1251"));
+        while(!ts.atEnd())
+        {
+            const QStringList buffer=ts.readLine().trimmed().split(SEPARATOR);
+            QString request;
 
-//            db.write();
+            int id=getProductId(db, buffer.at(0));
+            if(id<0)
+            {
+                request=QString("insert into t_products(f_name) "
+                                "values('%1');");
 
-//        }
-        db.endWrite();
+                request=request.arg(buffer.at(0));
+                if(!db.write(request))
+                {
+                    db.disconnect();
+                    file.close();
+                    return FileReader::DBError;
+                }
+            }
+
+            id=getProductId(db, buffer.at(0));
+            if(id<0)
+            {
+                db.disconnect();
+                file.close();
+                return FileReader::DBError;
+            }
+
+            request="insert into t_datas(f_product, f_date, f_sold, f_rest) "
+                    "values('%1', '%2', %3, %4);";
+            request=request.arg(id)
+                    .arg(buffer.at(1))
+                    .arg(buffer.at(2))
+                    .arg(buffer.at(3));
+            if(!db.write(request))
+            {
+                db.disconnect();
+                file.close();
+                return FileReader::DBError;
+            }
+        }
         db.disconnect();
     }
-
     file.close();
-    emit ended();
+    //    emit ended();
     return error;
 }

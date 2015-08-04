@@ -1,43 +1,58 @@
 #include "SqliteDataBase.h"
 
-SqliteDataBase::SqliteDataBase(const QString &dbName):_dbName(dbName){}
-
-
-bool SqliteDataBase::connect(){
-    return true;
+SqliteDataBase::SqliteDataBase(const QString &dbName):_dbName(dbName)
+{
+    _db = QSqlDatabase::addDatabase("QSQLITE");
+    _db.setDatabaseName(_dbName);
 }
 
-bool SqliteDataBase::disconnect(){
-    return false;
+SqliteDataBase::~SqliteDataBase()
+{
+    disconnect();
 }
 
-bool SqliteDataBase::isConnected(){
-    return false;
+bool SqliteDataBase::connect()
+{
+    return _db.open();
 }
 
-bool SqliteDataBase::beginWrite(){
-    return false;
+bool SqliteDataBase::disconnect()
+{
+    const QString conName=_db.connectionName();
+    bool res=false;
+    if(_db.isOpen())
+    {
+        _db.close();
+        res= true;
+    }
+    _db = QSqlDatabase();
+    _db.removeDatabase(conName);
+    return res;
 }
 
-bool SqliteDataBase::write(const QString &request){
-    return false;
-}
-bool SqliteDataBase::endWrite(){
-    return false;
+bool SqliteDataBase::isConnected()
+{
+    return _db.isOpen();
 }
 
-bool SqliteDataBase::beginRead(){
-    return false;
+bool SqliteDataBase::write(const QString &request)
+{
+    QSqlQuery query;
+    return query.exec(request);
 }
 
-QSqlQuery* SqliteDataBase::read(const QString &request){
-    return new QSqlQuery();
+QSqlQuery SqliteDataBase::read(const QString &request)
+{
+    QSqlQuery query;
+    if(query.exec(request))
+    {
+        return query;
+    }
+    return QSqlQuery();
 }
 
-bool SqliteDataBase::endRead(){
-    return false;
-}
-
-QSqlQueryModel* SqliteDataBase::model(const QString &request){
+QSqlQueryModel* SqliteDataBase::model(const QString &request)
+{
+    Q_UNUSED(request)
     return new QSqlQueryModel();
 }
