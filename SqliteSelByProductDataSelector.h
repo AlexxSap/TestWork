@@ -7,6 +7,7 @@
 class SqliteSelByProductDataSelector : public DataSelector
 {
 private:
+    ///notes у нас принято private поля обозначать суффиксом _, а не префиксом
     SqliteDataBase _db;
     QString _caseValue;
 

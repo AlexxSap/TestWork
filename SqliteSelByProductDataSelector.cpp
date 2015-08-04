@@ -34,6 +34,8 @@ QSqlQuery SqliteSelByProductDataSelector::get()
 
 void SqliteSelByProductDataSelector::setCaseValue(const QString &value)
 {
+    ///notes все бинарные операторы выделяем пробелами с обоих сторон
+    ///  _caseValue = value;
     _caseValue=value;
 }
 

@@ -20,6 +20,8 @@ QSqlQuery SqliteSelByDateDataSelector::get()
     }
     else
     {
+        ///notes никогда не генерируй заросы напрямую руками, если в них надо вставить конкретное значение чего-либо
+        /// для таких вещей используют QSqlQuery::bind и QSqlQuery::prepare
         const QString request("select t_products.f_name, "
                               "t_datas.f_date, "
                               "t_datas.f_sold, "

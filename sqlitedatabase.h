@@ -6,7 +6,7 @@
 
 #include "database.h"
 
-///notes не вижу об
+///notes не вижу обоснования для создания какой-то иерархии классов
 
 class SqliteDataBase : public DataBase
 {
