@@ -1,40 +1,44 @@
 #include "SqliteSelByDateDataSelector.h"
 
 SqliteSelByDateDataSelector::SqliteSelByDateDataSelector(const QString &dbName)
-    :_db(dbName),
-      _caseValue()
+    :DataBase(dbName),
+      caseValue_()
 {
-    _db.connect();
+    connect();
 }
 
 SqliteSelByDateDataSelector::~SqliteSelByDateDataSelector()
 {
-    _db.disconnect();
 }
 
-QSqlQuery SqliteSelByDateDataSelector::get()
+const QSqlQuery SqliteSelByDateDataSelector::get()
 {
-    if(_caseValue.isEmpty())
+    if(caseValue_.isEmpty())
     {
         return QSqlQuery();
     }
     else
     {
-        ///notes никогда не генерируй заросы напрямую руками, если в них надо вставить конкретное значение чего-либо
-        /// для таких вещей используют QSqlQuery::bind и QSqlQuery::prepare
-        const QString request("select t_products.f_name, "
-                              "t_datas.f_date, "
-                              "t_datas.f_sold, "
-                              "t_datas.f_rest "
-                              "from t_products left join t_datas "
-                              "on t_products.f_id=t_datas.f_product "
-                              "where t_datas.f_date='"+_caseValue+"';");
-        QSqlQuery query=_db.read(request);
+        QSqlQuery query(getDB());
+        query.prepare("select t_items.f_product, "
+                      "t_items.f_storage, "
+                      "t_datas.f_date, "
+                      "t_datas.f_sold, "
+                      "t_datas.f_rest "
+                      "from t_items left join t_datas "
+                      "on t_items.f_id = t_datas.f_item "
+                      "where t_datas.f_date = :date;");
+        query.bindValue(":date", caseValue_);
+        if(!query.exec())
+        {
+            return QSqlQuery();
+        }
+
         return query;
     }
 }
 
 void SqliteSelByDateDataSelector::setCaseValue(const QString &value)
 {
-    _caseValue=value;
+    caseValue_ = value;
 }

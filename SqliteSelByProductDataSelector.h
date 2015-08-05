@@ -1,21 +1,18 @@
 #ifndef SQLITESELBYPRODUCTDATASELECTOR_H
 #define SQLITESELBYPRODUCTDATASELECTOR_H
 
-#include "DataSelector.h"
-#include "SqliteDataBase.h"
+#include "DataBase.h"
 
-class SqliteSelByProductDataSelector : public DataSelector
+class SqliteSelByProductDataSelector : public DataBase
 {
 private:
-    ///notes у нас принято private поля обозначать суффиксом _, а не префиксом
-    SqliteDataBase _db;
-    QString _caseValue;
+    QString caseValue_;
 
 public:
     SqliteSelByProductDataSelector(const QString &dbName);
     ~SqliteSelByProductDataSelector();
 
-    QSqlQuery get();
+    const QSqlQuery get();
     void setCaseValue(const QString &value);
 };
 

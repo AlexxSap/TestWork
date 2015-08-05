@@ -1,41 +1,45 @@
 #include "SqliteSelByProductDataSelector.h"
 
 SqliteSelByProductDataSelector::SqliteSelByProductDataSelector(const QString &dbName)
-    :_db(dbName),
-      _caseValue()
+    :DataBase(dbName),
+      caseValue_()
 {
-    _db.connect();
+    connect();
 }
 
 SqliteSelByProductDataSelector::~SqliteSelByProductDataSelector()
 {
-    _db.disconnect();
 }
 
-QSqlQuery SqliteSelByProductDataSelector::get()
+const QSqlQuery SqliteSelByProductDataSelector::get()
 {
-    if(_caseValue.isEmpty())
+    if(caseValue_.isEmpty())
     {
         return QSqlQuery();
     }
     else
     {
-        const QString request("select t_products.f_name, "
-                              "t_datas.f_date, "
-                              "t_datas.f_sold, "
-                              "t_datas.f_rest "
-                              "from t_products left join t_datas "
-                              "on t_products.f_id=t_datas.f_product "
-                              "where t_products.f_name='"+_caseValue+"';");
-        QSqlQuery query=_db.read(request);
+        QSqlQuery query(getDB());
+        query.prepare("select t_items.f_product, "
+                             "t_items.f_storage, "
+                             "t_datas.f_date, "
+                             "t_datas.f_sold, "
+                             "t_datas.f_rest "
+                      "from t_items left join t_datas "
+                      "on t_items.f_id = t_datas.f_item "
+                      "where t_items.f_product = :product;"
+                      );
+        query.bindValue(":product", caseValue_);
+        if(!query.exec())
+        {
+            return QSqlQuery();
+        }
+
         return query;
     }
 }
 
 void SqliteSelByProductDataSelector::setCaseValue(const QString &value)
 {
-    ///notes все бинарные операторы выделяем пробелами с обоих сторон
-    ///  _caseValue = value;
-    _caseValue=value;
+    caseValue_ = value;
 }
-

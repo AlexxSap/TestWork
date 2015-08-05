@@ -1,19 +1,15 @@
 #ifndef SQLITEALLDATADATASELECTOR_H
 #define SQLITEALLDATADATASELECTOR_H
 
-#include "DataSelector.h"
-#include "SqliteDataBase.h"
+#include "DataBase.h"
 
-class SqliteAllDataDataSelector : public DataSelector
+class SqliteAllDataDataSelector : public DataBase
 {
-private:
-    SqliteDataBase _db;
-
 public:
     SqliteAllDataDataSelector(const QString &dbName);
     ~SqliteAllDataDataSelector();
 
-    QSqlQuery get();
+    const QSqlQuery get();
 };
 
 #endif // SQLITEALLDATADATASELECTOR_H

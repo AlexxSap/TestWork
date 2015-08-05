@@ -2,7 +2,6 @@
 #include <QApplication>
 #include <QTest>
 
-#include "tests/TestFileReder.h"
 #include "tests/TestWriteReadFileToDB.h"
 
 
@@ -118,13 +117,10 @@ public:
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    if(argc==2 && QString(argv[1])== "-t")
+    if(argc == 2 && QString(argv[1]) == "-t")
     {
-        ///notes на именах тут лучше не экономить.
-        TestFileReder tfr;
-        QTest::qExec(&tfr);
-        TestWriteReadFileToDB twrftbd;
-        QTest::qExec(&twrftbd);
+        TestWriteReadFileToDB testWriteReadFileToDB;
+        QTest::qExec(&testWriteReadFileToDB);
         return 0;
     }
     else

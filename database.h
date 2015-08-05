@@ -1,23 +1,29 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include <QSqlQuery>
+#include <QSqlDatabase>
 #include <QSqlQueryModel>
+#include <QSqlQuery>
+#include <QString>
 
 class DataBase
 {
+private:
+    QString dbName_;
+    QSqlDatabase db_;
+
+protected:
+    bool connect();
+    bool disconnect();
+
 public:
-    DataBase();
-    virtual ~DataBase();
+    explicit DataBase(const QString &dbName);
+    ~DataBase();
 
-    virtual bool connect()=0;
-    virtual bool disconnect()=0;
-    virtual bool isConnected()=0;
+    bool isConnected();
 
-    virtual bool write(const QString &request)=0;
-    virtual QSqlQuery read(const QString &request="")=0;
-
-    virtual QSqlQueryModel* model(const QString &request="")=0;
+    const virtual QSqlQuery get();
+    const QSqlDatabase getDB() const;
 };
 
 #endif // DATABASE_H

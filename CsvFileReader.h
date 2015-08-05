@@ -10,14 +10,17 @@
 #include <QDate>
 #include <QTextStream>
 #include <QTextCodec>
+#include <QSqlQuery>
 
 #include "FileReader.h"
+#include "DataBase.h"
 
 class CsvFileReader : public FileReader
 {
 private:
     FileReader::Error watchFile(QFile &file) const;
-    int getProductId(DataBase &db, const QString productName) const;
+    int getProductId(DataBase &db, const QString &product, const QString &storage) const;
+    bool insertToDB(DataBase &db, const QStringList &data) const;
 
 public:
     CsvFileReader();

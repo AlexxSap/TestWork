@@ -14,29 +14,23 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    tests/TestFileReder.cpp \
     CsvFileReader.cpp \
     tests/TestWriteReadFileToDB.cpp \
-    SqliteDataBase.cpp \
     CsvFileWriter.cpp \
-    DataBase.cpp \
     FileReader.cpp \
     FileWriter.cpp \
-    DataSelector.cpp \
     SqliteAllDataDataSelector.cpp \
     SqliteSelByProductDataSelector.cpp \
-    SqliteSelByDateDataSelector.cpp
+    SqliteSelByDateDataSelector.cpp \
+    DataBase.cpp
 
 HEADERS  += mainwindow.h \
-    tests/TestFileReder.h \
     FileReader.h \
     CsvFileReader.h \
-    DataBase.h \
     tests/TestWriteReadFileToDB.h \
-    SqliteDataBase.h \
     FileWriter.h \
     CsvFileWriter.h \
-    DataSelector.h \
     SqliteAllDataDataSelector.h \
     SqliteSelByProductDataSelector.h \
-    SqliteSelByDateDataSelector.h
+    SqliteSelByDateDataSelector.h \
+    DataBase.h

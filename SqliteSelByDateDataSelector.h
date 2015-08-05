@@ -1,20 +1,18 @@
 #ifndef SQLITESELBYDATEDATASELECTOR_H
 #define SQLITESELBYDATEDATASELECTOR_H
 
-#include "DataSelector.h"
-#include "SqliteDataBase.h"
+#include "DataBase.h"
 
-class SqliteSelByDateDataSelector : public DataSelector
+class SqliteSelByDateDataSelector : public DataBase
 {
 private:
-    SqliteDataBase _db;
-    QString _caseValue;
+    QString caseValue_;
 
 public:
     SqliteSelByDateDataSelector(const QString &dbName);
     ~SqliteSelByDateDataSelector();
 
-    QSqlQuery get();
+    const QSqlQuery get();
     void setCaseValue(const QString &value);
 };
 

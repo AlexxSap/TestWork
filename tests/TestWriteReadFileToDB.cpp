@@ -17,7 +17,7 @@ void TestWriteReadFileToDB::createFile(const QString &fileName, const QStringLis
 
     foreach (QString temp, data)
     {
-        file.write(QString(temp+"\r\n").toLocal8Bit());
+        file.write(QString(temp + "\r\n").toLocal8Bit());
     }
     file.close();
 }
@@ -37,22 +37,23 @@ void TestWriteReadFileToDB::removeFile(const QString &fileName)
 bool TestWriteReadFileToDB::createTestDbStructure(QSqlDatabase &db)
 {
     QSqlQuery query(db);
-    bool res=query.exec("create table t_products("
-                        "f_id integer primary key asc, "
-                        "f_name text not null"
-                        ");");
+    bool res = query.exec("create table t_items("
+                          "f_id integer primary key asc, "
+                          "f_product text not null, "
+                          "f_storage text not null"
+                          ");");
     if (!res)
     {
         return false;
     }
 
-    res=query.exec("create table t_datas("
-                           "f_product references t_products(f_id) on delete cascade, "
-                           "f_date real not null, "
-                           "f_sold real not null, "
-                           "f_rest real not null, "
-                           "primary key(f_product, f_date)"
-                           ");");
+    res = query.exec("create table t_datas("
+                     "f_item references t_items(f_id) on delete cascade, "
+                     "f_date real not null, "
+                     "f_sold real not null, "
+                     "f_rest real not null, "
+                     "primary key(f_item, f_date)"
+                     ");");
     return res;
 }
 
@@ -92,7 +93,7 @@ void TestWriteReadFileToDB::createTestDB(const QString &dbName)
 
 bool TestWriteReadFileToDB::compData(const QStringList &act, const QStringList &exp)
 {
-    if(act.count()!=exp.count())
+    if(act.count() != exp.count())
     {
         return false;
     }
@@ -108,7 +109,7 @@ bool TestWriteReadFileToDB::compData(const QStringList &act, const QStringList &
 
 bool TestWriteReadFileToDB::compError(const int &act, const int &exp)
 {
-    return act==exp;
+    return act == exp;
 }
 
 QStringList TestWriteReadFileToDB::readDataFromFile(const QString &fileName)
@@ -119,7 +120,7 @@ QStringList TestWriteReadFileToDB::readDataFromFile(const QString &fileName)
         return QStringList();
     }
 
-    if(file.size()==0)
+    if(file.size() == 0)
     {
         return QStringList();
     }
@@ -156,57 +157,57 @@ void TestWriteReadFileToDB::testWriteReadFileToDB()
     createFile(inFileName, data);
     createTestDB(dbName);
 
-    CsvFileReader csvFR;
-    CsvFileWriter csvFW;
+    CsvFileReader fileReader;
+    CsvFileWriter fileWriter;
 
-    int actualReaction=0;
+    int actualReaction = 0;
     {
-        SqliteDataBase db(dbName);
-        actualReaction=static_cast<int>(csvFR.readFromFile(inFileName, db));
+        DataBase db(dbName);
+        actualReaction = static_cast<int>(fileReader.readFromFile(inFileName, db));
     }
 
-    bool actualWritedToFile=false;
+    bool actualWritedToFile = false;
     {
         if(selectionCase.isEmpty())
         {
             SqliteAllDataDataSelector request(dbName);
-            actualWritedToFile=csvFW.writeToFile(outFileName,request);
+            actualWritedToFile = fileWriter.writeToFile(outFileName,request);
         }
         else
         {
-            QString rxPattern=QString("(^[?а-яА-ЯёЁa-zA-Z0-9_!]+)|"
-                                      "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))");
+            QString rxPattern = QString("([?а-яА-ЯёЁa-zA-Z0-9_!]+)|"
+                                        "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))");
             const QRegExp rx(rxPattern);
 
             if(rx.exactMatch(selectionCase))
             {
-                const QString product=rx.cap(1); ;
-                const QString date=rx.cap(2);
+                const QString product = rx.cap(1); ;
+                const QString date = rx.cap(2);
                 if(!product.isEmpty())
                 {
                     SqliteSelByProductDataSelector request(dbName);
                     request.setCaseValue(product);
-                    actualWritedToFile=csvFW.writeToFile(outFileName,request);
+                    actualWritedToFile = fileWriter.writeToFile(outFileName,request);
                 }
                 else if(!date.isEmpty())
                 {
                     SqliteSelByDateDataSelector request(dbName);
                     request.setCaseValue(date);
-                    actualWritedToFile=csvFW.writeToFile(outFileName,request);
+                    actualWritedToFile = fileWriter.writeToFile(outFileName,request);
                 }
             }
 
         }
     }
-    QStringList actualData=readDataFromFile(outFileName);
+    QStringList actualData = readDataFromFile(outFileName);
 
     removeFile(inFileName);
     removeFile(outFileName);
     removeFile(dbName);
 
-    const bool isWriteToDB=compError(actualReaction,expectedReaction);
-    const bool isWritedToFile=(actualWritedToFile==expectedWritedToFile);
-    const bool isDatasEqual=compData(actualData,expectedData);
+    const bool isWriteToDB = compError(actualReaction,expectedReaction);
+    const bool isWritedToFile = (actualWritedToFile == expectedWritedToFile);
+    const bool isDatasEqual = compData(actualData,expectedData);
 
     if(!(isWriteToDB && isWritedToFile && isDatasEqual))
     {
@@ -238,45 +239,89 @@ void TestWriteReadFileToDB::testWriteReadFileToDB_data()
                                 << QStringList()
                                 << ""
                                 << static_cast<int>(FileReader::EmptyFile)
-                                << true
+                                << false
                                 << QStringList();
 
     QTest::newRow("correct simple file") << QString("inFileCorrect.csv")
                                          << QString("outFileCorrect.csv")
                                          << QString("dbCorrect.db")
-                                         << (QStringList() << "товар1_?;2015.07.29;12.10;544.50"
-                                             << "product2;2015.07.29;23.60;54.10"
-                                             << "product2;2015.07.30;2.00;5.40")
+                                         << (QStringList() << "товар1!;склад_1;2015.07.29;12.10;544.50"
+                                             << "product2;storage1;2015.07.29;23.60;54.10"
+                                             << "product2;storage1;2015.07.30;2.00;5.40")
                                          << ""
                                          << static_cast<int>(FileReader::NoError)
                                          << true
-                                         << (QStringList() << "товар1_?;2015.07.29;12.10;544.50"
-                                             << "product2;2015.07.29;23.60;54.10"
-                                             << "product2;2015.07.30;2.00;5.40");
+                                         << (QStringList() << "товар1!;склад_1;2015.07.29;12.10;544.50"
+                                             << "product2;storage1;2015.07.29;23.60;54.10"
+                                             << "product2;storage1;2015.07.30;2.00;5.40");
+
+    QTest::newRow("file with ugly date") << QString("inUglyDate.csv")
+                                         << QString("outUglyDate.csv")
+                                         << QString("dbUglyDate.db")
+                                         << (QStringList() << "product1;storage1;2015.09.41;3;54.5"
+                                             << "product2;storage1;29.12.2015;23.6;5.1"
+                                             << "товар4;storage1;2015.27.30;2;5.4")
+                                         << ""
+                                         << static_cast<int>(FileReader::FileNotLoaded)
+                                         << false
+                                         << QStringList();
+
+    QTest::newRow("file with uncorrect date") << QString("inUncDate.csv")
+                                              << QString("outUncDate.csv")
+                                              << QString("dbUncDate.db")
+                                              << (QStringList() << "product1;storage1;2015.09.31;12.1;544.5"
+                                                  << "product_2!;storage1;2015.07.29;23.6;54.1"
+                                                  << "product2storage1;;2015.02.30;2;5.4")
+                                              << ""
+                                              << static_cast<int>(FileReader::FileNotLoaded)
+                                              << false
+                                              << QStringList();
+
+    QTest::newRow("file with a negative number of product") << QString("inNegative.csv")
+                                                            << QString("outNegative.csv")
+                                                            << QString("dbNegative.db")
+                                                            << (QStringList() << "product1;storage1;2015.07.20;-3;54.5"
+                                                                << "товар2;storage1;2015.07.20;23.6;-5.1"
+                                                                << "product4;storage1;2015.07.00;2;5.4")
+                                                            << ""
+                                                            << static_cast<int>(FileReader::FileNotLoaded)
+                                                            << false
+                                                            << QStringList();
+
+    QTest::newRow("file with a different structure") << QString("inDifferent.csv")
+                                                     << QString("outDifferent.csv")
+                                                     << QString("dbDifferent.db")
+                                                     << (QStringList() << "product1;storage1;20.07.2015;.3;54.5;45"
+                                                         << "product2;something else;2015.07.20,23.6;.5.1"
+                                                         << "56.5,wtf")
+                                                     << ""
+                                                     << static_cast<int>(FileReader::FileNotLoaded)
+                                                     << false
+                                                     << QStringList();
 
     QTest::newRow("get by product") << QString("inFileProduct.csv")
-                                         << QString("outFileProduct.csv")
-                                         << QString("dbProduct.db")
-                                         << (QStringList() << "товар1;2015.07.29;12.10;544.50"
-                                             << "product2;2015.07.29;23.60;54.10"
-                                             << "product2;2015.07.30;2.00;5.40"
-                                             << "товар1;2015.07.28;5.03;1.40")
-                                         << "товар1"
-                                         << static_cast<int>(FileReader::NoError)
-                                         << true
-                                         << (QStringList() << "товар1;2015.07.29;12.10;544.50"
-                                             << "товар1;2015.07.28;5.03;1.40");
+                                    << QString("outFileProduct.csv")
+                                    << QString("dbProduct.db")
+                                    << (QStringList() << "товар1;storage1;2015.07.29;12.10;544.50"
+                                        << "product2;storage1;2015.07.29;23.60;54.10"
+                                        << "product2;storage2;2015.07.30;2.00;5.40"
+                                        << "товар1;склад2;2015.07.28;5.03;1.40")
+                                    << "товар1"
+                                    << static_cast<int>(FileReader::NoError)
+                                    << true
+                                    << (QStringList() << "товар1;storage1;2015.07.29;12.10;544.50"
+                                        << "товар1;склад2;2015.07.28;5.03;1.40");
 
     QTest::newRow("get by date") << QString("inFileDate.csv")
-                                         << QString("outFileDate.csv")
-                                         << QString("dbDate.db")
-                                         << (QStringList() << "товар1;2015.07.29;12.10;544.50"
-                                             << "product2;2015.07.29;23.60;54.10"
-                                             << "product2;2015.07.30;2.00;5.40"
-                                             << "товар1;2015.07.30;5.03;1.40")
-                                         << "2015.07.30"
-                                         << static_cast<int>(FileReader::NoError)
-                                         << true
-                                         << (QStringList() << "product2;2015.07.30;2.00;5.40"
-                                             << "товар1;2015.07.30;5.03;1.40");
+                                 << QString("outFileDate.csv")
+                                 << QString("dbDate.db")
+                                 << (QStringList() << "товар1;storage1;2015.07.29;12.10;544.50"
+                                     << "product2;storage1;2015.07.29;23.60;54.10"
+                                     << "product2;storage1;2015.07.30;2.00;5.40"
+                                     << "товар1;storage1;2015.07.30;5.03;1.40")
+                                 << "2015.07.30"
+                                 << static_cast<int>(FileReader::NoError)
+                                 << true
+                                 << (QStringList() << "product2;storage1;2015.07.30;2.00;5.40"
+                                     << "товар1;storage1;2015.07.30;5.03;1.40");
 }

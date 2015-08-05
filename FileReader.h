@@ -23,15 +23,7 @@ public:
     explicit FileReader(QObject *parent = 0);
     virtual ~FileReader();
 
-    virtual FileReader::Error readFromFile(const QString &fileName, DataBase &db)=0;
-
-//signals:
-//    void started();
-//    void ended();
-//    void canceled();
-//    void progressRangeChanged(int minimum, int maximum);
-//    void progressTextChanged(const QString & progressText);
-//    void progressValueChanged(int progressValue);
+    virtual FileReader::Error readFromFile(const QString &fileName, DataBase &db) = 0;
 };
 
 #endif // FILEREADER_H

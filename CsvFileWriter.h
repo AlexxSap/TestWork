@@ -7,7 +7,7 @@
 #include <QTextStream>
 
 #include "FileWriter.h"
-#include "DataSelector.h"
+#include "DataBase.h"
 
 class CsvFileWriter : public FileWriter
 {
@@ -15,7 +15,7 @@ public:
     CsvFileWriter();
     ~CsvFileWriter();
 
-    bool writeToFile(const QString &fileName, DataSelector &ds);
+    bool writeToFile(const QString &fileName, DataBase &ds);
 
 public:
     static const char SEPARATOR;
