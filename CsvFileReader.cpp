@@ -23,6 +23,7 @@ FileReader::Error CsvFileReader::watchFile(QFile &file) const
     QTextStream ts(&file);
     ts.setCodec(QTextCodec::codecForName("Windows-1251"));
 
+    ///notes по-японски писать нельзя? а какие-нибудь символы типа двоеточия или амперсанта?
     QString rxPattern = QString("(^[?а-яА-ЯёЁa-zA-Z0-9_!]+)%1"                                  //наименование товара
                                 "([?а-яА-ЯёЁa-zA-Z0-9_!]+)%1"                                  //наименование склада
                                 "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))%1"   //дата
@@ -72,6 +73,10 @@ int CsvFileReader::getProductId(DataBase &db, const QString &product, const QStr
         insQuery.bindValue(":product", product);
         insQuery.bindValue(":storage", storage);
 
+        ///notes если операции как-то меняет состояние программы или дисковой системы и тд, то не надо
+        /// их подряд писать через || или && или вообще как-то в if
+        /// потому что порядок выполнения операций в с++ в данном случае не определён и может привести к очень хитрым багам.
+        /// const методы, которые ничего не меняют, можно так использовать.
         if(!insQuery.exec() || !query.exec() || !query.first())
         {
             return -1;
@@ -90,6 +95,8 @@ int CsvFileReader::getProductId(DataBase &db, const QString &product, const QStr
 
 bool CsvFileReader::insertToDB(DataBase &db, const QStringList &data) const
 {
+    ///notes всегда, если используем методы типа QList::at от какой-то константы проверяем, что у списка хватает длинны
+    /// иначе будет исключение. Неявное свойство data, что там точно будет сколько-то элементов в текущей версии никем не учитывается.
     const QString product=data.at(0);
     const QString storage=data.at(1);
     int id = getProductId(db, product, storage);
