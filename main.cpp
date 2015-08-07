@@ -3,8 +3,9 @@
 #include <QTest>
 
 #include "tests/TestWriteReadFileToDB.h"
+#include "tests/TestItemOperators.h"
 
-
+/*
 ///notes конечные цели:
 /// 1. уметь генерировать историю продаж на заданый временной период для заданого числа артикулов и складов
 /// 2. уметь читать "подряд" несколько историй продаж для заданного набора товаров
@@ -72,17 +73,6 @@ public:
     bool isValid() const;
 };
 
-/// простенький генератор историй продаж
-class SaleHistoryGenerator
-{
-public:
-    /// генерируем продажи и остатки для всех товаров на все дни от from для to для storageNum складов, на каждом из которых productNum артикулов
-    QList<SaleHistoryDay> generateHistory(const Date &from,
-                                          const Date &to,
-                                          const int storageNum,
-                                          const int productNum) const;
-};
-
 /// писалка товаров в базу
 class SaleHistoryWriter
 {
@@ -113,7 +103,7 @@ public:
     SaleHistory current();
 };
 
-
+*/
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -121,6 +111,8 @@ int main(int argc, char *argv[])
     {
         TestWriteReadFileToDB testWriteReadFileToDB;
         QTest::qExec(&testWriteReadFileToDB);
+        TestItemOperators testItemOperators;
+        QTest::qExec(&testItemOperators);
         return 0;
     }
     else

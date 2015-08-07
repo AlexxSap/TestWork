@@ -18,36 +18,6 @@ CsvFileReader::~CsvFileReader()
 
 }
 
-//FileReader::Error CsvFileReader::watchFile(QFile &file) const
-//{
-//    if(file.size() == 0)
-//    {
-//        return FileReader::EmptyFile;
-//    }
-
-//    const QString dateFormat = QString("yyyy.MM.dd");
-//    QTextStream ts(&file);
-//    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
-
-//    const QRegExp rx(pattern_);
-
-//    while(!ts.atEnd())
-//    {
-//        const QString buffer = ts.readLine().trimmed();
-//        if(!rx.exactMatch(buffer))
-//        {
-//            return FileReader::FileNotLoaded;
-//        }
-
-//        const QString date = rx.cap(3);
-//        if(!QDate::fromString(date,dateFormat).isValid())
-//        {
-//            return FileReader::FileNotLoaded;
-//        }
-//    }
-//    return FileReader::NoError;
-//}
-
 int CsvFileReader::getProductId(DataBase &db, const QString &product, const QString &storage) const
 {
     if(product.isEmpty() || storage.isEmpty())
@@ -154,17 +124,6 @@ FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase 
         return FileReader::EmptyFile;
     }
 
-    //вызов watchFile теперь не нужен, так как проверка по регулярному выражению теперь выполняется при
-    //разделении строки в методе getSplited
-
-    //    error = watchFile(file);
-    //    if(error != FileReader::NoError)
-    //    {
-    //        file.close();
-    //        return error;
-    //    }
-    //    else
-    //    {
     if(!db.isConnected())
     {
         file.close();
@@ -193,7 +152,7 @@ FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase 
         }
     }
     db.commitTransaction();
-    //    }
+
     file.close();
     return error;
 }

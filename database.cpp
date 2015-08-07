@@ -61,8 +61,3 @@ void DataBase::commitTransaction()
 {
     db_.commit();
 }
-
-//const QSqlDatabase DataBase::getDB() const
-//{
-//    return db_;
-//}

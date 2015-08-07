@@ -23,7 +23,6 @@ public:
     bool isConnected();
 
     const virtual QSqlQuery get();
-    //const QSqlDatabase getDB() const;
     QSqlQuery getAssociatedQuery() const;
 
     void beginTransaction();

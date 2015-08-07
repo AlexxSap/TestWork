@@ -22,7 +22,10 @@ SOURCES += main.cpp\
     SqliteAllDataDataSelector.cpp \
     SqliteSelByProductDataSelector.cpp \
     SqliteSelByDateDataSelector.cpp \
-    DataBase.cpp
+    DataBase.cpp \
+    Item.cpp \
+    SaleHistoryGenerator.cpp \
+    tests/TestItemOperators.cpp
 
 HEADERS  += mainwindow.h \
     FileReader.h \
@@ -33,4 +36,7 @@ HEADERS  += mainwindow.h \
     SqliteAllDataDataSelector.h \
     SqliteSelByProductDataSelector.h \
     SqliteSelByDateDataSelector.h \
-    DataBase.h
+    DataBase.h \
+    Item.h \
+    SaleHistoryGenerator.h \
+    tests/TestItemOperators.h
