@@ -1,7 +1,6 @@
 #include "CsvFileWriter.h"
 
-///notes на всякий случай для таких вещей пользуемся не просто char, а QChar, а лучше вообще QString
-const char CsvFileWriter::SEPARATOR = ';';
+const QString CsvFileWriter::SEPARATOR = ";";
 
 CsvFileWriter::CsvFileWriter():FileWriter()
 {

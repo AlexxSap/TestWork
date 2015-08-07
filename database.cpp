@@ -42,7 +42,27 @@ const QSqlQuery DataBase::get()
     return QSqlQuery();
 }
 
-const QSqlDatabase DataBase::getDB() const
+QSqlQuery DataBase::getAssociatedQuery() const
 {
-    return db_;
+    return QSqlQuery(db_);
 }
+
+void DataBase::beginTransaction()
+{
+    db_.transaction();
+}
+
+void DataBase::rollbackTransaction()
+{
+    db_.rollback();
+}
+
+void DataBase::commitTransaction()
+{
+    db_.commit();
+}
+
+//const QSqlDatabase DataBase::getDB() const
+//{
+//    return db_;
+//}

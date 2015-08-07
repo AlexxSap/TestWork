@@ -18,7 +18,7 @@ public:
     bool writeToFile(const QString &fileName, DataBase &ds);
 
 public:
-    static const char SEPARATOR;
+    static const QString SEPARATOR;
 };
 
 #endif // CSVFILEWRITER_H

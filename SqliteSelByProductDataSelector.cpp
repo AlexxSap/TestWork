@@ -19,7 +19,7 @@ const QSqlQuery SqliteSelByProductDataSelector::get()
     }
     else
     {
-        QSqlQuery query(getDB());
+        QSqlQuery query=getAssociatedQuery();
         query.prepare("select t_items.f_product, "
                              "t_items.f_storage, "
                              "t_datas.f_date, "

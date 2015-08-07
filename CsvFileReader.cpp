@@ -2,9 +2,15 @@
 
 const char CsvFileReader::SEPARATOR = ';';
 
-CsvFileReader::CsvFileReader():FileReader()
+CsvFileReader::CsvFileReader():
+    FileReader(),
+    pattern_("(^[^;]+|\"[^\"]+\")%1"                                  //наименование товара
+             "([^;]+|\"[^\"]+\")%1"                                  //наименование склада
+             "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))%1"   //дата
+             "(\\d+(\.\\d{0,})?)%1"                                          //продали
+             "(\\d+(\.\\d{0,})?)")                                            //конечный остаток
 {
-
+    pattern_=pattern_.arg(SEPARATOR);
 }
 
 CsvFileReader::~CsvFileReader()
@@ -12,43 +18,35 @@ CsvFileReader::~CsvFileReader()
 
 }
 
-FileReader::Error CsvFileReader::watchFile(QFile &file) const
-{
-    if(file.size() == 0)
-    {
-        return FileReader::EmptyFile;
-    }
+//FileReader::Error CsvFileReader::watchFile(QFile &file) const
+//{
+//    if(file.size() == 0)
+//    {
+//        return FileReader::EmptyFile;
+//    }
 
-    const QString dateFormat = QString("yyyy.MM.dd");
-    QTextStream ts(&file);
-    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
+//    const QString dateFormat = QString("yyyy.MM.dd");
+//    QTextStream ts(&file);
+//    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
 
-    ///notes по-японски писать нельзя? а какие-нибудь символы типа двоеточия или амперсанта?
-    QString rxPattern = QString("(^[?а-яА-ЯёЁa-zA-Z0-9_!]+)%1"                                  //наименование товара
-                                "([?а-яА-ЯёЁa-zA-Z0-9_!]+)%1"                                  //наименование склада
-                                "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))%1"   //дата
-                                "(\\d+(\.\\d{0,})?)%1"                                          //продали
-                                "(\\d+(\.\\d{0,})?)"                                            //конечный остаток
-                                );
-    rxPattern = rxPattern.arg(SEPARATOR);
-    const QRegExp rx(rxPattern);
+//    const QRegExp rx(pattern_);
 
-    while(!ts.atEnd())
-    {
-        const QString buffer = ts.readLine().trimmed();
-        if(!rx.exactMatch(buffer))
-        {
-            return FileReader::FileNotLoaded;
-        }
+//    while(!ts.atEnd())
+//    {
+//        const QString buffer = ts.readLine().trimmed();
+//        if(!rx.exactMatch(buffer))
+//        {
+//            return FileReader::FileNotLoaded;
+//        }
 
-        const QString date = rx.cap(3);
-        if(!QDate::fromString(date,dateFormat).isValid())
-        {
-            return FileReader::FileNotLoaded;
-        }
-    }
-    return FileReader::NoError;
-}
+//        const QString date = rx.cap(3);
+//        if(!QDate::fromString(date,dateFormat).isValid())
+//        {
+//            return FileReader::FileNotLoaded;
+//        }
+//    }
+//    return FileReader::NoError;
+//}
 
 int CsvFileReader::getProductId(DataBase &db, const QString &product, const QString &storage) const
 {
@@ -57,7 +55,7 @@ int CsvFileReader::getProductId(DataBase &db, const QString &product, const QStr
         return -1;
     }
 
-    QSqlQuery query(db.getDB());
+    QSqlQuery query=db.getAssociatedQuery();
     query.prepare("select f_id from t_items where f_product = :product and f_storage = :storage;");
     query.bindValue(":product", product);
     query.bindValue(":storage", storage);
@@ -68,25 +66,30 @@ int CsvFileReader::getProductId(DataBase &db, const QString &product, const QStr
 
     if(!query.first())
     {
-        QSqlQuery insQuery(db.getDB());
+        QSqlQuery insQuery=db.getAssociatedQuery();
         insQuery.prepare("insert into t_items(f_product, f_storage) values(:product, :storage);");
         insQuery.bindValue(":product", product);
         insQuery.bindValue(":storage", storage);
 
-        ///notes если операции как-то меняет состояние программы или дисковой системы и тд, то не надо
-        /// их подряд писать через || или && или вообще как-то в if
-        /// потому что порядок выполнения операций в с++ в данном случае не определён и может привести к очень хитрым багам.
-        /// const методы, которые ничего не меняют, можно так использовать.
-        if(!insQuery.exec() || !query.exec() || !query.first())
+        bool isOk=insQuery.exec();
+        if(isOk)
+        {
+            isOk=query.exec();
+        }
+        if(isOk)
+        {
+            isOk=query.first();
+        }
+
+        if(!isOk)
         {
             return -1;
         }
-
     }
 
-    bool ok = false;
-    int id = query.value(0).toInt(&ok);
-    if(!ok)
+    bool isOk = false;
+    int id = query.value(0).toInt(&isOk);
+    if(!isOk)
     {
         return -1;
     }
@@ -95,8 +98,8 @@ int CsvFileReader::getProductId(DataBase &db, const QString &product, const QStr
 
 bool CsvFileReader::insertToDB(DataBase &db, const QStringList &data) const
 {
-    ///notes всегда, если используем методы типа QList::at от какой-то константы проверяем, что у списка хватает длинны
-    /// иначе будет исключение. Неявное свойство data, что там точно будет сколько-то элементов в текущей версии никем не учитывается.
+    //Неявное свойство data, что там точно будет сколько-то элементов, обеспечивается при разделении
+    //строки методом getSplited
     const QString product=data.at(0);
     const QString storage=data.at(1);
     int id = getProductId(db, product, storage);
@@ -106,7 +109,7 @@ bool CsvFileReader::insertToDB(DataBase &db, const QStringList &data) const
         return false;
     }
 
-    QSqlQuery query(db.getDB());
+    QSqlQuery query=db.getAssociatedQuery();
     query.prepare("insert into t_datas(f_item, f_date, f_sold, f_rest) values(:id, :date, :sold, :rest);");
     query.bindValue(":id", id);
     query.bindValue(":date", data.at(2));
@@ -119,6 +122,25 @@ bool CsvFileReader::insertToDB(DataBase &db, const QStringList &data) const
     return true;
 }
 
+const QStringList CsvFileReader::getSplited(const QString &string) const
+{
+    QStringList res;
+    const QRegExp rx(pattern_);
+
+    if(!rx.exactMatch(string))
+    {
+        return QStringList();
+    }
+    //если уж дошли до сюда, то список captured содержит всё что нам нужно
+    res << rx.cap(1)
+        << rx.cap(2)
+        << rx.cap(3)
+        << rx.cap(6)
+        << rx.cap(8);
+
+    return res;
+}
+
 FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase &db)
 {
     QFile file(fileName);
@@ -127,35 +149,51 @@ FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase 
     {
         return FileReader::FileNotOpen;
     }
+    if(file.size() == 0)
+    {
+        return FileReader::EmptyFile;
+    }
 
-    error = watchFile(file);
-    if(error != FileReader::NoError)
+    //вызов watchFile теперь не нужен, так как проверка по регулярному выражению теперь выполняется при
+    //разделении строки в методе getSplited
+
+    //    error = watchFile(file);
+    //    if(error != FileReader::NoError)
+    //    {
+    //        file.close();
+    //        return error;
+    //    }
+    //    else
+    //    {
+    if(!db.isConnected())
     {
         file.close();
-        return error;
+        return FileReader::DBError;
     }
-    else
+
+    file.reset();
+    QTextStream ts(&file);
+    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
+    db.beginTransaction();
+    while(!ts.atEnd())
     {
-        if(!db.isConnected())
+        QString bufString=ts.readLine().trimmed();
+        const QStringList buffer = getSplited(bufString);
+        if(buffer.isEmpty())
         {
             file.close();
+            db.rollbackTransaction();
+            return FileReader::FileNotLoaded;;
+        }
+        if(!insertToDB(db, buffer))
+        {
+            file.close();
+            db.rollbackTransaction();
             return FileReader::DBError;
         }
-
-        file.reset();
-        QTextStream ts(&file);
-        ts.setCodec(QTextCodec::codecForName("Windows-1251"));
-        while(!ts.atEnd())
-        {
-            const QStringList buffer = ts.readLine().trimmed().split(SEPARATOR);
-            if(!insertToDB(db, buffer))
-            {
-                file.close();
-                return FileReader::DBError;
-
-            }
-        }
     }
+    db.commitTransaction();
+    //    }
     file.close();
     return error;
 }

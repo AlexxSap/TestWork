@@ -18,9 +18,12 @@
 class CsvFileReader : public FileReader
 {
 private:
-    FileReader::Error watchFile(QFile &file) const;
+    QString pattern_;
+private:
+//    FileReader::Error watchFile(QFile &file) const;
     int getProductId(DataBase &db, const QString &product, const QString &storage) const;
     bool insertToDB(DataBase &db, const QStringList &data) const;
+    const QStringList getSplited(const QString &string) const;
 
 public:
     CsvFileReader();

@@ -14,7 +14,7 @@ SqliteAllDataDataSelector::~SqliteAllDataDataSelector()
 
 const QSqlQuery SqliteAllDataDataSelector::get()
 {
-    QSqlQuery query(getDB());
+    QSqlQuery query=getAssociatedQuery();
     const QString request("select t_items.f_product, "
                           "t_items.f_storage, "
                           "t_datas.f_date, "

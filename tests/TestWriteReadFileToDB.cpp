@@ -174,7 +174,7 @@ void TestWriteReadFileToDB::testWriteReadFileToDB()
             actualWritedToFile = fileWriter.writeToFile(outFileName,request);
         }
         else
-        {
+        {           
             QString rxPattern = QString("([?а-яА-ЯёЁa-zA-Z0-9_!]+)|"
                                         "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))");
             const QRegExp rx(rxPattern);
@@ -245,13 +245,13 @@ void TestWriteReadFileToDB::testWriteReadFileToDB_data()
     QTest::newRow("correct simple file") << QString("inFileCorrect.csv")
                                          << QString("outFileCorrect.csv")
                                          << QString("dbCorrect.db")
-                                         << (QStringList() << "товар1!;склад_1;2015.07.29;12.10;544.50"
+                                         << (QStringList() << "\"тов;ар1!\";склад_1;2015.07.29;12.10;544.50"
                                              << "product2;storage1;2015.07.29;23.60;54.10"
                                              << "product2;storage1;2015.07.30;2.00;5.40")
                                          << ""
                                          << static_cast<int>(FileReader::NoError)
                                          << true
-                                         << (QStringList() << "товар1!;склад_1;2015.07.29;12.10;544.50"
+                                         << (QStringList() << "\"тов;ар1!\";склад_1;2015.07.29;12.10;544.50"
                                              << "product2;storage1;2015.07.29;23.60;54.10"
                                              << "product2;storage1;2015.07.30;2.00;5.40");
 
