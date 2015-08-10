@@ -5,6 +5,7 @@
 #include "tests/TestWriteReadFileToDB.h"
 #include "tests/TestItemOperators.h"
 #include "tests/TestSaleHistoryDayOperators.h"
+#include "tests/TestSaleHistory.h"
 
 /*
 ///notes конечные цели:
@@ -14,30 +15,7 @@
 /// Ниже будут описаны основные классы и сигнатуры их интерфейсов
 
 
-/// история продаж отдельного товара
-class SaleHistory
-{
-public:
-    /// идентификатор товара
-    Item item() const;
-
-    /// первый день, когда товар продали или завезли на склад
-    Date from() const;
-
-    /// последний день, когда товар продали или завезли на склад
-    Date to() const;
-
-    /// продажи товара за конкретную дату
-    SaleHistoryDay day(const Date &date) const;
-
-    /// все дни, которые продавался или завозился товар в порядке возрастания даты
-    QList<SaleHistoryDay> days() const;
-
-    /// корректная ли история продаж
-    bool isValid() const;
-};
-
-/// писалка товаров в базу
+// писалка товаров в базу
 class SaleHistoryWriter
 {
 public:
@@ -79,6 +57,8 @@ int main(int argc, char *argv[])
         QTest::qExec(&testItemOperators);
         TestSaleHistoryDayOperators testSaleHistoryDayOperators;
         QTest::qExec(&testSaleHistoryDayOperators);
+        TestSaleHistory testSaleHistory;
+        QTest::qExec(&testSaleHistory);
         return 0;
     }
     else

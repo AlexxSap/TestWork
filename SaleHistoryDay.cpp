@@ -23,11 +23,11 @@ SaleHistoryDay::SaleHistoryDay(const Item &item, const Date &date)
 
 }
 
-SaleHistoryDay::SaleHistoryDay(const SaleHistoryDay &shd)
-    :item_(shd.item()),
-      date_(shd.date()),
-      sold_(shd.sold()),
-      rest_(shd.rest())
+SaleHistoryDay::SaleHistoryDay(const SaleHistoryDay &other)
+    :item_(other.item()),
+      date_(other.date()),
+      sold_(other.sold()),
+      rest_(other.rest())
 {
 
 }

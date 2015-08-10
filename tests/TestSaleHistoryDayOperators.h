@@ -16,6 +16,9 @@ public:
 private slots:
     void TestSaleHistoryDayOperatorEqual();
     void TestSaleHistoryDayOperatorEqual_data();
+
+    void TestSaleHistoryDayOperatorNotEqual();
+    void TestSaleHistoryDayOperatorNotEqual_data();
 };
 
 #endif // TESTSALEHISTORYDAYOPERATORS_H

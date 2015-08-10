@@ -16,7 +16,7 @@ private:
 
 public:
     SaleHistoryDay(const Item &item, const Date &date);
-    SaleHistoryDay(const SaleHistoryDay &shd);
+    SaleHistoryDay(const SaleHistoryDay &other);
 
     void setSold(const Amount &sold);
     void setRest(const Amount &rest);
