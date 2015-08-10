@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     tests/TestSaleHistoryDayOperators.cpp \
     SaleHistoryDay.cpp \
     tests/TestSaleHistory.cpp \
-    SaleHistory.cpp
+    SaleHistory.cpp \
+    tests/TestSaleHistoryGenerator.cpp
 
 HEADERS  += mainwindow.h \
     FileReader.h \
@@ -47,4 +48,5 @@ HEADERS  += mainwindow.h \
     tests/TestSaleHistoryDayOperators.h \
     SaleHistoryDay.h \
     tests/TestSaleHistory.h \
-    SaleHistory.h
+    SaleHistory.h \
+    tests/TestSaleHistoryGenerator.h

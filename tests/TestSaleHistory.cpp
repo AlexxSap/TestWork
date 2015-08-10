@@ -175,7 +175,6 @@ void TestSaleHistory::testSaleHistoryFromToDate_data()
                       << QDate(2015, 8, 14);
 }
 
-
 void TestSaleHistory::testSaleHistoryDays()
 {
     QFETCH(QString, storage);
@@ -218,8 +217,6 @@ void TestSaleHistory::testSaleHistoryDays()
     QVERIFY(compareLists(actDateList, expDateList));
     QVERIFY(compareLists(actSoldList, expSoldList));
     QVERIFY(compareLists(actRestList, expRestList));
-
-
 }
 
 void TestSaleHistory::testSaleHistoryDays_data()

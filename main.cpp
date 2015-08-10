@@ -6,6 +6,7 @@
 #include "tests/TestItemOperators.h"
 #include "tests/TestSaleHistoryDayOperators.h"
 #include "tests/TestSaleHistory.h"
+#include "tests/TestSaleHistoryGenerator.h"
 
 /*
 ///notes конечные цели:
@@ -59,6 +60,8 @@ int main(int argc, char *argv[])
         QTest::qExec(&testSaleHistoryDayOperators);
         TestSaleHistory testSaleHistory;
         QTest::qExec(&testSaleHistory);
+        TestSaleHistoryGenerator testSaleHistoryGenerator;
+        QTest::qExec(&testSaleHistoryGenerator);
         return 0;
     }
     else
