@@ -1,25 +1,25 @@
 #include "Item.h"
 
-bool operator != (const Item& left, const Item& right)
+bool operator != (const Item &left, const Item &right)
 {
     return left.product() != right.product() || left.storage() != right.storage();
 }
 
-bool operator == (const Item& left, const Item& right)
+bool operator == (const Item &left, const Item &right)
 {
     return left.product() == right.product() && left.storage() == right.storage();
-}
-
-Item::Item()
-    : storage_(""),
-      product_("")
-{
-
 }
 
 Item::Item(const ID &storage, const ID &product)
     : storage_(storage),
       product_(product)
+{
+
+}
+
+Item::Item(const Item &item)
+    : storage_(item.storage()),
+      product_(item.product())
 {
 
 }

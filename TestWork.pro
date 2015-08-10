@@ -25,7 +25,9 @@ SOURCES += main.cpp\
     DataBase.cpp \
     Item.cpp \
     SaleHistoryGenerator.cpp \
-    tests/TestItemOperators.cpp
+    tests/TestItemOperators.cpp \
+    tests/TestSaleHistoryDayOperators.cpp \
+    SaleHistoryDay.cpp
 
 HEADERS  += mainwindow.h \
     FileReader.h \
@@ -39,4 +41,6 @@ HEADERS  += mainwindow.h \
     DataBase.h \
     Item.h \
     SaleHistoryGenerator.h \
-    tests/TestItemOperators.h
+    tests/TestItemOperators.h \
+    tests/TestSaleHistoryDayOperators.h \
+    SaleHistoryDay.h

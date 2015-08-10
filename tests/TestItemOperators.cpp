@@ -55,11 +55,17 @@ void TestItemOperators::testItemOperatorsIsEqual_data()
                            << QString("product1")
                            << true;
 
-    QTest::newRow("not equal") << QString("storage1")
-                               << QString("product1")
-                               << QString("storage2")
-                               << QString("product1")
-                               << false;
+    QTest::newRow("not equal storage") << QString("storage1")
+                                       << QString("product1")
+                                       << QString("storage2")
+                                       << QString("product1")
+                                       << false;
+
+    QTest::newRow("not equal product") << QString("storage1")
+                                       << QString("product1")
+                                       << QString("storage1")
+                                       << QString("prod1")
+                                       << false;
 }
 
 void TestItemOperators::testItemOperatorsIsNotEqual()
@@ -91,9 +97,15 @@ void TestItemOperators::testItemOperatorsIsNotEqual_data()
                            << QString("product1")
                            << false;
 
-    QTest::newRow("not equal") << QString("storage1")
-                               << QString("product1")
-                               << QString("storage2")
-                               << QString("product1")
-                               << true;
+    QTest::newRow("not equal storage") << QString("storage1")
+                                       << QString("product1")
+                                       << QString("storage2")
+                                       << QString("product1")
+                                       << true;
+
+    QTest::newRow("not equal product") << QString("storage1")
+                                       << QString("product1")
+                                       << QString("storage1")
+                                       << QString("prod1")
+                                       << true;
 }

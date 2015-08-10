@@ -4,6 +4,7 @@
 
 #include "tests/TestWriteReadFileToDB.h"
 #include "tests/TestItemOperators.h"
+#include "tests/TestSaleHistoryDayOperators.h"
 
 /*
 ///notes конечные цели:
@@ -12,43 +13,6 @@
 /// 3. уметь замерять за какое время записываются и считываются определённые объёмы историй продаж
 /// Ниже будут описаны основные классы и сигнатуры их интерфейсов
 
-/// тип для выражения "кол-во товара"
-typedef double Amount;
-
-/// дата
-typedef QDate Date;
-
-/// текстовый идентификатор
-typedef QString ID;
-
-
-/// идентификатор товара - пара Склад и Артикул
-class Item
-{
-public:
-    /// склад
-    ID storage() const;
-
-    /// артикул
-    ID product() const;
-};
-
-/// продажи за конкретный день для конкретного товара
-class SaleHistoryDay
-{
-public:
-    ///идентификатор товара
-    Item item() const;
-
-    ///сколько продали товара
-    Amount sold() const;
-
-    ///сколько осталось на складе товара
-    Amount rest() const;
-
-    ///в какой день продавали
-    Date date() const;
-};
 
 /// история продаж отдельного товара
 class SaleHistory
@@ -113,6 +77,8 @@ int main(int argc, char *argv[])
         QTest::qExec(&testWriteReadFileToDB);
         TestItemOperators testItemOperators;
         QTest::qExec(&testItemOperators);
+        TestSaleHistoryDayOperators testSaleHistoryDayOperators;
+        QTest::qExec(&testSaleHistoryDayOperators);
         return 0;
     }
     else
