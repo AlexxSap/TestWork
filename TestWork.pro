@@ -36,7 +36,9 @@ SOURCES += main.cpp\
     tests/TestSaleHistoryWriter.cpp \
     SaleHistoryWriter.cpp \
     SaleHistoryParser.cpp \
-    tests/TestSaleHistoryParser.cpp
+    tests/TestSaleHistoryParser.cpp \
+    SqliteSelByStorageAndProductDataSelector.cpp \
+    SqliteSelByStorageAndProductAndDateDataSelector.cpp
 
 HEADERS  += mainwindow.h \
     FileReader.h \
@@ -61,4 +63,6 @@ HEADERS  += mainwindow.h \
     tests/TestSaleHistoryWriter.h \
     SaleHistoryWriter.h \
     SaleHistoryParser.h \
-    tests/TestSaleHistoryParser.h
+    tests/TestSaleHistoryParser.h \
+    SqliteSelByStorageAndProductDataSelector.h \
+    SqliteSelByStorageAndProductAndDateDataSelector.h
