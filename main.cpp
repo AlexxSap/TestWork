@@ -8,6 +8,7 @@
 #include "tests/TestSaleHistory.h"
 #include "tests/TestSaleHistoryGenerator.h"
 #include "tests/TestSaleHistoryParser.h"
+#include "tests/TestSaleHistoryWriter.h"
 
 /*
 ///notes конечные цели:
@@ -34,6 +35,8 @@ int main(int argc, char *argv[])
         QTest::qExec(&testSaleHistoryGenerator);
         TestSaleHistoryParser testSaleHistoryParser;
         QTest::qExec(&testSaleHistoryParser);
+        TestSaleHistoryWriter testSaleHistoryWriter;
+        QTest::qExec(&testSaleHistoryWriter);
         return 0;
     }
     else

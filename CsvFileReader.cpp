@@ -70,16 +70,16 @@ bool CsvFileReader::insertToDB(DataBase &db, const QStringList &data) const
 {
     //Неявное свойство data, что там точно будет сколько-то элементов, обеспечивается при разделении
     //строки методом getSplited
-    const QString product=data.at(0);
-    const QString storage=data.at(1);
+    const QString product = data.at(0);
+    const QString storage = data.at(1);
     int id = getProductId(db, product, storage);
 
-    if(id<0)
+    if(id < 0)
     {
         return false;
     }
 
-    QSqlQuery query=db.getAssociatedQuery();
+    QSqlQuery query = db.getAssociatedQuery();
     query.prepare("insert into t_datas(f_item, f_date, f_sold, f_rest) values(:id, :date, :sold, :rest);");
     query.bindValue(":id", id);
     query.bindValue(":date", data.at(2));
@@ -136,7 +136,7 @@ FileReader::Error CsvFileReader::readFromFile(const QString &fileName, DataBase 
     db.beginTransaction();
     while(!ts.atEnd())
     {
-        QString bufString=ts.readLine().trimmed();
+        QString bufString = ts.readLine().trimmed();
         const QStringList buffer = getSplited(bufString);
         if(buffer.isEmpty())
         {

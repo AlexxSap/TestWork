@@ -7,7 +7,8 @@ SaleHistoryParser::SaleHistoryParser()
               "(\\d+(\.\\d{0,})?)%1"                                          //продали
               "(\\d+(\.\\d{0,})?)"),                                     //конечный остаток
     splitter_(";"),
-    dateFormat_("yyyy.MM.dd")
+    dateFormat_("yyyy.MM.dd"),
+    isValid_(false)
 {
 
 }
@@ -22,6 +23,11 @@ void SaleHistoryParser::setDateFormat(const QString &dateFormat)
     dateFormat_ = dateFormat;
 }
 
+bool SaleHistoryParser::isValid() const
+{
+    return isValid_;
+}
+
 QList<SaleHistoryDay> SaleHistoryParser::parse(const QStringList &rawData)
 {
     QList<SaleHistoryDay> list;
@@ -32,6 +38,7 @@ QList<SaleHistoryDay> SaleHistoryParser::parse(const QStringList &rawData)
     {
         if(!rx.exactMatch(buf))
         {
+            isValid_ = false;
             return QList<SaleHistoryDay>();
         }
 
@@ -48,6 +55,7 @@ QList<SaleHistoryDay> SaleHistoryParser::parse(const QStringList &rawData)
         list.append(day);
     }
 
+    isValid_ = true;
     return list;
 }
 

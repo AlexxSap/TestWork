@@ -27,6 +27,7 @@ void TestSaleHistoryParser::testSaleHistoryParser()
 {
     QFETCH(QStringList, raw);
 
+    QFETCH(bool, expValid);
     QFETCH(QStringList, expProductList);
     QFETCH(QStringList, expStorageList);
     QFETCH(QList<QDate>, expDateList);
@@ -36,18 +37,25 @@ void TestSaleHistoryParser::testSaleHistoryParser()
     SaleHistoryParser parser;
     QList<SaleHistoryDay> list = parser.parse(raw);
 
+    bool actIsValid = parser.isValid();
+    QVERIFY(actIsValid == expValid);
+
     QStringList actProductList;
     QStringList actStorageList;
     QList<QDate> actDateList;
     QList<double> actSoldList;
     QList<double> actRestList;
-    foreach (SaleHistoryDay day, list)
+
+    if(parser.isValid())
     {
-        actProductList.append(day.item().product());
-        actStorageList.append(day.item().storage());
-        actDateList.append(day.date());
-        actSoldList.append(day.sold());
-        actRestList.append(day.rest());
+        foreach (SaleHistoryDay day, list)
+        {
+            actProductList.append(day.item().product());
+            actStorageList.append(day.item().storage());
+            actDateList.append(day.date());
+            actSoldList.append(day.sold());
+            actRestList.append(day.rest());
+        }
     }
 
     QVERIFY(compareLists(actProductList, expProductList));
@@ -61,16 +69,18 @@ void TestSaleHistoryParser::testSaleHistoryParser_data()
 {
     QTest::addColumn<QStringList>("raw");
 
+    QTest::addColumn<bool>("expValid");
     QTest::addColumn<QStringList>("expProductList");
     QTest::addColumn<QStringList>("expStorageList");
     QTest::addColumn<QList<QDate> >("expDateList");
     QTest::addColumn<QList<double> >("expSoldList");
     QTest::addColumn<QList<double> >("expRestList");
 
-    QTest::newRow("") << (QStringList() << "товар1;склад1;2015.08.10;50.0;20.0"
+    QTest::newRow("good data") << (QStringList() << "товар1;склад1;2015.08.10;50.0;20.0"
                           << "товар1;склад1;2015.08.11;20.0;10.0"
                           << "товар2;склад1;2015.08.09;220.0;11.0"
                           << "товар2;склад2;2015.08.10;2.0;1.0")
+                      << true
                       << (QStringList() << "товар1" << "товар1" << "товар2" << "товар2")
                       << (QStringList() << "склад1" << "склад1" << "склад1" << "склад2")
                       << (QList<QDate>() << QDate(2015, 8, 10)
@@ -79,5 +89,16 @@ void TestSaleHistoryParser::testSaleHistoryParser_data()
                           << QDate(2015, 8, 10))
                       << (QList<double>() << 50.0 << 20.0 << 220.0 << 2.0)
                       << (QList<double>() << 20.0 << 10.0 << 11.0 << 1.0);
+
+    QTest::newRow("bad data") << (QStringList() << "товар1;склад1;2015.08.10;50.0;20.0"
+                          << "товар1;склад1;2015.08.11;20.0;10.0"
+                          << "товар2;склад1;2015.08.09;220.0;11.0"
+                          << "товар2;склад2;2015.08.10;1.0")
+                      << false
+                      << QStringList()
+                      << QStringList()
+                      << QList<QDate>()
+                      << QList<double>()
+                      << QList<double>();
 }
 
