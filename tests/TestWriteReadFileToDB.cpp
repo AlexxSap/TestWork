@@ -34,6 +34,8 @@ void TestWriteReadFileToDB::removeFile(const QString &fileName)
     }
 }
 
+///notes если тесту нужно напрямую что-то создавать в базе, то это очень исключительная ситуация
+/// (у нас, например, используется такое для проверки обратной совместимости новых версий программ со старыми)
 bool TestWriteReadFileToDB::createTestDbStructure(QSqlDatabase &db)
 {
     QSqlQuery query(db);
@@ -66,7 +68,10 @@ void TestWriteReadFileToDB::createTestDB(const QString &dbName)
         db.setDatabaseName(dbName);
         if(!db.open())
         {
+            ///notes обычно в тестах всю отладочную печать делаем латинскими символами, что бы избежать всяких неприятных ситуаций с utf-8
             qWarning() << "Не удалось создать тестовую БД";
+
+            ///notes для таких вещей обычно используют QFAIL
             QVERIFY(false);
         }
         db.close();
@@ -137,8 +142,14 @@ QStringList TestWriteReadFileToDB::readDataFromFile(const QString &fileName)
     return lst;
 }
 
+ ///notes для проверки такой примитивных операции, как запись и чтение, тесты выглядят очень сложно.
+ /// в идеале тест должен быть линейным кодом(без условий и циклов),
+ /// чтобы минимально снизить риск ошибки в тестах(тесты на тесты писать не очень прилично).
+ /// возможно, в тесте тестируется что-то ещё, и это что-то ещё заслуживает тогда отдельного теста.
+
 void TestWriteReadFileToDB::testWriteReadFileToDB()
 {
+    ///notes насколько критично в ручную задавать имена файлов? почему их нельзя генерировать прямо в теле теста?
     QFETCH(QString, inFileName);
     QFETCH(QString, outFileName);
     QFETCH(QString, dbName);
@@ -174,7 +185,7 @@ void TestWriteReadFileToDB::testWriteReadFileToDB()
             actualWritedToFile = fileWriter.writeToFile(outFileName,request);
         }
         else
-        {           
+        {
             QString rxPattern = QString("([?а-яА-ЯёЁa-zA-Z0-9_!]+)|"
                                         "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))");
             const QRegExp rx(rxPattern);
@@ -229,6 +240,8 @@ void TestWriteReadFileToDB::testWriteReadFileToDB_data()
     QTest::addColumn<QString>("dbName");
     QTest::addColumn<QStringList>("data");
     QTest::addColumn<QString>("selectionCase");
+
+    ///notes почему тут используется int, а не FileReader::Error ?
     QTest::addColumn<int>("expectedReaction");
     QTest::addColumn<bool>("expectedWritedToFile");
     QTest::addColumn<QStringList>("expectedData");

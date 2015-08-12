@@ -13,6 +13,8 @@ class TestSalesHistoryStreamReader : public QObject
     Q_OBJECT
 public:
     explicit TestSalesHistoryStreamReader(QObject *parent = 0);
+
+    ///notes явное дублирование тестовых функций-утилит
     void removeFile(const QString &fileName);
     void createTestDB(const QString &dbName);
     bool createTestDbStructure(QSqlDatabase &db);

@@ -5,9 +5,13 @@ TestSaleHistoryGenerator::TestSaleHistoryGenerator(QObject *parent) : QObject(pa
 
 }
 
+///notes что бы выбрать, что нужно обязательно тестировать, а что нет, можно задаться вопросом
+/// "а что будет, если эта компонента будет работать неверно и как быстро это будет замечено".
+/// что будет, если эта довольно сложная функция(цикл и четыре условия) будет работать неверно и как быстро это будет замечено?
 bool TestSaleHistoryGenerator::compareData(const QList<SaleHistoryDay> &list,
                                            int maxVal)
 {
+    ///notes  в итераторах тоже используем const& где только можно ( foreach(const SaleHistoryDay &day, list) )
     foreach (SaleHistoryDay day, list)
     {
         if(day.sold() < 0
@@ -36,8 +40,12 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator()
                                                      storageNum,
                                                      productNum);
 
+    ///notes всякие арифметические операции в тестах обычно их сильно усложняют.
+    /// тут будет лучше вынести actNum в тестовые данные, для явного указания.
+    /// в тестовых данных его вполне можно задавать сложным термом без переменных, например, 10 * 20 * (43 + 1)
     int actNum = storageNum * productNum * (fromDate.daysTo(toDate) + 1);
     bool comp = compareData(list, maxVal);
+    ///notes для таких вещей обычно пользуемся QCOMPARE
     QVERIFY(list.count() == actNum);
     QVERIFY(comp);
 }

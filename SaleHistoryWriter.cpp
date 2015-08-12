@@ -59,8 +59,11 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
     db_.beginTransaction();
     foreach (SaleHistoryDay day, days)
     {
+        ///notes const ID product = day.item().product();
         ID product = day.item().product();
         ID storage = day.item().storage();
+
+        ///notes что за itemId? чем обосновано его введение в схему?
         int itemId = getItemId(product, storage);
         if(itemId < 0)
         {

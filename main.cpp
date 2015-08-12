@@ -26,20 +26,28 @@ int main(int argc, char *argv[])
     {
         TestWriteReadFileToDB testWriteReadFileToDB;
         QTest::qExec(&testWriteReadFileToDB);
+
         TestItemOperators testItemOperators;
         QTest::qExec(&testItemOperators);
+
         TestSaleHistoryDayOperators testSaleHistoryDayOperators;
         QTest::qExec(&testSaleHistoryDayOperators);
+
         TestSaleHistory testSaleHistory;
         QTest::qExec(&testSaleHistory);
+
         TestSaleHistoryGenerator testSaleHistoryGenerator;
         QTest::qExec(&testSaleHistoryGenerator);
+
         TestSaleHistoryParser testSaleHistoryParser;
         QTest::qExec(&testSaleHistoryParser);
+
         TestSaleHistoryWriter testSaleHistoryWriter;
         QTest::qExec(&testSaleHistoryWriter);
+
         TestSalesHistoryStreamReader testSalesHistoryStreamReader;
         QTest::qExec(&testSalesHistoryStreamReader);
+
         return 0;
     }
     else

@@ -1,5 +1,6 @@
 #include "TestSalesHistoryStreamReader.h"
 
+///notes чем не устроил стандартный оператор равенства списков?
 template <typename T>
 bool compareLists(const QList<T> &act, const QList<T> &exp)
 {
@@ -90,6 +91,17 @@ bool TestSalesHistoryStreamReader::createTestDbStructure(QSqlDatabase &db)
                      ");");
     return res;
 }
+
+///notes я бы использовал такой набор тестовых данных:
+/// QList<SaleHistoryDay> - что пишем в базу(изначальное состояние базы то основного тестирования)
+/// QList<Item> - для чего читаем
+/// QDate - откуда читаем
+/// QDate - докуда читаем
+/// QList<SaleHistory> - что должно прочитаться
+///
+/// текущий набор тестовых данных будет неудобен, например, если что-то поменяется в
+/// формате загрузки истории продаж. Читалке истории продаж абсолютно всё равно на формат истории продаж,
+/// её интересуют только уже записанные каким-либо образом продажи в базу. а в этом тесте создаётся такая вот зависимость.
 
 void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
 {

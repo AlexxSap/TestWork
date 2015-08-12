@@ -7,6 +7,8 @@ TestSaleHistoryDayOperators::TestSaleHistoryDayOperators(QObject *parent) : QObj
 
 void TestSaleHistoryDayOperators::TestSaleHistoryDayOperatorEqual()
 {
+
+    ///notes почему нельзя было для тестовых данных использовать два SaleHistoryDay и результат их сравнения?
     QFETCH(QString, leftStorage);
     QFETCH(QString, leftProduct);
     QFETCH(QDate, leftDate);

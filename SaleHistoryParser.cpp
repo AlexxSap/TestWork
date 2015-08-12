@@ -42,6 +42,7 @@ QList<SaleHistoryDay> SaleHistoryParser::parse(const QStringList &rawData)
             return QList<SaleHistoryDay>();
         }
 
+        ///notes как себя ведёт rx.cap, если в качестве аргумента подать ему число большее, чем количество элементов rx?
         const ID product = rx.cap(1);
         const ID storage = rx.cap(2);
         const Date date = QDate::fromString(rx.cap(3), dateFormat_);

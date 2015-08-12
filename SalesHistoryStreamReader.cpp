@@ -73,6 +73,9 @@ SaleHistory SalesHistoryStreamReader::current()
     query_.first();
     if(!query_.isValid())
     {
+        ///notes зачем в несуществующую историю что-то добавлять?
+        /// я бы просто вернул SaleHistory() или статический метод SaleHistory::Invalid().
+        /// это заоодно спасает от ошибок, когда с history что-то уже произошло до проверки if(!query_.isValid())
         history.addDay(from_, 0.0, 0.0);
     }
     else

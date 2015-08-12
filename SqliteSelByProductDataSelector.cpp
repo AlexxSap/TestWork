@@ -21,10 +21,10 @@ const QSqlQuery SqliteSelByProductDataSelector::get()
     {
         QSqlQuery query=getAssociatedQuery();
         query.prepare("select t_items.f_product, "
-                             "t_items.f_storage, "
-                             "t_datas.f_date, "
-                             "t_datas.f_sold, "
-                             "t_datas.f_rest "
+                      "t_items.f_storage, "
+                      "t_datas.f_date, "
+                      "t_datas.f_sold, "
+                      "t_datas.f_rest "
                       "from t_items left join t_datas "
                       "on t_items.f_id = t_datas.f_item "
                       "where t_items.f_product = :product;"
