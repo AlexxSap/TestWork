@@ -15,18 +15,16 @@ SqliteAllDataDataSelector::~SqliteAllDataDataSelector()
 const QSqlQuery SqliteAllDataDataSelector::get()
 {
     QSqlQuery query=getAssociatedQuery();
-    const QString request("select t_items.f_product, "
-                          "t_items.f_storage, "
-                          "t_datas.f_date, "
-                          "t_datas.f_sold, "
-                          "t_datas.f_rest "
-                          "from t_items left join t_datas "
-                          "on t_items.f_id = t_datas.f_item;");
+    const QString request("select f_storage, "
+                          "f_product, "
+                          "f_date, "
+                          "f_sold, "
+                          "f_rest "
+                          "from t_datas;");
 
     if(!query.exec(request))
     {
         return QSqlQuery();
     }
-
     return query;
 }

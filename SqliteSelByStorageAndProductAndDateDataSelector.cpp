@@ -20,17 +20,16 @@ const QSqlQuery SqliteSelByStorageAndProductAndDateDataSelector::get()
     {
         QSqlQuery query=getAssociatedQuery();
 
-        query.prepare("select t_items.f_product, "
-                      "t_items.f_storage, "
-                      "t_datas.f_date, "
-                      "t_datas.f_sold, "
-                      "t_datas.f_rest "
-                      "from t_items left join t_datas "
-                      "on t_items.f_id = t_datas.f_item "
-                      "where t_items.f_product = :product "
-                      "and t_items.f_storage = :storage "
-                      "and t_datas.f_date between :fromDate and :toDate "
-                      "order by t_items.f_storage, t_items.f_product, t_datas.f_date;");
+        query.prepare("select f_storage, "
+                      "f_product, "
+                      "f_date, "
+                      "f_sold, "
+                      "f_rest "
+                      "from t_datas "
+                      "where f_storage = :storage "
+                      "and f_product = :product "
+                      "and f_date between :fromDate and :toDate "
+                      "order by f_storage, f_product, f_date;");
 
         query.bindValue(":product", product_);
         query.bindValue(":storage", storage_);

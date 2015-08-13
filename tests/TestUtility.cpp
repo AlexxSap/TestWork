@@ -3,23 +3,13 @@
 bool TestUtility::createTestDbStructure(QSqlDatabase &db)
 {
     QSqlQuery query(db);
-    bool res = query.exec("create table t_items("
-                          "f_id integer primary key asc, "
+    bool res = query.exec("create table t_datas("
+                          "f_storage text not null, "
                           "f_product text not null, "
-                          "f_storage text not null"
-                          ");");
-    if (!res)
-    {
-        return false;
-    }
-
-    res = query.exec("create table t_datas("
-                     "f_item references t_items(f_id) on delete cascade, "
-                     "f_date real not null, "
-                     "f_sold real not null, "
-                     "f_rest real not null, "
-                     "primary key(f_item, f_date)"
-                     ");");
+                          "f_date real not null, "
+                          "f_sold real not null, "
+                          "f_rest real not null, "
+                          "primary key(f_storage, f_product, f_date));");
     return res;
 }
 

@@ -9,9 +9,6 @@ class SaleHistoryWriter
 private:
     DataBase db_;
 
-private:
-    int getItemId(const ID &product, const ID &storage);
-
 public:
     explicit SaleHistoryWriter(const QString &dbName);
     bool write(const QList<SaleHistoryDay> &days);
