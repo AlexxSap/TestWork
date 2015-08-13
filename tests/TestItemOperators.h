@@ -20,9 +20,6 @@ private slots:
 
     void testItemOperatorsIsEqual();
     void testItemOperatorsIsEqual_data();
-
-    void testItemOperatorsIsNotEqual();
-    void testItemOperatorsIsNotEqual_data();
 };
 
 #endif // TESTITEMOPERATORS_H

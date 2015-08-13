@@ -29,9 +29,9 @@ QList<SaleHistoryDay> SaleHistoryGenerator::generateHistory(const Date &from,
 
             for(QDate dateIndex = from; dateIndex <= to; dateIndex = dateIndex.addDays(1))
             {
-                SaleHistoryDay day(item, dateIndex);
-                day.setSold(rand() % maxVal_);
-                day.setRest(rand() % maxVal_);
+                const double sold = (rand() + 1) % maxVal_;
+                const double rest = (rand() + 1) % maxVal_;
+                SaleHistoryDay day(item, dateIndex, sold, rest);
 
                 buffer.append(day);
             }

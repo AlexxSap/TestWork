@@ -57,23 +57,23 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
 {
     db_.beginTransaction();
-    foreach (SaleHistoryDay day, days)
+    foreach (const SaleHistoryDay &day, days)
     {
-        ///notes const ID product = day.item().product();
-        ID product = day.item().product();
-        ID storage = day.item().storage();
+        const ID product = day.item().product();
+        const ID storage = day.item().storage();
 
         ///notes что за itemId? чем обосновано его введение в схему?
-        int itemId = getItemId(product, storage);
+        //это поле t_items.f_id в БД, к схеме классов отношения не имеет
+        const int itemId = getItemId(product, storage);
         if(itemId < 0)
         {
             db_.rollbackTransaction();
             return false;
         }
         QSqlQuery query = db_.getAssociatedQuery();
-        Date date = day.date();
-        Amount sold = day.sold();
-        Amount rest = day.rest();
+        const Date date = day.date();
+        const Amount sold = day.sold();
+        const Amount rest = day.rest();
         query.prepare("insert into t_datas(f_item, f_date, f_sold, f_rest) values(:id, :date, :sold, :rest);");
         query.bindValue(":id", itemId);
         query.bindValue(":date", date.toString("yyyy.MM.dd"));

@@ -34,7 +34,7 @@ QList<SaleHistoryDay> SaleHistoryParser::parse(const QStringList &rawData)
     QString pattern = pattern_.arg(splitter_);
     const QRegExp rx(pattern);
 
-    foreach (QString buf, rawData)
+    foreach (const QString &buf, rawData)
     {
         if(!rx.exactMatch(buf))
         {
@@ -42,16 +42,19 @@ QList<SaleHistoryDay> SaleHistoryParser::parse(const QStringList &rawData)
             return QList<SaleHistoryDay>();
         }
 
-        ///notes как себя ведёт rx.cap, если в качестве аргумента подать ему число большее, чем количество элементов rx?
+        const int count = rx.captureCount();
+        if(count < 8)
+        {
+            isValid_ = false;
+            return QList<SaleHistoryDay>();
+        }
         const ID product = rx.cap(1);
         const ID storage = rx.cap(2);
         const Date date = QDate::fromString(rx.cap(3), dateFormat_);
         Amount sold = rx.cap(6).toDouble();
         Amount rest = rx.cap(8).toDouble();
 
-        SaleHistoryDay day(Item(storage, product), date);
-        day.setSold(sold);
-        day.setRest(rest);
+        SaleHistoryDay day(Item(storage, product), date, sold, rest);
 
         list.append(day);
     }

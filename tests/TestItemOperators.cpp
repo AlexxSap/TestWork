@@ -7,10 +7,7 @@ TestItemOperators::TestItemOperators(QObject *parent) : QObject(parent)
 
 void TestItemOperators::testItemOperatorsAssign()
 {
-    QFETCH(QString, realStorage);
-    QFETCH(QString, realProduct);
-
-    Item real(realStorage, realProduct);
+    QFETCH(Item, real);
 
     Item assigned = real;
     bool actResult = (real == assigned);
@@ -19,93 +16,38 @@ void TestItemOperators::testItemOperatorsAssign()
 
 void TestItemOperators::testItemOperatorsAssign_data()
 {
-    QTest::addColumn<QString>("realStorage");
-    QTest::addColumn<QString>("realProduct");
+    QTest::addColumn<Item>("real");
 
-    QTest::newRow("Assignment") << QString("storage1")
-                                << QString("product1");
+    QTest::newRow("Assignment") << Item(ID("storage1"), ID("product1"));
 }
 
 void TestItemOperators::testItemOperatorsIsEqual()
 {
-    QFETCH(QString, leftStorage);
-    QFETCH(QString, leftProduct);
-    QFETCH(QString, rightStorage);
-    QFETCH(QString, rightProduct);
+    QFETCH(Item, left);
+    QFETCH(Item, right);
     QFETCH(bool, expResult);
 
-    Item left(leftStorage, leftProduct);
-    Item right(rightStorage, rightProduct);
-
-    bool actResult = (left == right);
-    QCOMPARE(expResult, actResult);
+    const bool actEqual = (left == right);
+    const bool actNotEqual = (left != right);
+    QCOMPARE(actEqual, expResult);
+    QCOMPARE(!actNotEqual, expResult);
 }
 
 void TestItemOperators::testItemOperatorsIsEqual_data()
 {
-    QTest::addColumn<QString>("leftStorage");
-    QTest::addColumn<QString>("leftProduct");
-    QTest::addColumn<QString>("rightStorage");
-    QTest::addColumn<QString>("rightProduct");
+    QTest::addColumn<Item>("left");
+    QTest::addColumn<Item>("right");
     QTest::addColumn<bool>("expResult");
 
-    QTest::newRow("equal") << QString("storage1")
-                           << QString("product1")
-                           << QString("storage1")
-                           << QString("product1")
+    QTest::newRow("equal") << Item(ID("storage1"), ID("product1"))
+                           << Item(ID("storage1"), ID("product1"))
                            << true;
 
-    QTest::newRow("not equal storage") << QString("storage1")
-                                       << QString("product1")
-                                       << QString("storage2")
-                                       << QString("product1")
+    QTest::newRow("not equal storage") << Item(ID("storage1"), ID("product1"))
+                                       << Item(ID("storage2"), ID("product1"))
                                        << false;
 
-    QTest::newRow("not equal product") << QString("storage1")
-                                       << QString("product1")
-                                       << QString("storage1")
-                                       << QString("prod1")
+    QTest::newRow("not equal product") << Item(ID("storage1"), ID("product1"))
+                                       << Item(ID("storage2"), ID("prod1"))
                                        << false;
-}
-
-void TestItemOperators::testItemOperatorsIsNotEqual()
-{
-    QFETCH(QString, leftStorage);
-    QFETCH(QString, leftProduct);
-    QFETCH(QString, rightStorage);
-    QFETCH(QString, rightProduct);
-    QFETCH(bool, expResult);
-
-    Item left(leftStorage, leftProduct);
-    Item right(rightStorage, rightProduct);
-
-    bool actResult = (left != right);
-    QCOMPARE(expResult, actResult);
-}
-
-void TestItemOperators::testItemOperatorsIsNotEqual_data()
-{
-    QTest::addColumn<QString>("leftStorage");
-    QTest::addColumn<QString>("leftProduct");
-    QTest::addColumn<QString>("rightStorage");
-    QTest::addColumn<QString>("rightProduct");
-    QTest::addColumn<bool>("expResult");
-
-    QTest::newRow("equal") << QString("storage1")
-                           << QString("product1")
-                           << QString("storage1")
-                           << QString("product1")
-                           << false;
-
-    QTest::newRow("not equal storage") << QString("storage1")
-                                       << QString("product1")
-                                       << QString("storage2")
-                                       << QString("product1")
-                                       << true;
-
-    QTest::newRow("not equal product") << QString("storage1")
-                                       << QString("product1")
-                                       << QString("storage1")
-                                       << QString("prod1")
-                                       << true;
 }

@@ -14,13 +14,8 @@ public:
     explicit TestSaleHistoryDayOperators(QObject *parent = 0);
 
 private slots:
-   ///notes если мы хотим выразить свойство, что все дни продаж либо равны, либо не равны, то обычно оба этих оператора тестируем в одном тесте
-
     void TestSaleHistoryDayOperatorEqual();
     void TestSaleHistoryDayOperatorEqual_data();
-
-    void TestSaleHistoryDayOperatorNotEqual();
-    void TestSaleHistoryDayOperatorNotEqual_data();
 };
 
 #endif // TESTSALEHISTORYDAYOPERATORS_H

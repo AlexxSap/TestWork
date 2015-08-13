@@ -26,7 +26,4 @@ private slots:
     void testSaleHistoryDays_data();
 };
 
-template <typename T>
-bool compareLists(const QList<T> &act, const QList<T> &exp);
-
 #endif // TESTSALEHISTORY_H

@@ -15,10 +15,6 @@ public:
 private slots:
     void testSaleHistoryParser();
     void testSaleHistoryParser_data();
-
 };
-
-template <typename T>
-bool compareLists(const QList<T> &act, const QList<T> &exp);
 
 #endif // TESTSALEHISTORYPARSER_H

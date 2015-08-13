@@ -16,9 +16,11 @@ bool operator == (const SaleHistoryDay &left, const SaleHistoryDay &right)
             && (left.rest() == right.rest());
 }
 
-SaleHistoryDay::SaleHistoryDay(const Item &item, const Date &date)
-    :item_(item),
-      date_(date)
+SaleHistoryDay::SaleHistoryDay()
+    :item_(),
+      date_(),
+      sold_(),
+      rest_()
 {
 
 }
@@ -32,14 +34,16 @@ SaleHistoryDay::SaleHistoryDay(const SaleHistoryDay &other)
 
 }
 
-void SaleHistoryDay::setSold(const Amount &sold)
+SaleHistoryDay::SaleHistoryDay(const Item &item,
+                               const Date &date,
+                               const Amount &sold,
+                               const Amount &rest)
+    :item_(item),
+      date_(date),
+      sold_(sold),
+      rest_(rest)
 {
-    sold_ = sold;
-}
 
-void SaleHistoryDay::setRest(const Amount &rest)
-{
-    rest_ = rest;
 }
 
 Item SaleHistoryDay::item() const
@@ -61,4 +65,13 @@ Date SaleHistoryDay::date() const
 {
     return date_;
 }
+
+bool SaleHistoryDay::isValid() const
+{
+    return (item().isValid()
+            && date() != Date()
+            && sold() >= 0.0
+            && rest() >= 0.0);
+}
+
 

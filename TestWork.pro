@@ -14,11 +14,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    CsvFileReader.cpp \
-    tests/TestWriteReadFileToDB.cpp \
-    CsvFileWriter.cpp \
-    FileReader.cpp \
-    FileWriter.cpp \
     SqliteAllDataDataSelector.cpp \
     SqliteSelByProductDataSelector.cpp \
     SqliteSelByDateDataSelector.cpp \
@@ -33,19 +28,16 @@ SOURCES += main.cpp\
     tests/TestSaleHistoryGenerator.cpp \
     SalesHistoryStreamReader.cpp \
     tests/TestSalesHistoryStreamReader.cpp \
-    tests/TestSaleHistoryWriter.cpp \
     SaleHistoryWriter.cpp \
     SaleHistoryParser.cpp \
     tests/TestSaleHistoryParser.cpp \
     SqliteSelByStorageAndProductDataSelector.cpp \
-    SqliteSelByStorageAndProductAndDateDataSelector.cpp
+    SqliteSelByStorageAndProductAndDateDataSelector.cpp \
+    tests/TestUtility.cpp \
+    CsvFile.cpp \
+    tests/TestCsvFile.cpp
 
 HEADERS  += mainwindow.h \
-    FileReader.h \
-    CsvFileReader.h \
-    tests/TestWriteReadFileToDB.h \
-    FileWriter.h \
-    CsvFileWriter.h \
     SqliteAllDataDataSelector.h \
     SqliteSelByProductDataSelector.h \
     SqliteSelByDateDataSelector.h \
@@ -60,9 +52,11 @@ HEADERS  += mainwindow.h \
     tests/TestSaleHistoryGenerator.h \
     SalesHistoryStreamReader.h \
     tests/TestSalesHistoryStreamReader.h \
-    tests/TestSaleHistoryWriter.h \
     SaleHistoryWriter.h \
     SaleHistoryParser.h \
     tests/TestSaleHistoryParser.h \
     SqliteSelByStorageAndProductDataSelector.h \
-    SqliteSelByStorageAndProductAndDateDataSelector.h
+    SqliteSelByStorageAndProductAndDateDataSelector.h \
+    tests/TestUtility.h \
+    CsvFile.h \
+    tests/TestCsvFile.h

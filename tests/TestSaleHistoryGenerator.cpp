@@ -5,18 +5,20 @@ TestSaleHistoryGenerator::TestSaleHistoryGenerator(QObject *parent) : QObject(pa
 
 }
 
-///notes что бы выбрать, что нужно обязательно тестировать, а что нет, можно задаться вопросом
-/// "а что будет, если эта компонента будет работать неверно и как быстро это будет замечено".
-/// что будет, если эта довольно сложная функция(цикл и четыре условия) будет работать неверно и как быстро это будет замечено?
+///notes что бы выбрать, что нужно обязательно тестировать, а что нет,
+/// можно задаться вопросом
+/// "а что будет, если эта компонента будет работать неверно
+///  и как быстро это будет замечено".
+/// что будет, если эта довольно сложная функция(цикл и четыре условия)
+/// будет работать неверно и как быстро это будет замечено?
 bool TestSaleHistoryGenerator::compareData(const QList<SaleHistoryDay> &list,
                                            int maxVal)
 {
-    ///notes  в итераторах тоже используем const& где только можно ( foreach(const SaleHistoryDay &day, list) )
-    foreach (SaleHistoryDay day, list)
+    foreach (const SaleHistoryDay &day, list)
     {
-        if(day.sold() < 0
+        if(day.sold() <= 0
                 || day.sold() > maxVal
-                || day.rest() < 0
+                || day.rest() <= 0
                 || day.rest() > maxVal)
         {
             return false;
@@ -31,6 +33,7 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator()
     QFETCH(QDate, toDate);
     QFETCH(int, storageNum);
     QFETCH(int, productNum);
+    QFETCH(int, expNumber);
     QFETCH(int, maxVal);
 
     SaleHistoryGenerator gen;
@@ -40,13 +43,9 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator()
                                                      storageNum,
                                                      productNum);
 
-    ///notes всякие арифметические операции в тестах обычно их сильно усложняют.
-    /// тут будет лучше вынести actNum в тестовые данные, для явного указания.
-    /// в тестовых данных его вполне можно задавать сложным термом без переменных, например, 10 * 20 * (43 + 1)
-    int actNum = storageNum * productNum * (fromDate.daysTo(toDate) + 1);
     bool comp = compareData(list, maxVal);
-    ///notes для таких вещей обычно пользуемся QCOMPARE
-    QVERIFY(list.count() == actNum);
+
+    QCOMPARE(list.count(), expNumber);
     QVERIFY(comp);
 }
 
@@ -56,18 +55,27 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator_data()
     QTest::addColumn<QDate>("toDate");
     QTest::addColumn<int>("storageNum");
     QTest::addColumn<int>("productNum");
+    QTest::addColumn<int>("expNumber");
     QTest::addColumn<int>("maxVal");
 
     QTest::newRow("gen test 1") << QDate(2015, 3, 1)
                                 << QDate(2015, 3, 10)
                                 << 3
                                 << 5
+                                << 3 * 5 * 10
                                 << 10000;
 
     QTest::newRow("gen test 2") << QDate(2015, 2, 20)
                                 << QDate(2015, 3, 4)
                                 << 3
                                 << 15
+                                << 3 * 15 * 13
+                                << 1000;
+
+    QTest::newRow("wronge gen test") << QDate(2015, 3, 20)
+                                << QDate(2015, 3, 4)
+                                << 3
+                                << 15
+                                << 0
                                 << 1000;
 }
-

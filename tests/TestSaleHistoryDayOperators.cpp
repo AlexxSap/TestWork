@@ -7,237 +7,44 @@ TestSaleHistoryDayOperators::TestSaleHistoryDayOperators(QObject *parent) : QObj
 
 void TestSaleHistoryDayOperators::TestSaleHistoryDayOperatorEqual()
 {
-
-    ///notes почему нельзя было для тестовых данных использовать два SaleHistoryDay и результат их сравнения?
-    QFETCH(QString, leftStorage);
-    QFETCH(QString, leftProduct);
-    QFETCH(QDate, leftDate);
-    QFETCH(double, leftSold);
-    QFETCH(double, leftRest);
-
-    QFETCH(QString, rightStorage);
-    QFETCH(QString, rightProduct);
-    QFETCH(QDate, rightDate);
-    QFETCH(double, rightSold);
-    QFETCH(double, rightRest);
-
+    QFETCH(SaleHistoryDay, left);
+    QFETCH(SaleHistoryDay, right);
     QFETCH(bool, expResult);
 
-    SaleHistoryDay left(Item(leftStorage, leftProduct), leftDate);
-    left.setSold(leftSold);
-    left.setRest(leftRest);
-
-    SaleHistoryDay right(Item(rightStorage, rightProduct), rightDate);
-    right.setSold(rightSold);
-    right.setRest(rightRest);
-
-    bool actResult = (left == right);
-    QCOMPARE(actResult, expResult);
+    const bool actEqual = (left == right);
+    const bool actNotEqual = (left != right);
+    QCOMPARE(actEqual, expResult);
+    QCOMPARE(actNotEqual, !expResult);
 }
 
 void TestSaleHistoryDayOperators::TestSaleHistoryDayOperatorEqual_data()
 {
-    QTest::addColumn<QString>("leftStorage");
-    QTest::addColumn<QString>("leftProduct");
-    QTest::addColumn<QDate>("leftDate");
-    QTest::addColumn<double>("leftSold");
-    QTest::addColumn<double>("leftRest");
-
-    QTest::addColumn<QString>("rightStorage");
-    QTest::addColumn<QString>("rightProduct");
-    QTest::addColumn<QDate>("rightDate");
-    QTest::addColumn<double>("rightSold");
-    QTest::addColumn<double>("rightRest");
+    QTest::addColumn<SaleHistoryDay>("left");
+    QTest::addColumn<SaleHistoryDay>("right");
 
     QTest::addColumn<bool>("expResult");
 
-    QTest::newRow("equal") << QString("storage1")
-                           << QString("product1")
-                           << QDate(2015, 8, 8)
-                           << 100.6
-                           << 50.0
-                           << QString("storage1")
-                           << QString("product1")
-                           << QDate(2015, 8, 8)
-                           << 100.6
-                           << 50.0
-                           << true;
+    QTest::newRow("equal")  << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
+                            << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
+                            << true;
 
-    QTest::newRow("not equal storage") << QString("storage1")
-                                       << QString("product1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
-                                       << QString("storage10")
-                                       << QString("product1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
+    QTest::newRow("not equal storage") << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
+                                       << SaleHistoryDay(Item(ID("storage10"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
                                        << false;
 
-    QTest::newRow("not equal product") << QString("storage1")
-                                       << QString("product1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
-                                       << QString("storage1")
-                                       << QString("prod1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
+    QTest::newRow("not equal product") << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
+                                       << SaleHistoryDay(Item(ID("storage1"), ID("prod1")), Date(2015, 8, 8), 100.6, 50.0)
                                        << false;
 
-    QTest::newRow("not equal date") << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 18)
-                                    << 100.6
-                                    << 50.0
-                                    << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.0
+    QTest::newRow("not equal date") << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 18), 100.6, 50.0)
+                                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
                                     << false;
 
-    QTest::newRow("not equal sold") << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.0
-                                    << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 10.6
-                                    << 50.0
+    QTest::newRow("not equal sold") << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.6, 50.0)
+                                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
                                     << false;
 
-    QTest::newRow("not equal rest") << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.0
-                                    << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.5
+    QTest::newRow("not equal rest") << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 50.0)
+                                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 100.6, 5.0)
                                     << false;
 }
-
-void TestSaleHistoryDayOperators::TestSaleHistoryDayOperatorNotEqual()
-{
-    QFETCH(QString, leftStorage);
-    QFETCH(QString, leftProduct);
-    QFETCH(QDate, leftDate);
-    QFETCH(double, leftSold);
-    QFETCH(double, leftRest);
-
-    QFETCH(QString, rightStorage);
-    QFETCH(QString, rightProduct);
-    QFETCH(QDate, rightDate);
-    QFETCH(double, rightSold);
-    QFETCH(double, rightRest);
-
-    QFETCH(bool, expResult);
-
-    SaleHistoryDay left(Item(leftStorage, leftProduct), leftDate);
-    left.setSold(leftSold);
-    left.setRest(leftRest);
-
-    SaleHistoryDay right(Item(rightStorage, rightProduct), rightDate);
-    right.setSold(rightSold);
-    right.setRest(rightRest);
-
-    bool actResult = (left != right);
-    QCOMPARE(actResult, expResult);
-}
-
-void TestSaleHistoryDayOperators::TestSaleHistoryDayOperatorNotEqual_data()
-{
-    QTest::addColumn<QString>("leftStorage");
-    QTest::addColumn<QString>("leftProduct");
-    QTest::addColumn<QDate>("leftDate");
-    QTest::addColumn<double>("leftSold");
-    QTest::addColumn<double>("leftRest");
-
-    QTest::addColumn<QString>("rightStorage");
-    QTest::addColumn<QString>("rightProduct");
-    QTest::addColumn<QDate>("rightDate");
-    QTest::addColumn<double>("rightSold");
-    QTest::addColumn<double>("rightRest");
-
-    QTest::addColumn<bool>("expResult");
-
-    QTest::newRow("equal") << QString("storage1")
-                           << QString("product1")
-                           << QDate(2015, 8, 8)
-                           << 100.6
-                           << 50.0
-                           << QString("storage1")
-                           << QString("product1")
-                           << QDate(2015, 8, 8)
-                           << 100.6
-                           << 50.0
-                           << false;
-
-    QTest::newRow("not equal storage") << QString("storage1")
-                                       << QString("product1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
-                                       << QString("storage10")
-                                       << QString("product1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
-                                       << true;
-
-    QTest::newRow("not equal product") << QString("storage1")
-                                       << QString("product1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
-                                       << QString("storage1")
-                                       << QString("prod1")
-                                       << QDate(2015, 8, 8)
-                                       << 100.6
-                                       << 50.0
-                                       << true;
-
-    QTest::newRow("not equal date") << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 18)
-                                    << 100.6
-                                    << 50.0
-                                    << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.0
-                                    << true;
-
-    QTest::newRow("not equal sold") << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.0
-                                    << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 10.6
-                                    << 50.0
-                                    << true;
-
-    QTest::newRow("not equal rest") << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.0
-                                    << QString("storage1")
-                                    << QString("product1")
-                                    << QDate(2015, 8, 8)
-                                    << 100.6
-                                    << 50.5
-                                    << true;
-}
-

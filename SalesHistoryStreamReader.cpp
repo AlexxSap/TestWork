@@ -69,14 +69,12 @@ bool SalesHistoryStreamReader::next()
 
 SaleHistory SalesHistoryStreamReader::current()
 {
-    SaleHistory history(items_.at(currentIndex_));
+    const Item item = items_.at(currentIndex_);
+    SaleHistory history(item);
     query_.first();
     if(!query_.isValid())
     {
-        ///notes зачем в несуществующую историю что-то добавлять?
-        /// я бы просто вернул SaleHistory() или статический метод SaleHistory::Invalid().
-        /// это заоодно спасает от ошибок, когда с history что-то уже произошло до проверки if(!query_.isValid())
-        history.addDay(from_, 0.0, 0.0);
+        return history;
     }
     else
     {
@@ -85,7 +83,7 @@ SaleHistory SalesHistoryStreamReader::current()
             QDate date = query_.value(2).toDate();
             double sold = query_.value(3).toDouble();
             double rest = query_.value(4).toDouble();
-            history.addDay(date, sold, rest);
+            history.addDay(SaleHistoryDay(item, date, sold, rest));
 
         } while(query_.next());
     }

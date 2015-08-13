@@ -2,6 +2,7 @@
 #define SALEHISTORY_H
 
 #include <QMap>
+#include <QMetaType>
 
 #include "Item.h"
 #include "SaleHistoryDay.h"
@@ -25,26 +26,29 @@ private:
     Item item_;
     QMap<Date, Day> days_;
 
-private:
-    SaleHistory();
-
 public:
+    SaleHistory();
     SaleHistory(const Item &item);
-    SaleHistory(const SaleHistory &other);
+    SaleHistory(const SaleHistory & other);
 
     Item item() const;
 
     Date from() const;
     Date to() const;
 
-    ///notes почему бы не использовать один аргумент типа SaleHistoryDay?
-    /// можно было бы сразу проверять, что добавляется SaleHistoryDay правильного товара
-    /// и не нужно будет переписывать использование этого метода из-за того, в SaleHistoryDay появилось новое поле
-    void addDay(const Date &date, const Amount &sold, const Amount &rest);
+    void addDay(const SaleHistoryDay &day);
+    SaleHistory& operator << (const SaleHistoryDay &day);
+
+
     SaleHistoryDay day(const Date &date) const;
     QList<SaleHistoryDay> days() const;
 
     bool isValid() const;
 };
+
+Q_DECLARE_METATYPE(SaleHistory)
+
+bool operator != (const SaleHistory &left, const SaleHistory &right);
+bool operator == (const SaleHistory &left, const SaleHistory &right);
 
 #endif // SALEHISTORY_H

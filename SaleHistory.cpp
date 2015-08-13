@@ -1,20 +1,37 @@
 #include "SaleHistory.h"
 
+bool operator != (const SaleHistory &left, const SaleHistory &right)
+{
+    return (left.item() != right.item() || left.days() != right.days());
+}
+
+bool operator == (const SaleHistory &left, const SaleHistory &right)
+{
+    return (left.item() == right.item() && left.days() == right.days());
+}
+
+SaleHistory::SaleHistory()
+    :item_(),
+      days_()
+{
+
+}
+
 SaleHistory::SaleHistory(const Item &item)
-    :item_(item)
+    :item_(item),
+      days_()
 {
 
 }
 
 SaleHistory::SaleHistory(const SaleHistory &other)
-    :item_(other.item())
+    :item_(other.item()),
+      days_()
 {
-    QList<SaleHistoryDay> days = other.days();
-    days_.clear();
-
-    foreach (SaleHistoryDay temp, days)
+    const QList<SaleHistoryDay> days = other.days();
+    foreach (const SaleHistoryDay &day, days)
     {
-        addDay(temp.date(), temp.sold(), temp.rest());
+        days_.insert(day.date(), Day(day.sold(), day.rest()));
     }
 }
 
@@ -33,10 +50,18 @@ Date SaleHistory::to() const
     return days_.lastKey();
 }
 
-void SaleHistory::addDay(const Date &date, const Amount &sold, const Amount &rest)
+void SaleHistory::addDay(const SaleHistoryDay &day)
 {
-    days_.insert(date, Day(sold, rest));
+    if(item() == day.item())
+    {
+        days_.insert(day.date(), Day(day.sold(), day.rest()));
+    }
+}
 
+SaleHistory &SaleHistory::operator <<(const SaleHistoryDay &day)
+{
+    addDay(day);
+    return *this;
 }
 
 SaleHistoryDay SaleHistory::day(const Date &date) const
@@ -49,7 +74,7 @@ SaleHistoryDay SaleHistory::day(const Date &date) const
     }
     else if(date < days_.firstKey() || date > days_.lastKey())
     {
-        day = Day();
+        return SaleHistoryDay();
     }
     else
     {
@@ -64,9 +89,7 @@ SaleHistoryDay SaleHistory::day(const Date &date) const
             }
         }
     }
-    SaleHistoryDay temp(item_, tempDate);
-    temp.setSold(day.sold());
-    temp.setRest(day.rest());
+    SaleHistoryDay temp(item_, tempDate, day.sold(), day.rest());
     return temp;
 }
 
@@ -77,11 +100,8 @@ QList<SaleHistoryDay> SaleHistory::days() const
     QMap<Date, Day>::const_iterator i = days_.begin();
     for( ;i != days_.end(); i++)
     {
-        SaleHistoryDay tempDay(item_, i.key());
-        Day d = i.value();
-        tempDay.setSold(d.sold());
-        tempDay.setRest(d.rest());
-
+        const Day d = i.value();
+        SaleHistoryDay tempDay(item_, i.key(), d.sold(), d.rest());
         temp.append(tempDay);
     }
     return temp;
@@ -89,11 +109,7 @@ QList<SaleHistoryDay> SaleHistory::days() const
 
 bool SaleHistory::isValid() const
 {
-    if(days_.isEmpty())
-    {
-        return false;
-    }
-    return true;
+    return (item().isValid() && !days_.isEmpty());
 }
 
 SaleHistory::Day::Day()

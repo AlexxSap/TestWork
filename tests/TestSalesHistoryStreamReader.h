@@ -6,7 +6,7 @@
 
 #include "SalesHistoryStreamReader.h"
 #include "SaleHistoryWriter.h"
-#include "SaleHistoryParser.h"
+#include "TestUtility.h"
 
 class TestSalesHistoryStreamReader : public QObject
 {
@@ -14,17 +14,9 @@ class TestSalesHistoryStreamReader : public QObject
 public:
     explicit TestSalesHistoryStreamReader(QObject *parent = 0);
 
-    ///notes явное дублирование тестовых функций-утилит
-    void removeFile(const QString &fileName);
-    void createTestDB(const QString &dbName);
-    bool createTestDbStructure(QSqlDatabase &db);
-
 private slots:
     void testSalesHistoryStreamReader();
     void testSalesHistoryStreamReader_data();
 };
-
-template <typename T>
-bool compareLists(const QList<T> &act, const QList<T> &exp);
 
 #endif // TESTSALESHISTORYSTREAMREADER_H
