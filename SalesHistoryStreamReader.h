@@ -1,18 +1,17 @@
 #ifndef SALESHISTORYSTREAMREADER_H
 #define SALESHISTORYSTREAMREADER_H
 
+#include <QSqlError>
+
 #include "SaleHistory.h"
 #include "DataBase.h"
-#include "SqliteSelByStorageAndProductDataSelector.h"
-#include "SqliteSelByStorageAndProductAndDateDataSelector.h"
 
-/// "потоковая" читалка товаров
 class SalesHistoryStreamReader
 {
 private:
     QList<Item> items_;
+    DataBase db_;
     QSqlQuery query_;
-    QString dbName_;
     int currentIndex_;
     QDate from_;
     QDate to_;
@@ -21,10 +20,7 @@ private:
     bool queryForNextItem();
 
 public:
-    /// собираемся читать items товары
-    explicit SalesHistoryStreamReader(const QList<Item> &items);
-
-    void setDbName(const QString &dbName);
+    explicit SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);
 
     /// перед чтением указывает откуда и докуда будем читать
     /// from и to могут принимать значения Date(), в этом случае читаем от
@@ -36,8 +32,6 @@ public:
     /// SalesHistoryStreamReader::current()
     bool open(const Date &from, const Date &to);
 
-    /// проверяем, есть ли ещё что читать в "потоке", возвращает
-    /// false если нету, возвращает true если есть и переходит к этому элементу
     bool next();
 
     /// возвращает текущий SaleHistory в "потоке чтения"

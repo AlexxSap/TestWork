@@ -10,6 +10,14 @@ bool TestUtility::createTestDbStructure(QSqlDatabase &db)
                           "f_sold real not null, "
                           "f_rest real not null, "
                           "primary key(f_storage, f_product, f_date));");
+    if(!res)
+    {
+        return false;
+    }
+
+    res = query.exec("create index i_datas on t_datas "
+                     "(f_storage, f_product, f_date asc);");
+
     return res;
 }
 
@@ -67,6 +75,16 @@ bool TestUtility::createTestDB(const QString &dbName)
             return false;
         }
         db.commit();
+
+        db.transaction();
+        QSqlQuery query(db);
+        if(!query.exec("PRAGMA temp_store = MEMORY;"))
+        {
+            db.rollback();
+            return false;
+        }
+        db.commit();
+
         db.close();
     }
     QSqlDatabase::removeDatabase(connName);

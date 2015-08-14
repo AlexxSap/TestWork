@@ -5,6 +5,9 @@
 запись/чтение           З	Ч			З	Ч			З	Ч			З	Ч
 
 Первоначальные данные	109	2296		287	8456		981	21728		909	21706
+Изменён метод SalesHistoryStreamReader::queryForNextItem()
+                        134	823         292	4374        928	8023        943	8206
+Добавлен индекс i_datas	146	793         323	4478        1080 8010       1085 7976
 
 */
 
@@ -58,8 +61,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     }
 
     QList<SaleHistory> saleHistoryList;
-    SalesHistoryStreamReader reader(items);
-    reader.setDbName(dbName);
+    SalesHistoryStreamReader reader(items, dbName);
 
     timer.start();
     bool isOpen = reader.open(fromDate, toDate);

@@ -31,5 +31,9 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         }
     }
     db_.commitTransaction();
-    return true;
+
+    QSqlQuery query = db_.getAssociatedQuery();
+    const bool res = query.exec("analyze t_datas;");
+
+    return res;
 }

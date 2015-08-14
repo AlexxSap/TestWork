@@ -39,8 +39,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
 
     QList<SaleHistory> actList;
     {
-        SalesHistoryStreamReader reader(caseItems);
-        reader.setDbName(dbName);
+        SalesHistoryStreamReader reader(caseItems, dbName);
         bool isOpen = reader.open(caseDateFrom, caseDateTo);
         if(!isOpen)
         {
