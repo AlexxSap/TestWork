@@ -38,6 +38,7 @@ bool TestUtility::removeFile(const QString &fileName)
             return false;
         }
     }
+    QThread::msleep(100); // просто винда не всегда успевает удалить файл
     return true;
 }
 

@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QFile>
 #include <QSqlQuery>
+#include <QThread>
 
 class TestUtility
 {

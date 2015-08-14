@@ -36,7 +36,7 @@ SOURCES += main.cpp\
     tests/TestUtility.cpp \
     CsvFile.cpp \
     tests/TestCsvFile.cpp \
-    tests/BenchmarkReadWriteToDb.cpp
+    benchmarks/BenchmarkWriteRead.cpp
 
 HEADERS  += mainwindow.h \
     SqliteAllDataDataSelector.h \
@@ -61,4 +61,4 @@ HEADERS  += mainwindow.h \
     tests/TestUtility.h \
     CsvFile.h \
     tests/TestCsvFile.h \
-    tests/BenchmarkReadWriteToDb.h
+    benchmarks/BenchmarkWriteRead.h

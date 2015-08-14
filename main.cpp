@@ -1,7 +1,7 @@
-#include "mainwindow.h"
-#include <QApplication>
-#include <QTest>
+#define TEST
 
+#ifdef TEST
+#include <QTest>
 #include "tests/TestItemOperators.h"
 #include "tests/TestSaleHistoryDayOperators.h"
 #include "tests/TestSaleHistory.h"
@@ -9,44 +9,49 @@
 #include "tests/TestSaleHistoryParser.h"
 #include "tests/TestSalesHistoryStreamReader.h"
 #include "tests/TestCsvFile.h"
-#include "tests/BenchmarkReadWriteToDb.h"
+#include "benchmarks/BenchmarkWriteRead.h"
+#else
+#include <QApplication>
+#include "mainwindow.h"
+#endif
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    if(argc == 2 && QString(argv[1]) == "-t")
+int main()
+{   
+#ifdef TEST
+    int test = 0;
+    TestItemOperators testItemOperators;
+    test += QTest::qExec(&testItemOperators);
+
+    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
+    test += QTest::qExec(&testSaleHistoryDayOperators);
+
+    TestSaleHistory testSaleHistory;
+    test += QTest::qExec(&testSaleHistory);
+
+    TestSaleHistoryGenerator testSaleHistoryGenerator;
+    test += QTest::qExec(&testSaleHistoryGenerator);
+
+    TestSaleHistoryParser testSaleHistoryParser;
+    test += QTest::qExec(&testSaleHistoryParser);
+
+    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+    test += QTest::qExec(&testSalesHistoryStreamReader);
+
+    TestCsvFile testCsvFile;
+    test += QTest::qExec(&testCsvFile);
+
+    if(test == 0)
     {
-        TestItemOperators testItemOperators;
-        QTest::qExec(&testItemOperators);
-
-        TestSaleHistoryDayOperators testSaleHistoryDayOperators;
-        QTest::qExec(&testSaleHistoryDayOperators);
-
-        TestSaleHistory testSaleHistory;
-        QTest::qExec(&testSaleHistory);
-
-        TestSaleHistoryGenerator testSaleHistoryGenerator;
-        QTest::qExec(&testSaleHistoryGenerator);
-
-        TestSaleHistoryParser testSaleHistoryParser;
-        QTest::qExec(&testSaleHistoryParser);
-
-        TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-        QTest::qExec(&testSalesHistoryStreamReader);
-
-        TestCsvFile testCsvFile;
-        QTest::qExec(&testCsvFile);
-
-        BenchmarkReadWriteToDb benchmarkReadWriteToDb;
-        QTest::qExec(&benchmarkReadWriteToDb);
-
-        return 0;
-    }
-    else
-    {
-        MainWindow w;
-        w.show();
-        return a.exec();
+        BenchmarkWriteRead::run(30, 1, 100);
+        BenchmarkWriteRead::run(90, 1, 100);
+        BenchmarkWriteRead::run(30, 10, 100);
+        BenchmarkWriteRead::run(30, 1, 1000);
     }
     return 0;
+#else
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
+#endif
 }

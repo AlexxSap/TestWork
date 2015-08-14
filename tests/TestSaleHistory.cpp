@@ -14,7 +14,7 @@ void TestSaleHistory::testSaleHistoryByDate()
 
     SaleHistoryDay actDay = history.day(caseDate);
 
-    QCOMPARE(actDay, expDay);
+    QCOMPARE(actDay.isValid(), expValid);
     QCOMPARE(actDay, expDay);
 }
 
