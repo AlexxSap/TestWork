@@ -54,7 +54,6 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         }while (reader.next());
     }
 
-
     if(!TestUtility::removeFile(dbName))
     {
         QFAIL("cannot remove test-db in ending of test");

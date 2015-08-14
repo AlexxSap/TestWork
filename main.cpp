@@ -9,13 +9,7 @@
 #include "tests/TestSaleHistoryParser.h"
 #include "tests/TestSalesHistoryStreamReader.h"
 #include "tests/TestCsvFile.h"
-
-///notes конечные цели:
-/// 1. уметь генерировать историю продаж на заданый временной
-/// период для заданого числа артикулов и складов
-/// 2. уметь читать "подряд" несколько историй продаж для заданного набора товаров
-/// 3. уметь замерять за какое время записываются и считываются определённые
-/// объёмы историй продаж
+#include "tests/BenchmarkReadWriteToDb.h"
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +36,9 @@ int main(int argc, char *argv[])
 
         TestCsvFile testCsvFile;
         QTest::qExec(&testCsvFile);
+
+        BenchmarkReadWriteToDb benchmarkReadWriteToDb;
+        QTest::qExec(&benchmarkReadWriteToDb);
 
         return 0;
     }

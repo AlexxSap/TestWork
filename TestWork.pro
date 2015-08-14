@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     SqliteSelByStorageAndProductAndDateDataSelector.cpp \
     tests/TestUtility.cpp \
     CsvFile.cpp \
-    tests/TestCsvFile.cpp
+    tests/TestCsvFile.cpp \
+    tests/BenchmarkReadWriteToDb.cpp
 
 HEADERS  += mainwindow.h \
     SqliteAllDataDataSelector.h \
@@ -59,4 +60,5 @@ HEADERS  += mainwindow.h \
     SqliteSelByStorageAndProductAndDateDataSelector.h \
     tests/TestUtility.h \
     CsvFile.h \
-    tests/TestCsvFile.h
+    tests/TestCsvFile.h \
+    tests/BenchmarkReadWriteToDb.h

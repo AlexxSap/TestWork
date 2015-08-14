@@ -38,7 +38,7 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator()
 
     SaleHistoryGenerator gen;
     gen.setMaxValue(maxVal);
-    QList<SaleHistoryDay> list = gen.generateHistory(fromDate,
+    const QList<SaleHistoryDay> list = gen.generateHistory(fromDate,
                                                      toDate,
                                                      storageNum,
                                                      productNum);
