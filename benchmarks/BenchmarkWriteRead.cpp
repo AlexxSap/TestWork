@@ -61,27 +61,29 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     }
 
     QList<SaleHistory> saleHistoryList;
-    SalesHistoryStreamReader reader(items, dbName);
-
-    timer.start();
-    bool isOpen = reader.open(fromDate, toDate);
-    const int openTime = timer.elapsed();
-
-    if(!isOpen)
     {
-        TestUtility::removeFile(dbName);
-        qWarning() << "something wrong with opening SalesHistoryStreamReader";
-        return;
+        SalesHistoryStreamReader reader(items, dbName);
+
+        timer.start();
+        bool isOpen = reader.open(fromDate, toDate);
+        const int openTime = timer.elapsed();
+
+        if(!isOpen)
+        {
+            TestUtility::removeFile(dbName);
+            qWarning() << "something wrong with opening SalesHistoryStreamReader";
+            return;
+        }
+        timer.start();
+        do
+        {
+            const SaleHistory history = reader.current();
+            saleHistoryList.append(history);
+        } while (reader.next());
+
+        qInfo() << "read.............."
+                << timer.elapsed() + openTime << "ms";
     }
-    timer.start();
-    do
-    {
-        const SaleHistory history = reader.current();
-        saleHistoryList.append(history);
-    } while (reader.next());
-
-    qInfo() << "read.............."
-            << timer.elapsed() + openTime << "ms";
 
     if(!TestUtility::removeFile(dbName))
     {
