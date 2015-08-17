@@ -16,9 +16,6 @@ private:
     QDate from_;
     QDate to_;
 
-private:
-    bool queryForNextItem();
-
 public:
     explicit SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);
 

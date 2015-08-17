@@ -8,7 +8,9 @@
 Изменён метод SalesHistoryStreamReader::queryForNextItem()
                         134	823         292	4374        928	8023        943	8206
 Добавлен индекс i_datas	146	793         323	4478        1080 8010       1085 7976
-
+(выигрыш в чтении находится в рамках отклонения, не использовать)
+Изменение селект-запроса в методе SalesHistoryStreamReader::open
+                        116	15          293	50          912	140         931	143
 */
 
 void BenchmarkWriteRead::run(const int &days, const int &storages, const int &products)

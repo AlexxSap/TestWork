@@ -13,7 +13,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
     QFETCH(Date, caseDateTo);
     QFETCH(QList<SaleHistory> , expList);
 
-    const QString dbName("DBase.db");
+    const QString dbName("TestDBase.db");
 
     if(!TestUtility::removeFile(dbName))
     {

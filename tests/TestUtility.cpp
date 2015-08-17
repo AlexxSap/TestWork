@@ -14,11 +14,11 @@ bool TestUtility::createTestDbStructure(QSqlDatabase &db)
     {
         return false;
     }
+    return true;
 
-    res = query.exec("create index i_datas on t_datas "
-                     "(f_storage, f_product, f_date asc);");
-
-    return res;
+//    res = query.exec("create index i_datas on t_datas "
+//                     "(f_storage, f_product, f_date asc);");
+//    return res;
 }
 
 bool TestUtility::createFile(const QString &fileName, const QStringList &data)
@@ -68,17 +68,7 @@ bool TestUtility::createTestDB(const QString &dbName)
         }
 
         db.transaction();
-
         if(!createTestDbStructure(db))
-        {
-            db.rollback();
-            return false;
-        }
-        db.commit();
-
-        db.transaction();
-        QSqlQuery query(db);
-        if(!query.exec("PRAGMA temp_store = MEMORY;"))
         {
             db.rollback();
             return false;
