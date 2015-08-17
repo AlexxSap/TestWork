@@ -11,6 +11,9 @@
 (выигрыш в чтении находится в рамках отклонения, не использовать)
 Изменение селект-запроса в методе SalesHistoryStreamReader::open
                         116	15          293	50          912	140         931	143
+Исравление ошибки бенчмарка
+                        126	1           330	4           1055 6          1038 5
+
 */
 
 void BenchmarkWriteRead::run(const int &days, const int &storages, const int &products)
@@ -59,10 +62,12 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     QList<Item> items;
     foreach (const SaleHistoryDay &day, list)
     {
-        items.append(day.item());
+        if(!items.contains(day.item()))
+        {
+            items.append(day.item());
+        }
     }
 
-    QList<SaleHistory> saleHistoryList;
     {
         SalesHistoryStreamReader reader(items, dbName);
 
@@ -80,7 +85,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         do
         {
             const SaleHistory history = reader.current();
-            saleHistoryList.append(history);
         } while (reader.next());
 
         qInfo() << "read.............."
