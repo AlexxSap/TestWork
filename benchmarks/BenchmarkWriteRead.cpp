@@ -1,18 +1,20 @@
 #include "BenchmarkWriteRead.h"
 /*
 результаты даны в мс
-дни/склады/товары		30/1/100		90/1/100		30/10/100		30/1/1000
-запись/чтение           З	Ч			З	Ч			З	Ч			З	Ч
+дни/склады/товары		30/1/100		90/1/100		30/10/100		30/1/1000   720/10/10000
+запись/чтение           З	Ч			З	Ч			З	Ч			З	Ч       з   ч
 
-Первоначальные данные	109	2296		287	8456		981	21728		909	21706
+Первоначальные данные	109	2296		287	8456		981	21728		909	21706   43 min	18 h
 Изменён метод SalesHistoryStreamReader::queryForNextItem()
-                        134	823         292	4374        928	8023        943	8206
+                        134	823         292	4374        928	8023        943	8206    43 min	5-6 h
 Добавлен индекс i_datas	146	793         323	4478        1080 8010       1085 7976
 (выигрыш в чтении находится в рамках отклонения, не использовать)
 Изменение селект-запроса в методе SalesHistoryStreamReader::open
-                        116	15          293	50          912	140         931	143
+                        116	15          293	50          912	140         931	143     43 min	14 min
 Исравление ошибки бенчмарка
                         126	1           330	4           1055 6          1038 5
+Изменение записи в БД на пакетную
+                        37	1           113	4           345	5           347	7       14 min	0.7 min
 
 */
 
@@ -59,20 +61,11 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         return;
     }
 
-    QList<Item> items;
-    foreach (const SaleHistoryDay &day, list)
     {
-        if(!items.contains(day.item()))
-        {
-            items.append(day.item());
-        }
-    }
-
-    {
-        SalesHistoryStreamReader reader(items, dbName);
+        SalesHistoryStreamReader reader(QList<Item>(), dbName);
 
         timer.start();
-        bool isOpen = reader.open(fromDate, toDate);
+        bool isOpen = reader.open(Date(), Date());
         const int openTime = timer.elapsed();
 
         if(!isOpen)
@@ -81,10 +74,12 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             qWarning() << "something wrong with opening SalesHistoryStreamReader";
             return;
         }
+//        QList<SaleHistory> list;
         timer.start();
         do
         {
             const SaleHistory history = reader.current();
+//            list.append(history);
         } while (reader.next());
 
         qInfo() << "read.............."

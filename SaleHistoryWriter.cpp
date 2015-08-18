@@ -8,32 +8,66 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
 {
-    db_.beginTransaction();
-    foreach (const SaleHistoryDay &day, days)
+    QVariantList storageList;
+    QVariantList productList;
+    QVariantList dateList;
+    QVariantList soldList;
+    QVariantList restList;
+
+    int i = 0;
+    //затраты памяти при разных size
+    // при 1 млн - 530 мб
+    // при 100к - 342 мб
+    // при 10к - 322 мб
+    const int size = 100000;
+    while(i < days.count())
     {
+        int delta;
+        if(i + size >= days.count())
+        {
+            delta = days.count() - i;
+        }
+        else
+        {
+            delta = size;
+        }
+
+        storageList.clear();
+        productList.clear();
+        dateList.clear();
+        soldList.clear();
+        restList.clear();
+
+        for(int j = i; j < i + delta ; j++)
+        {
+            storageList << days.at(j).item().storage();
+            productList << days.at(j).item().product();
+            dateList << days.at(j).date().toString("yyyy.MM.dd");
+            soldList << days.at(j).sold();
+            restList << days.at(j).rest();
+        }
+        i += delta;
+
         QSqlQuery query = db_.getAssociatedQuery();
-        const ID storage = day.item().storage();
-        const ID product = day.item().product();
-        const Date date = day.date();
-        const Amount sold = day.sold();
-        const Amount rest = day.rest();
         query.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
-                      "values(:storage, :product, :date, :sold, :rest);");
-        query.bindValue(":storage", storage);
-        query.bindValue(":product", product);
-        query.bindValue(":date", date.toString("yyyy.MM.dd"));
-        query.bindValue(":sold", sold);
-        query.bindValue(":rest", rest);
-        if(!query.exec())
+                      "values(?, ?, ?, ?, ?);");
+        query.addBindValue(storageList);
+        query.addBindValue(productList);
+        query.addBindValue(dateList);
+        query.addBindValue(soldList);
+        query.addBindValue(restList);
+
+        db_.beginTransaction();
+        if(!query.execBatch())
         {
             db_.rollbackTransaction();
             return false;
         }
+        db_.commitTransaction();
     }
-    db_.commitTransaction();
 
-//    QSqlQuery query = db_.getAssociatedQuery();
-//    return query.exec("analyze t_datas;");
+    //    QSqlQuery query = db_.getAssociatedQuery();
+    //    return query.exec("analyze t_datas;");
 
     return true;
 }

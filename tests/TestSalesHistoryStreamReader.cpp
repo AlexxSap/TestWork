@@ -112,6 +112,28 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                 << (SaleHistory(Item(ID("storage1"), ID("product2")))
                     << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0)));
 
+    QTest::newRow("simple wo items")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0)
+                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0))
+
+            << QList<Item>()
+            << Date(2015, 8, 10)
+            << Date(2015, 8, 11)
+
+            << (QList<SaleHistory>()
+                << (SaleHistory(Item(ID("storage1"), ID("product1")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0))
+                << (SaleHistory(Item(ID("storage1"), ID("product2")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0))
+            << (SaleHistory(Item(ID("storage2"), ID("product2")))
+                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)));
+
+
     QTest::newRow("empty Item")
             << (QList<SaleHistoryDay>()
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)

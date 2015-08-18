@@ -14,9 +14,22 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
 
 bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 {
-    if(items_.isEmpty())
+    QString itemsCase;
+    if(!items_.isEmpty())
     {
-        return false;
+        QString product;
+        QString storage;
+        foreach (const Item &item, items_)
+        {
+            product += "'" + item.product() + "', ";
+            storage += "'" + item.storage() + "', ";
+        }
+        product = product.left(product.length()-2);
+        storage = storage.left(storage.length()-2);
+
+        itemsCase = QString("f_storage in (" + storage + ") "
+                           "and f_product in (" + product + ") ");
+
     }
     from_ = from;
     to_ = to;
@@ -25,38 +38,19 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 
     if(from_ == Date() && to_ == Date())
     {
-        QString product;
-        QString storage;
-        foreach (const Item &item, items_)
-        {
-            product += "'" + item.product() + "', ";
-            storage += "'" + item.storage() + "', ";
-        }
-        product = product.left(product.length()-2);
-        storage = storage.left(storage.length()-2);
-
+        const QString where(items_.isEmpty()?"":"where ");
         query_.prepare("select f_storage, "
                       "f_product, "
                       "f_date, "
                       "f_sold, "
                       "f_rest "
                       "from t_datas "
-                      "where f_storage in (" + storage + ") "
-                      "and f_product in (" + product + ") "
+                      + where + itemsCase +
                       "order by f_storage, f_product, f_date;");
     }
     else
     {
-        QString product;
-        QString storage;
-        foreach (const Item &item, items_)
-        {
-            product += "'" + item.product() + "', ";
-            storage += "'" + item.storage() + "', ";
-        }
-        product = product.left(product.length()-2);
-        storage = storage.left(storage.length()-2);
-
+        const QString andCase(items_.isEmpty()?"":"and ");
         query_.prepare("select f_storage, "
                       "f_product, "
                       "f_date, "
@@ -64,13 +58,12 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
                       "f_rest "
                       "from t_datas "
                       "where f_date >= :fromDate and f_date <= :toDate "
-                      "and f_storage in (" + storage + ") "
-                      "and f_product in (" + product + ") "
+                      + andCase + itemsCase +
                       "order by f_storage, f_product, f_date;");
-
         query_.bindValue(":fromDate", from_.toString("yyyy.MM.dd"));
         query_.bindValue(":toDate", to_.toString("yyyy.MM.dd"));
     }
+
     if(!query_.exec())
     {
         return false;
@@ -80,30 +73,43 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     {
         return false;
     }
-    return true;
+    return query_.next();
 }
 
 bool SalesHistoryStreamReader::next()
 {
+    if(items_.isEmpty())
+    {
+        return query_.next();
+    }
+
     currentIndex_++;
     if(currentIndex_ < items_.count())
     {
-        return true;
+        return query_.next();
     }
     return false;
 }
 
 SaleHistory SalesHistoryStreamReader::current()
 {
-    const Item item = items_.at(currentIndex_);
-    SaleHistory history(item);
+    SaleHistory history;
+    if(!items_.isEmpty())
+    {
+        const Item item = items_.at(currentIndex_);
+        history = SaleHistory(item);
+    }
 
-    while(query_.next())
+    do
     {
         const QString storage = query_.value(0).toString();
         const QString product = query_.value(1).toString();
         const Item temp(storage, product);
-        if(item != temp)
+        if(!history.item().isValid())
+        {
+            history = SaleHistory(temp);
+        }
+        if(history.item() != temp)
         {
             query_.previous();
             return history;
@@ -111,7 +117,7 @@ SaleHistory SalesHistoryStreamReader::current()
         const QDate date = query_.value(2).toDate();
         const double sold = query_.value(3).toDouble();
         const double rest = query_.value(4).toDouble();
-        history.addDay(SaleHistoryDay(item, date, sold, rest));
-    }
+        history.addDay(SaleHistoryDay(history.item(), date, sold, rest));
+    } while(query_.next());
     return history;
 }
