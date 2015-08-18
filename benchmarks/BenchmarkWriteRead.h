@@ -9,6 +9,7 @@
 #include "SaleHistoryGenerator.h"
 #include "SaleHistoryWriter.h"
 #include "SalesHistoryStreamReader.h"
+#include "CsvFile.h"
 
 class BenchmarkWriteRead
 {

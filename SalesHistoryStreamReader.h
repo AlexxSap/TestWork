@@ -2,6 +2,7 @@
 #define SALESHISTORYSTREAMREADER_H
 
 #include <QSqlError>
+#include <QDebug>
 
 #include "SaleHistory.h"
 #include "DataBase.h"
@@ -15,13 +16,7 @@ private:
     int currentIndex_;
     QDate from_;
     QDate to_;
-    int limit_;
-    int offset_;
     QString select_;
-
-private:
-    bool nextQueryByOffset();
-    bool nextRecord();
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);

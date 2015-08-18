@@ -10,11 +10,11 @@
 Добавлен индекс i_datas	146	793         323	4478        1080 8010       1085 7976
 (выигрыш в чтении находится в рамках отклонения, не использовать)
 Изменение селект-запроса в методе SalesHistoryStreamReader::open
-                        116	15          293	50          912	140         931	143     43 min	14 min
+                        116	15          293	42          912	140         931	143     43 min	14 min
 Исравление ошибки бенчмарка
-                        126	1           330	4           1055 6          1038 5
+                        126	15          330	42          1055 140        1038 143
 Изменение записи в БД на пакетную
-                        37	1           113	4           345	5           347	7       14 min	0.7 min
+                        37	15          113	42          345	140         347	143     15 min	7 min
 
 */
 
@@ -23,6 +23,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
     const QString dbName("TestDBase.db");
+    const QString fileName("file.csv");
 
     qInfo() << "-------Benchmark for write and read data-------" << endl
             << days << " days, "
@@ -32,6 +33,12 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     if(!TestUtility::removeFile(dbName))
     {
         qWarning() << "cannot remove test-db in begining of benchmark";
+        return;
+    }
+
+    if(!TestUtility::removeFile(fileName))
+    {
+        qWarning() << "cannot remove test-file in begining of benchmark";
         return;
     }
 
@@ -45,14 +52,29 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     bool result = false;
     {
         const SaleHistoryGenerator gen;
-        const QList<SaleHistoryDay> list = gen.generateHistory(fromDate,
-                                                               toDate,
+
+        for(Date date = fromDate; date < toDate; date = date.addMonths(2).addDays(1))
+        {
+            qInfo() << "prepare data" << date <<  date.addMonths(2);
+            const QList<SaleHistoryDay> list = gen.generateHistory(date,
+                                                               date.addMonths(2),
                                                                storages,
                                                                products);
-        SaleHistoryWriter writer(dbName);
 
+            qInfo() << "write data to file" << date <<  date.addMonths(2);
+            bool isWrited = CsvFile::write(list, fileName);
+            if(!isWrited)
+            {
+                qWarning() << "cannot write to file";
+                return;
+            }
+            qInfo() << "writed";
+        }
+
+        SaleHistoryWriter writer(dbName);
         timer.start();
-        result = writer.write(list);
+        qInfo() << "import from file";
+        result = writer.importFromFile(fileName);
         qInfo() << "write............." << timer.elapsed() << "ms";
     }
     if(!result)
@@ -65,32 +87,45 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         SalesHistoryStreamReader reader(QList<Item>(), dbName);
 
         timer.start();
+        qInfo() << "open reader";
         bool isOpen = reader.open(Date(), Date());
         const int openTime = timer.elapsed();
 
         if(!isOpen)
         {
             TestUtility::removeFile(dbName);
+            TestUtility::removeFile(fileName);
             qWarning() << "something wrong with opening SalesHistoryStreamReader";
             return;
         }
-//        QList<SaleHistory> list;
         timer.start();
+        qInfo() << "begin read";
+        int counter = 0;
         do
         {
             const SaleHistory history = reader.current();
-//            list.append(history);
+            counter++;
+            if(counter%1000 == 0)
+            {
+                qInfo() << "SaleHistory - " << counter;
+            }
         } while (reader.next());
 
         qInfo() << "read.............."
                 << timer.elapsed() + openTime << "ms";
     }
 
-    if(!TestUtility::removeFile(dbName))
-    {
-        qWarning() << "cannot remove test-db in ending of benchmark";
-        return;
-    }
+//    if(!TestUtility::removeFile(dbName))
+//    {
+//        qWarning() << "cannot remove test-db in ending of benchmark";
+//        return;
+//    }
+
+//    if(!TestUtility::removeFile(fileName))
+//    {
+//        qWarning() << "cannot remove test-file in ending of benchmark";
+//        return;
+//    }
 
     qInfo() << "----End of benchmark for write and read data---" << endl;
 }

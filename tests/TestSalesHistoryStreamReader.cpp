@@ -58,6 +58,13 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         QFAIL("cannot remove test-db in ending of test");
     }
 
+    bool res = actList == expList;
+
+    if(!res)
+    {
+        qInfo() << "actList - " << actList;
+        qInfo() << "expList - " << expList;
+    }
     QCOMPARE(actList, expList);
 }
 
@@ -130,9 +137,8 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0))
                 << (SaleHistory(Item(ID("storage1"), ID("product2")))
                     << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0))
-            << (SaleHistory(Item(ID("storage2"), ID("product2")))
-                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)));
-
+                << (SaleHistory(Item(ID("storage2"), ID("product2")))
+                    << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)));
 
     QTest::newRow("empty Item")
             << (QList<SaleHistoryDay>()
@@ -153,4 +159,62 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)));
+
+
+    QTest::newRow("empty Item")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0)
+                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0))
+
+            << QList<Item>()
+            << Date()
+            << Date()
+
+            << (QList<SaleHistory>()
+                << (SaleHistory(Item(ID("storage1"), ID("product1")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0))
+
+                << (SaleHistory(Item(ID("storage1"), ID("product2")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0))
+
+                << (SaleHistory(Item(ID("storage2"), ID("product2")))
+                    << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)));
+
+    QTest::newRow("diff Items")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0)
+                << SaleHistoryDay(Item(ID("storage2"), ID("product3")), Date(2015, 8, 10), 2.0, 1.0))
+
+            << (QList<Item>() << Item(ID("storage2"), ID("product2")))
+            << Date()
+            << Date()
+
+            << (QList<SaleHistory>()
+                << SaleHistory(Item(ID("storage2"), ID("product2"))));
+
+    QTest::newRow("diff Items 2")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("storage2"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 11), 20.0, 10.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
+                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0))
+
+            << (QList<Item>() << Item(ID("storage1"), ID("product2")) << Item(ID("storage2"), ID("product1")))
+            << Date()
+            << Date()
+
+            << (QList<SaleHistory>()
+                << (SaleHistory(Item(ID("storage1"), ID("product2")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 11), 20.0, 10.0))
+                << (SaleHistory(Item(ID("storage2"), ID("product1")))
+                    << SaleHistoryDay(Item(ID("storage2"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)));
+
 }

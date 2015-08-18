@@ -28,14 +28,15 @@ int main()
     TestSaleHistory testSaleHistory;
     test += QTest::qExec(&testSaleHistory);
 
+    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+    test += QTest::qExec(&testSalesHistoryStreamReader);
+
     TestSaleHistoryGenerator testSaleHistoryGenerator;
     test += QTest::qExec(&testSaleHistoryGenerator);
 
     TestSaleHistoryParser testSaleHistoryParser;
     test += QTest::qExec(&testSaleHistoryParser);
 
-    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-    test += QTest::qExec(&testSalesHistoryStreamReader);
 
     TestCsvFile testCsvFile;
     test += QTest::qExec(&testCsvFile);
@@ -44,14 +45,14 @@ int main()
     {
 //        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
-//        BenchmarkWriteRead::run(720, 10, 10000);
+        BenchmarkWriteRead::run(40, 10, 1000);
 
-        BenchmarkWriteRead::run(30, 1, 100);
-        BenchmarkWriteRead::run(90, 1, 100);
-        BenchmarkWriteRead::run(30, 10, 100);
-        BenchmarkWriteRead::run(30, 1, 1000);
+//        BenchmarkWriteRead::run(30, 1, 100);
+//        BenchmarkWriteRead::run(90, 1, 100);
+//        BenchmarkWriteRead::run(30, 10, 100);
+//        BenchmarkWriteRead::run(30, 1, 1000);
     }
-    return 0;
+    return test;
 #else
     QApplication a(argc, argv);
     MainWindow w;

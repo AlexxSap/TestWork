@@ -10,11 +10,22 @@ void TestCsvFile::testCsvFile()
     QFETCH(QList<SaleHistoryDay>, inData);
     QFETCH(QList<SaleHistoryDay>, expData);
 
-    const QString fileName("test.csv");
+    const QString fileName(QString(QTest::currentDataTag()) + "Test.csv");
+    const QString dbName(QString(QTest::currentDataTag()) + "TestDB.db");
 
     if(!TestUtility::removeFile(fileName))
     {
         QFAIL("cannot remove test-file in begining of test");
+    }
+
+    if(!TestUtility::removeFile(dbName))
+    {
+        QFAIL("cannot remove test-db in begining of test");
+    }
+
+    if(!TestUtility::createTestDB(dbName))
+    {
+        QFAIL("cannot create test-db");
     }
 
     const bool isWrite = CsvFile::write(inData, fileName);
@@ -25,12 +36,45 @@ void TestCsvFile::testCsvFile()
 
     const QList<SaleHistoryDay> actData = CsvFile::read(fileName);
 
+    QCOMPARE(actData, expData);
+
+    {
+        SaleHistoryWriter writer(dbName);
+        bool isWritedToDb = writer.importFromFile(fileName);
+
+        if(!isWritedToDb)
+        {
+            QFAIL(QString("cannot write to file " + fileName).toLocal8Bit());
+        }
+    }
+    {
+        SalesHistoryStreamReader reader(QList<Item>(), dbName);
+        const bool isOpen = reader.open(Date(), Date());
+        if(!isOpen)
+        {
+            QFAIL(QString("cannot open db " + dbName).toLocal8Bit());
+        }
+
+        QList<SaleHistoryDay> days;
+        do
+        {
+            days.append(reader.current().days());
+        }
+        while(reader.next());
+
+        bool isEqual = TestUtility::compareListWithoutOrder(days, expData);
+        QVERIFY(isEqual);
+    }
+
+    if(!TestUtility::removeFile(dbName))
+    {
+        QFAIL("cannot remove test-db in begining of test");
+    }
+
     if(!TestUtility::removeFile(fileName))
     {
         QFAIL("cannot remove test-file in ending of test");
     }
-
-    QCOMPARE(actData, expData);
 }
 
 void TestCsvFile::testCsvFile_data()

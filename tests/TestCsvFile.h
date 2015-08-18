@@ -6,6 +6,8 @@
 
 #include "CsvFile.h"
 #include "TestUtility.h"
+#include "SalesHistoryStreamReader.h"
+#include "SaleHistoryWriter.h"
 
 class TestCsvFile : public QObject
 {

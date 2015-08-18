@@ -40,11 +40,16 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
 
         for(int j = i; j < i + delta ; j++)
         {
-            storageList << days.at(j).item().storage();
-            productList << days.at(j).item().product();
-            dateList << days.at(j).date().toString("yyyy.MM.dd");
-            soldList << days.at(j).sold();
-            restList << days.at(j).rest();
+            const SaleHistoryDay day = days.at(j);
+            if(day.isValid())
+            {
+            storageList << day.item().storage();
+            productList << day.item().product();
+            dateList << day.date().toString("yyyy.MM.dd");
+            soldList << day.sold();
+            restList << day.rest();
+            }
+
         }
         i += delta;
 
@@ -61,6 +66,8 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         if(!query.execBatch())
         {
             db_.rollbackTransaction();
+            qInfo() << query.lastError().text();
+            qInfo() << query.lastQuery();
             return false;
         }
         db_.commitTransaction();
@@ -70,4 +77,64 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
     //    return query.exec("analyze t_datas;");
 
     return true;
+}
+
+bool SaleHistoryWriter::writeBuffer(const QStringList &list)
+{
+    SaleHistoryParser parser;
+    if(list.isEmpty())
+    {
+        return true;
+    }
+
+    QList<SaleHistoryDay> days = parser.parse(list);
+
+    if(!parser.isValid())
+    {
+        return false;
+    }
+    return write(days);
+}
+
+bool SaleHistoryWriter::importFromFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+
+    QTextStream ts(&file);
+    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
+
+    const int size = 10000;
+    int counter = 0;
+    QStringList bufferList;
+
+    while(!ts.atEnd())
+    {
+        counter++;
+        const QString buffer = ts.readLine().trimmed();
+        if(!buffer.isEmpty())
+        {
+            bufferList.append(buffer);
+        }
+
+        if(counter == size )
+        {
+            qInfo() << "write" << counter;
+            counter = 0;
+
+            bool isWited = writeBuffer(bufferList);
+            if(!isWited)
+            {
+                file.close();
+                return false;
+            }
+            bufferList.clear();
+        }
+    }
+    file.close();
+
+    return writeBuffer(bufferList);
 }

@@ -8,8 +8,6 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       currentIndex_(0),
       from_(),
       to_(),
-      limit_(1000000),
-      offset_(0),
       select_()
 {
 
@@ -34,7 +32,7 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
         storage = storage.left(storage.length()-2);
 
         itemCase = QString("f_storage in (" + storage + ") "
-                                                                "and f_product in (" + product + ") ");
+                           "and f_product in (" + product + ") ");
     }
 
     if(from_ == Date() && to_ == Date())
@@ -47,8 +45,7 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
                           "f_rest "
                           "from t_datas "
                           + where + itemCase +
-                          "order by f_storage, f_product, f_date "
-                          "limit :limit offset :offset;");
+                          "order by f_storage, f_product, f_date;");
     }
     else
     {
@@ -61,28 +58,18 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
                           "from t_datas "
                           "where f_date >= '%1' and f_date <= '%2' "
                           + andCase + itemCase +
-                          "order by f_storage, f_product, f_date "
-                          "limit :limit offset :offset;");
+                          "order by f_storage, f_product, f_date;");
         select_ = select_.arg(from_.toString("yyyy.MM.dd"))
                          .arg(to_.toString("yyyy.MM.dd"));
     }
     query_ = db_.getAssociatedQuery();
 
-    return nextQueryByOffset();
-}
-
-
-bool SalesHistoryStreamReader::nextQueryByOffset()
-{
-    query_.clear();
-    query_.prepare(select_);
-    query_.bindValue(":limit", limit_);
-    query_.bindValue(":offset", offset_);
-
-    offset_ += limit_;
-
-    if(!query_.exec())
+    if(!query_.exec(select_))
     {
+        qWarning() << query_.lastError().text();
+        qWarning() << query_.lastQuery();
+        qWarning() << query_.boundValues();
+
         return false;
     }
 
@@ -90,14 +77,11 @@ bool SalesHistoryStreamReader::nextQueryByOffset()
     {
         return false;
     }
-    return query_.next();
-}
 
-bool SalesHistoryStreamReader::nextRecord()
-{
     if(!query_.next())
     {
-        return nextQueryByOffset();
+        qWarning() << "fail query_.next()";
+        return false;
     }
     return true;
 }
@@ -106,13 +90,13 @@ bool SalesHistoryStreamReader::next()
 {
     if(items_.isEmpty())
     {
-        return nextRecord();
+        return query_.next();
     }
 
     currentIndex_++;
     if(currentIndex_ < items_.count())
     {
-        return nextRecord();
+        return query_.next();
     }
     return false;
 }
@@ -144,6 +128,6 @@ SaleHistory SalesHistoryStreamReader::current()
         const double sold = query_.value(3).toDouble();
         const double rest = query_.value(4).toDouble();
         history.addDay(SaleHistoryDay(history.item(), date, sold, rest));
-    } while(nextRecord());
+    } while(query_.next());
     return history;
 }

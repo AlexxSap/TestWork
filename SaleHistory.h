@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QMetaType>
+#include <QDebug>
 
 #include "Item.h"
 #include "SaleHistoryDay.h"
@@ -50,5 +51,10 @@ Q_DECLARE_METATYPE(SaleHistory)
 
 bool operator != (const SaleHistory &left, const SaleHistory &right);
 bool operator == (const SaleHistory &left, const SaleHistory &right);
+
+inline QDebug& operator <<(QDebug &debug, const SaleHistory &history)
+{
+   debug << "Item(" << history.item().storage() << ";" << history.item().product() + ")";
+}
 
 #endif // SALEHISTORY_H

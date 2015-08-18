@@ -80,19 +80,3 @@ bool TestUtility::createTestDB(const QString &dbName)
     QSqlDatabase::removeDatabase(connName);
     return true;
 }
-
-bool TestUtility::compareListWithoutOrder(const QStringList &act, const QStringList &exp)
-{
-    if(act.count() != exp.count())
-    {
-        return false;
-    }
-    foreach (const QString &str, exp)
-    {
-        if(!act.contains(str))
-        {
-            return false;
-        }
-    }
-    return true;
-}
