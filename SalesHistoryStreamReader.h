@@ -15,9 +15,16 @@ private:
     int currentIndex_;
     QDate from_;
     QDate to_;
+    int limit_;
+    int offset_;
+    QString select_;
+
+private:
+    bool nextQueryByOffset();
+    bool nextRecord();
 
 public:
-    explicit SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);
+    SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);
 
     /// перед чтением указывает откуда и докуда будем читать
     /// from и to могут принимать значения Date(), в этом случае читаем от

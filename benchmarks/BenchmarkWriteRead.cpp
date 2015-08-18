@@ -42,13 +42,13 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     }
 
     QElapsedTimer timer;
-    const SaleHistoryGenerator gen;
-    const QList<SaleHistoryDay> list = gen.generateHistory(fromDate,
-                                                           toDate,
-                                                           storages,
-                                                           products);
     bool result = false;
     {
+        const SaleHistoryGenerator gen;
+        const QList<SaleHistoryDay> list = gen.generateHistory(fromDate,
+                                                               toDate,
+                                                               storages,
+                                                               products);
         SaleHistoryWriter writer(dbName);
 
         timer.start();

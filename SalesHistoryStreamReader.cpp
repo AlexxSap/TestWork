@@ -7,14 +7,20 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       query_(),
       currentIndex_(0),
       from_(),
-      to_()
+      to_(),
+      limit_(1000000),
+      offset_(0),
+      select_()
 {
 
 }
 
 bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 {
-    QString itemsCase;
+    from_ = from;
+    to_ = to;
+
+    QString itemCase;
     if(!items_.isEmpty())
     {
         QString product;
@@ -27,42 +33,53 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
         product = product.left(product.length()-2);
         storage = storage.left(storage.length()-2);
 
-        itemsCase = QString("f_storage in (" + storage + ") "
-                           "and f_product in (" + product + ") ");
-
+        itemCase = QString("f_storage in (" + storage + ") "
+                                                                "and f_product in (" + product + ") ");
     }
-    from_ = from;
-    to_ = to;
-
-    query_ = db_.getAssociatedQuery();
 
     if(from_ == Date() && to_ == Date())
     {
         const QString where(items_.isEmpty()?"":"where ");
-        query_.prepare("select f_storage, "
-                      "f_product, "
-                      "f_date, "
-                      "f_sold, "
-                      "f_rest "
-                      "from t_datas "
-                      + where + itemsCase +
-                      "order by f_storage, f_product, f_date;");
+        select_ = QString("select f_storage, "
+                          "f_product, "
+                          "f_date, "
+                          "f_sold, "
+                          "f_rest "
+                          "from t_datas "
+                          + where + itemCase +
+                          "order by f_storage, f_product, f_date "
+                          "limit :limit offset :offset;");
     }
     else
     {
         const QString andCase(items_.isEmpty()?"":"and ");
-        query_.prepare("select f_storage, "
-                      "f_product, "
-                      "f_date, "
-                      "f_sold, "
-                      "f_rest "
-                      "from t_datas "
-                      "where f_date >= :fromDate and f_date <= :toDate "
-                      + andCase + itemsCase +
-                      "order by f_storage, f_product, f_date;");
-        query_.bindValue(":fromDate", from_.toString("yyyy.MM.dd"));
-        query_.bindValue(":toDate", to_.toString("yyyy.MM.dd"));
+        select_ = QString("select f_storage, "
+                          "f_product, "
+                          "f_date, "
+                          "f_sold, "
+                          "f_rest "
+                          "from t_datas "
+                          "where f_date >= '%1' and f_date <= '%2' "
+                          + andCase + itemCase +
+                          "order by f_storage, f_product, f_date "
+                          "limit :limit offset :offset;");
+        select_ = select_.arg(from_.toString("yyyy.MM.dd"))
+                         .arg(to_.toString("yyyy.MM.dd"));
     }
+    query_ = db_.getAssociatedQuery();
+
+    return nextQueryByOffset();
+}
+
+
+bool SalesHistoryStreamReader::nextQueryByOffset()
+{
+    query_.clear();
+    query_.prepare(select_);
+    query_.bindValue(":limit", limit_);
+    query_.bindValue(":offset", offset_);
+
+    offset_ += limit_;
 
     if(!query_.exec())
     {
@@ -76,17 +93,26 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     return query_.next();
 }
 
+bool SalesHistoryStreamReader::nextRecord()
+{
+    if(!query_.next())
+    {
+        return nextQueryByOffset();
+    }
+    return true;
+}
+
 bool SalesHistoryStreamReader::next()
 {
     if(items_.isEmpty())
     {
-        return query_.next();
+        return nextRecord();
     }
 
     currentIndex_++;
     if(currentIndex_ < items_.count())
     {
-        return query_.next();
+        return nextRecord();
     }
     return false;
 }
@@ -118,6 +144,6 @@ SaleHistory SalesHistoryStreamReader::current()
         const double sold = query_.value(3).toDouble();
         const double rest = query_.value(4).toDouble();
         history.addDay(SaleHistoryDay(history.item(), date, sold, rest));
-    } while(query_.next());
+    } while(nextRecord());
     return history;
 }
