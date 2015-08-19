@@ -1,7 +1,8 @@
 #include "SaleHistoryWriter.h"
 
 SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
-    :db_(dbName)
+    :db_(dbName),
+      bufferSize_(100000)
 {
 
 }
@@ -107,7 +108,7 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     QTextStream ts(&file);
     ts.setCodec(QTextCodec::codecForName("Windows-1251"));
 
-    const int size = 10000;
+    const int size = 1000000;
     int counter = 0;
     QStringList bufferList;
 
@@ -122,8 +123,9 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
 
         if(counter == size )
         {
-            qInfo() << "write" << counter;
             counter = 0;
+
+            qInfo() << "imported " << size;
 
             bool isWited = writeBuffer(bufferList);
             if(!isWited)
@@ -137,4 +139,9 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     file.close();
 
     return writeBuffer(bufferList);
+}
+
+void SaleHistoryWriter::setBufferSize(const int size)
+{
+
 }

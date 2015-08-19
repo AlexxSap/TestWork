@@ -36,7 +36,7 @@ Q_DECLARE_METATYPE(Item)
 bool operator!= (const Item &left, const Item &right);
 bool operator== (const Item &left, const Item &right);
 
-inline QDebug& operator<<(QDebug &debug, const Item &item)
+inline QDebug& operator <<(QDebug &debug, const Item &item)
 {
    debug << item.toString();
    return debug;

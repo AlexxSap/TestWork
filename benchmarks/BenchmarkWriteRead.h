@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QTest>
 
 #include "SaleHistoryDay.h"
 #include "tests/TestUtility.h"

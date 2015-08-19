@@ -77,29 +77,30 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 
     if(from_ == Date() && to_ == Date())
     {
-        select_ = QString("select t_datas.f_storage, "
-                          "t_datas.f_product, "
+        select_ = QString("select t_temp_items.f_storage, "
+                          "t_temp_items.f_product, "
                           "t_datas.f_date, "
                           "t_datas.f_sold, "
                           "t_datas.f_rest "
-                          "from t_datas "
-                          "inner join t_temp_items "
-                          "on t_datas.f_storage = t_temp_items.f_storage "
-                          "and t_datas.f_product = t_temp_items.f_product "
+                          "from t_temp_items "
+                          "left outer join t_datas "
+                          "on t_temp_items.f_storage = t_datas.f_storage "
+                          "and t_temp_items.f_product = t_datas.f_product "
                           "order by t_datas.f_storage, t_datas.f_product, t_datas.f_date;");
     }
     else
     {
-        select_ = QString("select t_datas.f_storage, "
-                          "t_datas.f_product, "
+        select_ = QString("select t_temp_items.f_storage, "
+                          "t_temp_items.f_product, "
                           "t_datas.f_date, "
                           "t_datas.f_sold, "
                           "t_datas.f_rest "
-                          "from t_datas "
-                          "inner join t_temp_items "
-                          "on t_datas.f_storage = t_temp_items.f_storage "
-                          "and t_datas.f_product = t_temp_items.f_product "
-                          "where t_datas.f_date >= '%1' and t_datas.f_date <= '%2' "
+                          "from t_temp_items "
+                          "left outer join t_datas "
+                          "on t_temp_items.f_storage = t_datas.f_storage "
+                          "and t_temp_items.f_product = t_datas.f_product "
+                          "where (t_datas.f_date >= '%1' and t_datas.f_date <= '%2') "
+                          "or t_datas.f_date is null "
                           "order by t_datas.f_storage, t_datas.f_product, t_datas.f_date;");
         select_ = select_.arg(from_.toString("yyyy.MM.dd"))
                 .arg(to_.toString("yyyy.MM.dd"));
@@ -149,16 +150,19 @@ SaleHistory SalesHistoryStreamReader::current()
     do
     {
         const Item tempItemp(query_.value(0).toString(), query_.value(1).toString());
+
         if(item != tempItemp)
         {
             query_.previous();
             return history;
         }
-
-        const QDate date = query_.value(2).toDate();
-        const double sold = query_.value(3).toDouble();
-        const double rest = query_.value(4).toDouble();
-        history.addDay(SaleHistoryDay(history.item(), date, sold, rest));
+        if(!query_.value(2).isNull() && !query_.value(3).isNull() && !query_.value(4).isNull())
+        {
+            const QDate date = query_.value(2).toDate();
+            const double sold = query_.value(3).toDouble();
+            const double rest = query_.value(4).toDouble();
+            history.addDay(SaleHistoryDay(history.item(), date, sold, rest));
+        }
     } while(query_.next());
     return history;
 }

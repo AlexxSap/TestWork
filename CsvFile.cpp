@@ -24,7 +24,6 @@ bool CsvFile::write(const QList<SaleHistoryDay> &days, const QString &fileName)
                 .arg(QString::number(day.sold(),'f',2))
                 .arg(QString::number(day.rest(),'f',2));
 
-//        file.write(QString(temp + "\r\n").toLocal8Bit());
           out << temp << "\n";
     }
     file.close();

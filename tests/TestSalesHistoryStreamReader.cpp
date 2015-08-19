@@ -33,6 +33,20 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
     }
     qInfo() << "data is writed";
 
+    if(caseItems.isEmpty())
+    {
+        foreach (const SaleHistoryDay &day, data)
+        {
+            const Item item = day.item();
+            if(!caseItems.contains(item))
+            {
+                caseItems.append(item);
+            }
+        }
+    }
+
+    qInfo() << caseItems;
+
     QList<SaleHistory> actList;
     {
         SalesHistoryStreamReader reader(caseItems, dbName);
@@ -156,7 +170,6 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)));
-
 
     QTest::newRow("empty case items")
             << (QList<SaleHistoryDay>()

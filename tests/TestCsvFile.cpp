@@ -42,8 +42,19 @@ void TestCsvFile::testCsvFile()
             QFAIL(QString("cannot write to file " + fileName).toLocal8Bit());
         }
     }
+
+    QList<Item> items;
+    foreach (const SaleHistoryDay &day, actData)
     {
-        SalesHistoryStreamReader reader(QList<Item>(), dbName);
+        const Item item = day.item();
+        if(!items.contains(item))
+        {
+            items.append(item);
+        }
+    }
+
+    {
+        SalesHistoryStreamReader reader(items, dbName);
         const bool isOpen = reader.open(Date(), Date());
         if(!isOpen)
         {
