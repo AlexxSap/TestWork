@@ -5,12 +5,17 @@
 #include <QSqlQueryModel>
 #include <QSqlQuery>
 #include <QString>
+#include <QFile>
 
 class DataBase
 {
 private:
     QString dbName_;
     QSqlDatabase db_;
+
+private:
+    bool createEmptyDB();
+    bool executeQuery(QSqlDatabase &db, const QString &request);
 
 protected:
     bool connect();

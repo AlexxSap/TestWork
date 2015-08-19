@@ -3,6 +3,10 @@
 DataBase::DataBase(const QString &dbName)
     :dbName_(dbName)
 {
+    if(!QFile::exists(dbName))
+    {
+        createEmptyDB();
+    }
     db_ = QSqlDatabase::addDatabase("QSQLITE");
     db_.setDatabaseName(dbName_);
     connect();
@@ -11,6 +15,59 @@ DataBase::DataBase(const QString &dbName)
 DataBase::~DataBase()
 {
     disconnect();
+}
+
+bool DataBase::createEmptyDB()
+{
+    const QString connName("createEmptyDB");
+    {
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
+        db.setDatabaseName(dbName_);
+        if(!db.open())
+        {
+            return false;
+        }
+        db.close();
+
+        if(!db.open())
+        {
+            return false;
+        }
+
+        if(!executeQuery(db, "create table t_datas("
+                         "f_storage text not null, "
+                         "f_product text not null, "
+                         "f_date real not null, "
+                         "f_sold real not null, "
+                         "f_rest real not null, "
+                         "primary key(f_storage, f_product, f_date));"))
+        {
+            return false;
+        }
+
+        if(!executeQuery(db, "PRAGMA temp_store = MEMORY;"))
+        {
+            return false;
+        }
+
+        db.close();
+    }
+    QSqlDatabase::removeDatabase(connName);
+    return true;
+}
+
+bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
+{
+    QSqlQuery query(db);
+    db.transaction();
+    bool res = query.exec(request);
+    if(!res)
+    {
+        db.rollback();
+        return false;
+    }
+    db.commit();
+    return res;
 }
 
 bool DataBase::connect()

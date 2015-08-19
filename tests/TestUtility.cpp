@@ -1,26 +1,5 @@
 #include "TestUtility.h"
 
-bool TestUtility::createTestDbStructure(QSqlDatabase &db)
-{
-    QSqlQuery query(db);
-    bool res = query.exec("create table t_datas("
-                          "f_storage text not null, "
-                          "f_product text not null, "
-                          "f_date real not null, "
-                          "f_sold real not null, "
-                          "f_rest real not null, "
-                          "primary key(f_storage, f_product, f_date));");
-    if(!res)
-    {
-        return false;
-    }
-    return true;
-
-//    res = query.exec("create index i_datas on t_datas "
-//                     "(f_storage, f_product, f_date asc);");
-//    return res;
-}
-
 bool TestUtility::createFile(const QString &fileName, const QStringList &data)
 {
     QFile file(fileName);
@@ -47,36 +26,5 @@ bool TestUtility::removeFile(const QString &fileName)
         }
     }
     QThread::msleep(100); // просто винда не всегда успевает удалить файл
-    return true;
-}
-
-bool TestUtility::createTestDB(const QString &dbName)
-{
-    const QString connName("testDB");
-    {
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
-        db.setDatabaseName(dbName);
-        if(!db.open())
-        {
-            return false;
-        }
-        db.close();
-
-        if(!db.open())
-        {
-            return false;
-        }
-
-        db.transaction();
-        if(!createTestDbStructure(db))
-        {
-            db.rollback();
-            return false;
-        }
-        db.commit();
-
-        db.close();
-    }
-    QSqlDatabase::removeDatabase(connName);
     return true;
 }
