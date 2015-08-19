@@ -42,12 +42,26 @@ Item SaleHistory::item() const
 
 Date SaleHistory::from() const
 {
-    return days_.firstKey();
+    if(!days_.isEmpty())
+    {
+        return days_.firstKey();
+    }
+    else
+    {
+        return Date();
+    }
 }
 
 Date SaleHistory::to() const
 {
-    return days_.lastKey();
+    if(!days_.isEmpty())
+    {
+        return days_.lastKey();
+    }
+    else
+    {
+        return Date();
+    }
 }
 
 void SaleHistory::addDay(const SaleHistoryDay &day)
@@ -114,10 +128,7 @@ bool SaleHistory::isValid() const
 
 QString SaleHistory::toString() const
 {
-    QString str("%1 - from '%2' to '%3'");
-    str = str.arg(item().toString())
-            .arg(from().toString("yyyy.MM.dd"))
-            .arg(to().toString("yyyy.MM.dd"));
+    QString str = item().toString();
 
     const QList<SaleHistoryDay> shDays = days();
     foreach (const SaleHistoryDay day, shDays)
