@@ -16,8 +16,6 @@ private:
 private:
     bool createEmptyDB();
     bool executeQuery(QSqlDatabase &db, const QString &request);
-
-protected:
     bool connect();
     bool disconnect();
 

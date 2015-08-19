@@ -42,12 +42,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         return;
     }
 
-    if(!TestUtility::createTestDB(dbName))
-    {
-        qWarning() << "cannot create test-db";
-        return;
-    }
-
     QElapsedTimer timer;
     bool result = false;
     {

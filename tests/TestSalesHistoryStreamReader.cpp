@@ -13,16 +13,11 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
     QFETCH(Date, caseDateTo);
     QFETCH(QList<SaleHistory> , expList);
 
-    const QString dbName("TestDBase.db");
+    const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
 
     if(!TestUtility::removeFile(dbName))
     {
         QFAIL("cannot remove test-db in begining of test");
-    }
-
-    if(!TestUtility::createTestDB(dbName))
-    {
-        QFAIL("cannot create test-db");
     }
 
     bool result = false;
@@ -36,6 +31,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         TestUtility::removeFile(dbName);
         QFAIL("cannot write data to db");
     }
+    qInfo() << "data is writed";
 
     QList<SaleHistory> actList;
     {
@@ -46,6 +42,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
             TestUtility::removeFile(dbName);
             QFAIL("something wrong with opening SalesHistoryStreamReader");
         }
+        qInfo() << "SalesHistoryStreamReader is open";
         do
         {
             const SaleHistory history = reader.current();
@@ -161,7 +158,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)));
 
 
-    QTest::newRow("empty Item")
+    QTest::newRow("empty case items")
             << (QList<SaleHistoryDay>()
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
@@ -185,7 +182,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                 << (SaleHistory(Item(ID("storage2"), ID("product2")))
                     << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)));
 
-    QTest::newRow("diff Items")
+    QTest::newRow("Item not found")
             << (QList<SaleHistoryDay>()
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
@@ -200,14 +197,15 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
             << (QList<SaleHistory>()
                 << SaleHistory(Item(ID("storage2"), ID("product2"))));
 
-    QTest::newRow("diff Items 2")
+    QTest::newRow("diff Items")
             << (QList<SaleHistoryDay>()
                 << SaleHistoryDay(Item(ID("storage2"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                 << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 11), 20.0, 10.0)
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
                 << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0))
 
-            << (QList<Item>() << Item(ID("storage1"), ID("product2")) << Item(ID("storage2"), ID("product1")))
+            << (QList<Item>() << Item(ID("storage1"), ID("product2"))
+                << Item(ID("storage2"), ID("product1")))
             << Date()
             << Date()
 

@@ -23,11 +23,6 @@ void TestCsvFile::testCsvFile()
         QFAIL("cannot remove test-db in begining of test");
     }
 
-    if(!TestUtility::createTestDB(dbName))
-    {
-        QFAIL("cannot create test-db");
-    }
-
     const bool isWrite = CsvFile::write(inData, fileName);
     if(!isWrite)
     {

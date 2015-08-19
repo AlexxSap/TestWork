@@ -13,10 +13,13 @@ private:
     QList<Item> items_;
     DataBase db_;
     QSqlQuery query_;
-    int currentIndex_;
     QDate from_;
     QDate to_;
     QString select_;
+
+private:
+    bool createTempItemsTable();
+    void deleteTempItemsTable();
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);
