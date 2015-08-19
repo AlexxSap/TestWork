@@ -80,6 +80,11 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             }
             qInfo() << "writed";
         }
+        for(int i = items.count() - 1 ; i >= 0; i -= 2)
+        {
+            items.removeAt(i);
+        }
+        qInfo() << "will select " <<  items.count() << "items";
 
         SaleHistoryWriter writer(dbName);
         timer.start();
