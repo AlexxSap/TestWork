@@ -16,21 +16,20 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
     QVariantList restList;
 
     int i = 0;
-    //затраты памяти при разных size
+    //затраты памяти при разных bufferSize_
     // при 1 млн - 530 мб
     // при 100к - 342 мб
     // при 10к - 322 мб
-    const int size = 100000;
     while(i < days.count())
     {
         int delta;
-        if(i + size >= days.count())
+        if(i + bufferSize_ >= days.count())
         {
             delta = days.count() - i;
         }
         else
         {
-            delta = size;
+            delta = bufferSize_;
         }
 
         storageList.clear();
@@ -108,7 +107,6 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     QTextStream ts(&file);
     ts.setCodec(QTextCodec::codecForName("Windows-1251"));
 
-    const int size = 1000000;
     int counter = 0;
     QStringList bufferList;
 
@@ -121,11 +119,9 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
             bufferList.append(buffer);
         }
 
-        if(counter == size )
+        if(counter == bufferSize_ )
         {
             counter = 0;
-
-            qInfo() << "imported " << size;
 
             bool isWited = writeBuffer(bufferList);
             if(!isWited)
@@ -143,5 +139,5 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
 
 void SaleHistoryWriter::setBufferSize(const int size)
 {
-
+    bufferSize_ = size;
 }
