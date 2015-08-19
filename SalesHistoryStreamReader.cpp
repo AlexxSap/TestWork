@@ -156,12 +156,16 @@ SaleHistory SalesHistoryStreamReader::current()
             query_.previous();
             return history;
         }
-        if(!query_.value(2).isNull() && !query_.value(3).isNull() && !query_.value(4).isNull())
+
+        const QVariant date = query_.value(2);
+        const QVariant sold = query_.value(3);
+        const QVariant rest = query_.value(4);
+        if(!date.isNull() && !sold.isNull() && !rest.isNull())
         {
-            const QDate date = query_.value(2).toDate();
-            const double sold = query_.value(3).toDouble();
-            const double rest = query_.value(4).toDouble();
-            history.addDay(SaleHistoryDay(history.item(), date, sold, rest));
+            history.addDay(SaleHistoryDay(history.item(),
+                                          date.toDate(),
+                                          sold.toDouble(),
+                                          rest.toDouble()));
         }
     } while(query_.next());
     return history;

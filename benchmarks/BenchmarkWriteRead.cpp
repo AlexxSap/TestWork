@@ -20,6 +20,38 @@
 
 */
 
+QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products, const int maxStogare, const int maxProduct)
+{
+    QString productPrefix_("prod_");
+    QString storagePrefix_("stor_");
+
+    QList<Item> list;
+    for(int storIndex = 0; storIndex < storages; storIndex++)
+    {
+        for(int prodIndex = 0; prodIndex < products; prodIndex++)
+        {
+            const int storNum = rand() % maxStogare;
+            const int prodNum = rand() % maxProduct;
+            const Item item(storagePrefix_ + QString::number(storNum),
+                      productPrefix_ + QString::number(prodNum));
+
+//            qInfo() << item.toString().toLocal8Bit();
+
+            if(list.contains(item))
+            {
+                prodIndex--;
+            }
+            else
+            {
+                list.append(item);
+//                qInfo() << list.count();
+
+            }
+        }
+    }
+    return list;
+}
+
 void BenchmarkWriteRead::run(const int &days, const int &storages, const int &products)
 {
     const Date fromDate = Date(2015, 1, 1);
@@ -48,7 +80,10 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     }
 
     QElapsedTimer timer;
-    QList<Item> items;
+    qInfo() << "prepare items list";
+    QList<Item> items = genRandomItemList(5, products/2, storages, products);
+    qInfo() << "will select " <<  items.count() << "items";
+
     bool result = false;
     {
         const SaleHistoryGenerator gen;
@@ -61,16 +96,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                                                                storages,
                                                                products);
 
-//            qInfo() << "write data to file" << date <<  date.addMonths(monthCount);
-
-            foreach (const SaleHistoryDay &day, list)
-            {
-                const Item item = day.item();
-                if(!items.contains(item))
-                {
-                    items.append(item);
-                }
-            }
+            qInfo() << "write data to file" << date <<  date.addMonths(monthCount);
 
             bool isWrited = CsvFile::write(list, fileName);
             if(!isWrited)
@@ -80,13 +106,8 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                 qWarning() << "cannot write to file";
                 return;
             }
-//            qInfo() << "writed";
         }
-        for(int i = items.count() - 1 ; i >= 0; i -= 2)
-        {
-            items.removeAt(i);
-        }
-        qInfo() << "will select " <<  items.count() << "items";
+
 
         SaleHistoryWriter writer(dbName);
         timer.start();

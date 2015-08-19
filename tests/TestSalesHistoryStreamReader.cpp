@@ -45,7 +45,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         }
     }
 
-    qInfo() << caseItems;
+    //qInfo() << caseItems;
 
     QList<SaleHistory> actList;
     {
@@ -194,6 +194,20 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
 
                 << (SaleHistory(Item(ID("storage2"), ID("product2")))
                     << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)));
+
+    QTest::newRow("rests for skipped days")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0))
+
+            << QList<Item>()
+            << Date(2015, 8, 9)
+            << Date(2015, 8, 11)
+
+            << (QList<SaleHistory>()
+                << (SaleHistory(Item(ID("storage1"), ID("product1")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 9), 0.0, 0.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 0.0, 20.0)));
 
     QTest::newRow("Item not found")
             << (QList<SaleHistoryDay>()
