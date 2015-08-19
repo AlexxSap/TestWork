@@ -74,4 +74,21 @@ bool SaleHistoryDay::isValid() const
             && rest() >= 0.0);
 }
 
+QString SaleHistoryDay::toString() const
+{
+    QString str("%1 %2");
+    str = str.arg(item().toString())
+            .arg(toStringWoItem());
+    return str;
+}
+
+QString SaleHistoryDay::toStringWoItem() const
+{
+    QString str("[%1;%2;%3]");
+    str = str.arg(date().toString("yyyy.MM.dd"))
+            .arg(QString::number(sold(),'f',2))
+            .arg(QString::number(rest(),'f',2));
+    return str;
+}
+
 

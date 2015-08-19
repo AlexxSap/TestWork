@@ -2,6 +2,7 @@
 #define SALEHISTORYDAY_H
 
 #include <QMetaType>
+#include <QDebug>
 
 #include "Item.h"
 
@@ -24,11 +25,20 @@ public:
     Date date() const;
 
     bool isValid() const;
+
+    QString toString() const;
+    QString toStringWoItem() const;
 };
 
 Q_DECLARE_METATYPE(SaleHistoryDay)
 
 bool operator != (const SaleHistoryDay &left, const SaleHistoryDay &right);
 bool operator == (const SaleHistoryDay &left, const SaleHistoryDay &right);
+
+inline QDebug& operator<<(QDebug &debug, const SaleHistoryDay &day)
+{
+   debug << day.toString();
+   return debug;
+}
 
 #endif // SALEHISTORYDAY_H

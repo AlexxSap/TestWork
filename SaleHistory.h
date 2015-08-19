@@ -45,6 +45,8 @@ public:
     QList<SaleHistoryDay> days() const;
 
     bool isValid() const;
+
+    QString toString() const;
 };
 
 Q_DECLARE_METATYPE(SaleHistory)
@@ -52,9 +54,10 @@ Q_DECLARE_METATYPE(SaleHistory)
 bool operator != (const SaleHistory &left, const SaleHistory &right);
 bool operator == (const SaleHistory &left, const SaleHistory &right);
 
-inline QDebug& operator <<(QDebug &debug, const SaleHistory &history)
+inline QDebug& operator<<(QDebug &debug, const SaleHistory &history)
 {
-   debug << "Item(" << history.item().storage() << ";" << history.item().product() + ")";
+   debug << history.toString();
+   return debug;
 }
 
 #endif // SALEHISTORY_H

@@ -1,11 +1,11 @@
 #include "Item.h"
 
-bool operator != (const Item &left, const Item &right)
+bool operator!= (const Item &left, const Item &right)
 {
     return left.product() != right.product() || left.storage() != right.storage();
 }
 
-bool operator == (const Item &left, const Item &right)
+bool operator== (const Item &left, const Item &right)
 {
     return left.product() == right.product() && left.storage() == right.storage();
 }
@@ -51,5 +51,13 @@ Item &Item::operator=(const Item &anotherItem)
     storage_ = anotherItem.storage();
     product_ = anotherItem.product();
     return *this;
+}
+
+QString Item::toString() const
+{
+    QString str("Item(%1;%2)");
+    str = str.arg(storage())
+            .arg(product());
+    return str;
 }
 

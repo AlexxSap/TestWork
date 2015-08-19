@@ -4,6 +4,7 @@
 #include <QDate>
 #include <QString>
 #include <QMetaType>
+#include <QDebug>
 
 typedef double Amount;  // тип для выражения "кол-во товара"
 typedef QDate Date;     // дата
@@ -26,11 +27,19 @@ public:
     bool isValid() const;
 
     Item& operator = (const Item &anotherItem);
+
+    QString toString() const;
 };
 
 Q_DECLARE_METATYPE(Item)
 
-bool operator != (const Item &left, const Item &right);
-bool operator == (const Item &left, const Item &right);
+bool operator!= (const Item &left, const Item &right);
+bool operator== (const Item &left, const Item &right);
+
+inline QDebug& operator<<(QDebug &debug, const Item &item)
+{
+   debug << item.toString();
+   return debug;
+}
 
 #endif // ITEM_H

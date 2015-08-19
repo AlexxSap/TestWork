@@ -112,6 +112,21 @@ bool SaleHistory::isValid() const
     return (item().isValid() && !days_.isEmpty());
 }
 
+QString SaleHistory::toString() const
+{
+    QString str("%1 - from '%2' to '%3'");
+    str = str.arg(item().toString())
+            .arg(from().toString("yyyy.MM.dd"))
+            .arg(to().toString("yyyy.MM.dd"));
+
+    const QList<SaleHistoryDay> shDays = days();
+    foreach (const SaleHistoryDay day, shDays)
+    {
+        str += day.toStringWoItem();
+    }
+    return str;
+}
+
 SaleHistory::Day::Day()
     :sold_(0.0),
       rest_(0.0)
