@@ -11,6 +11,8 @@ QT       += core gui testlib sql widgets
 TARGET = TestWork
 TEMPLATE = app
 
+LIBS += -lpsapi
+
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -31,7 +33,9 @@ SOURCES += main.cpp\
     tests/TestUtility.cpp \
     CsvFile.cpp \
     tests/TestCsvFile.cpp \
-    benchmarks/BenchmarkWriteRead.cpp
+    benchmarks/BenchmarkWriteRead.cpp \
+    RamTracker/RamTracker.cpp \
+    RamTracker/Utils.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -51,4 +55,6 @@ HEADERS  += mainwindow.h \
     tests/TestUtility.h \
     CsvFile.h \
     tests/TestCsvFile.h \
-    benchmarks/BenchmarkWriteRead.h
+    benchmarks/BenchmarkWriteRead.h \
+    RamTracker/RamTracker.h \
+    RamTracker/Utils.h

@@ -1,5 +1,6 @@
 #include "BenchmarkWriteRead.h"
 /*
+------------------данные по замеру быстродействия ---------------
 результаты даны в мс                                                                чтение для 5к
 дни/склады/товары		30/1/100		90/1/100		30/10/100		30/1/1000   720/10/10000
 запись/чтение           З	Ч			З	Ч			З	Ч			З	Ч       з   ч
@@ -17,9 +18,17 @@
                         37	15          113	42          345	140         347	143     15 min	7 min
 Исправление бенчмарка и селекта в классе SalesHistoryStreamReader
                         250 33          722 77          2486 216        2964 216    150 min 5 min
-Исправление записи в файл
-                        255
 
+Исправление записи в файл и исправление перноса остатков
+                        227 10          454 44          1530 61         1547 125    120 min 1 min
+
+
+---------------даннеы по замеру использования памяти 720 дней 10 складов
+читаем с половины складов (если не 1) половину всех товаров за всё время
+запись_общее (только_процедура_записи) - чтение_общее (только_процедура_чтения)
+ 10 товаров         100 товаров            1000 товаров
+Исправление записи в файл и исправление перноса остатков
+ 17 (5) - 20 (3)    61 (43) - 53 (35)      64 (48) - 399 (372)
 */
 
 QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products)
@@ -40,8 +49,6 @@ QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int 
             const Item item(storagePrefix_ + QString::number(storNum),
                       productPrefix_ + QString::number(prodNum));
 
-//            qInfo() << item.toString().toLocal8Bit();
-
             if(list.contains(item))
             {
                 prodIndex--;
@@ -49,7 +56,6 @@ QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int 
             else
             {
                 list.append(item);
-//                qInfo() << list.count();
 
             }
         }
@@ -67,6 +73,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     qint64 writeTime = 0;
     qint64 readTime = 0;
 
+    QThread::msleep(100);
     qInfo() << "-------Benchmark for write and read data-------";
     qInfo() << days << " days, "
             << storages << " storages, "
@@ -116,8 +123,11 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
         SaleHistoryWriter writer(dbName);
         timer.start();
-        qInfo() << "import from file";
+        Utils::_runBenchmarking("write");
+
         result = writer.importFromFile(fileName);
+
+        Utils::_endBenchmarking("write");
         writeTime = timer.elapsed();
         qInfo() << "write............." << writeTime << "ms";
     }
@@ -144,22 +154,42 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             qWarning() << "something wrong with opening SalesHistoryStreamReader";
             return;
         }
-        timer.start();
+
         qInfo() << "begin read";
-//        int counter = 0;
+        Utils::_runBenchmarking("read");
+        timer.start();
+
+//        QList<SaleHistory> shList;
         do
         {
             const SaleHistory history = reader.current();
-//            counter++;
-//            if(counter%1000 == 0)
-//            {
-//                qInfo() << "SaleHistory - " << counter;
-//            }
+//            shList.append(history);
         } while (reader.next());
 
+
         readTime = timer.elapsed() + openTime;
+        Utils::_endBenchmarking("read");
         qInfo() << "read.............."
                 << readTime << "ms";
+
+//        QList<Item> actList;
+//        foreach (const SaleHistory &history, shList)
+//        {
+//            if(!actList.contains(history.item()))
+//            {
+//                actList.append(history.item());
+//            }
+//        }
+
+//        if(!TestUtility::compareListWithoutOrder(actList, items))
+//        {
+//            qWarning() << "item lists not equal";
+//            qWarning() << "writed list-------";
+//            qWarning() << items;
+//            qWarning() << "readed list-------";
+//            qWarning() << actList;
+
+//        }
     }
 
     if(!TestUtility::removeFile(dbName))

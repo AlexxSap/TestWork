@@ -42,10 +42,11 @@ int main()
 
     if(test == 0)
     {
-//        BenchmarkWriteRead::run(720, 10, 10);   //  40 mb
-//        BenchmarkWriteRead::run(720, 10, 100);  // 80 mb
-//        BenchmarkWriteRead::run(720, 10, 1000);   //58 mb 300 mb
-//        BenchmarkWriteRead::run(720, 10, 100);//14
+        BenchmarkWriteRead::run(720, 10, 10);
+        BenchmarkWriteRead::run(720, 10, 100);
+        BenchmarkWriteRead::run(720, 10, 1000);
+
+        //        BenchmarkWriteRead::run(720, 10, 100);//14
 //        BenchmarkWriteRead::run(720, 10, 200);//20
 //        BenchmarkWriteRead::run(720, 10, 300);//40
 

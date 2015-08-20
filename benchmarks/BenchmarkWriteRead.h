@@ -11,6 +11,7 @@
 #include "SaleHistoryWriter.h"
 #include "SalesHistoryStreamReader.h"
 #include "CsvFile.h"
+#include "RamTracker/Utils.h"
 
 class BenchmarkWriteRead
 {
