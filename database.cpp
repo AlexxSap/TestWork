@@ -34,26 +34,74 @@ bool DataBase::createEmptyDB()
             return false;
         }
 
-        if(!executeQuery(db, "create table t_datas("
+        //        if(!executeQuery(db, "create table t_datas("
+        //                         "f_storage text not null, "
+        //                         "f_product text not null, "
+        //                         "f_date real not null, "
+        //                         "f_sold real not null, "
+        //                         "f_rest real not null, "
+        //                         "primary key(f_storage, f_product, f_date));"))
+        //        {
+        //            return false;
+        //        }
+        //        if(!executeQuery(db, "create index i_datas_sp on t_datas("
+        //                         "f_storage, f_product);"))
+        //        {
+        //            return false;
+        //        }
+
+        //        if(!executeQuery(db, "create index i_datas_ord on t_datas("
+        //                         "f_storage, f_product, f_date);"))
+        //        {
+        //            return false;
+        //        }
+
+
+
+
+        if(!executeQuery(db, "create table t_items("
+                         "f_item integer primary key asc, "
                          "f_storage text not null, "
                          "f_product text not null, "
+                         "unique(f_storage, f_product));"))
+        {
+            return false;
+        }
+        if(!executeQuery(db, "create index i_items_sp on t_items"
+                         "(f_storage, f_product);"))
+        {
+            return false;
+        }
+
+
+        if(!executeQuery(db, "create table t_datas("
+                         "f_item integer, "
                          "f_date real not null, "
                          "f_sold real not null, "
                          "f_rest real not null, "
-                         "primary key(f_storage, f_product, f_date));"))
+                         "primary key(f_item, f_date),"
+                         "foreign key(f_item) references t_items(f_item));"))
         {
             return false;
         }
 
-        if(!executeQuery(db, "PRAGMA temp_store = MEMORY;"))
-        {
-            return false;
-        }
-
+        setPragmaParameters(db);
         db.close();
     }
     QSqlDatabase::removeDatabase(connName);
     return true;
+}
+
+void DataBase::setPragmaParameters(QSqlDatabase &db)
+{
+    QSqlQuery query(db);
+    db.transaction();
+    query.exec("PRAGMA temp_store = MEMORY;");
+    query.exec("PRAGMA synchronous = OFF;");
+    query.exec("PRAGMA count_changes = OFF;");
+    query.exec("PRAGMA journal_mode = WAL;");
+    query.exec("PRAGMA foreign_keys = ON;");
+    db.commit();
 }
 
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
@@ -92,11 +140,6 @@ bool DataBase::disconnect()
 bool DataBase::isConnected()
 {
     return db_.isOpen();
-}
-
-const QSqlQuery DataBase::get()
-{
-    return QSqlQuery();
 }
 
 QSqlQuery DataBase::getAssociatedQuery() const

@@ -18,6 +18,7 @@ private:
     bool executeQuery(QSqlDatabase &db, const QString &request);
     bool connect();
     bool disconnect();
+    void setPragmaParameters(QSqlDatabase &db);
 
 public:
     explicit DataBase(const QString &dbName);
@@ -25,12 +26,12 @@ public:
 
     bool isConnected();
 
-    const virtual QSqlQuery get();
     QSqlQuery getAssociatedQuery() const;
 
     void beginTransaction();
     void rollbackTransaction();
     void commitTransaction();
+
 };
 
 #endif // DATABASE_H

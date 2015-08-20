@@ -47,10 +47,10 @@ int main()
 //        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 
-        BenchmarkWriteRead::run(30, 1, 100);
-        BenchmarkWriteRead::run(90, 1, 100);
-        BenchmarkWriteRead::run(30, 10, 100);
-        BenchmarkWriteRead::run(30, 1, 1000);
+//        BenchmarkWriteRead::run(30, 1, 100);
+//        BenchmarkWriteRead::run(90, 1, 100);
+//        BenchmarkWriteRead::run(30, 10, 100);
+//        BenchmarkWriteRead::run(30, 1, 1000);
 
 //        BenchmarkWriteRead::runForBuffer(1000000);
 //        BenchmarkWriteRead::runForBuffer(100000);

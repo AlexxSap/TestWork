@@ -6,6 +6,7 @@
 #include <QTextCodec>
 #include <QDebug>
 #include <QSqlError>
+#include <QHash>
 
 #include "SaleHistoryDay.h"
 #include "DataBase.h"
@@ -16,9 +17,14 @@ class SaleHistoryWriter
 private:
     DataBase db_;
     int bufferSize_;
+    QHash<int, Item> itemTable_;
+    bool isFromFile_;
+    int maxId_;
 
 private:
     bool writeBuffer(const QStringList &list);
+    bool fillItemHashTable();
+    int getItemId(const Item &item);
 
 public:
     explicit SaleHistoryWriter(const QString &dbName);
