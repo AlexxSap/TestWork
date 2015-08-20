@@ -15,6 +15,10 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
     QVariantList soldList;
     QVariantList restList;
 
+    QSqlQuery query = db_.getAssociatedQuery();
+    query.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
+                  "values(?, ?, ?, ?, ?);");
+
     int i = 0;
     //затраты памяти при разных bufferSize_
     // при 1 млн - 530 мб
@@ -53,9 +57,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         }
         i += delta;
 
-        QSqlQuery query = db_.getAssociatedQuery();
-        query.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
-                      "values(?, ?, ?, ?, ?);");
         query.addBindValue(storageList);
         query.addBindValue(productList);
         query.addBindValue(dateList);

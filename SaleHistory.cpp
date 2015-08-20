@@ -138,6 +138,79 @@ QString SaleHistory::toString() const
     return str;
 }
 
+SaleHistory SaleHistory::normalaze(const Date &nFrom, const Date &nTo) const
+{
+    SaleHistory history(item_);
+
+    Date factFrom = from();
+    Date factTo = to();
+    Date normFrom = nFrom;
+    Date normTo = nTo;
+
+    if(factFrom == Date() && factTo == Date() && normFrom == Date() && normTo == Date())
+    {
+        return history;
+    }
+
+    if(nFrom == Date())
+    {
+        normFrom = factFrom;
+    }
+
+    if(nTo == Date())
+    {
+        normTo = factTo;
+    }
+
+    if(days_.isEmpty())
+    {
+        history.addDay(SaleHistoryDay(item_, normFrom, 0.0, 0.0));
+        factFrom = normFrom;
+        factTo = normFrom;
+    }
+
+    if(normFrom < factFrom)
+    {
+        for(Date d = normFrom; d < factFrom; d = d.addDays(1))
+        {
+            history.addDay(SaleHistoryDay(item_, d, 0.0, 0.0));
+        }
+    }
+
+    if(normTo > factTo)
+    {
+        Amount lastRest = 0.0;
+        if(!days_.isEmpty())
+        {
+            lastRest = days_.last().rest();
+        }
+        for(Date d = factTo.addDays(1); d <= normTo; d = d.addDays(1))
+        {
+            history.addDay(SaleHistoryDay(item_, d, 0.0, lastRest));
+        }
+    }
+
+    Amount prevRest = 0.0;
+    if(!days_.isEmpty())
+    {
+        prevRest = days_.value(factFrom).rest();
+    }
+    for(Date d = factFrom; d <= factTo; d = d.addDays(1))
+    {
+        if(days_.contains(d))
+        {
+            prevRest = days_.value(d).rest();
+            history.addDay(SaleHistoryDay(item_, d, days_.value(d).sold(), prevRest));
+        }
+        else
+        {
+            history.addDay(SaleHistoryDay(item_, d, 0.0, prevRest));
+        }
+    }
+
+    return history;
+}
+
 SaleHistory::Day::Day()
     :sold_(0.0),
       rest_(0.0)

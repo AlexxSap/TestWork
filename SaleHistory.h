@@ -47,6 +47,8 @@ public:
     bool isValid() const;
 
     QString toString() const;
+
+    SaleHistory normalaze(const Date &nFrom, const Date &nTo) const;
 };
 
 Q_DECLARE_METATYPE(SaleHistory)

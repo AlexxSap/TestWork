@@ -16,9 +16,7 @@ class BenchmarkWriteRead
 {
 private:
     static QList<Item> genRandomItemList(const int storages,
-                                  const int products,
-                                  const int maxStogare,
-                                  const int maxProduct);
+                                  const int products);
 public:
     static void run(const int &days, const int &storages, const int &products);
     static void runForBuffer(const int bufferSize);

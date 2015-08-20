@@ -28,9 +28,6 @@ int main()
     TestSaleHistory testSaleHistory;
     test += QTest::qExec(&testSaleHistory);
 
-    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-    test += QTest::qExec(&testSalesHistoryStreamReader);
-
     TestSaleHistoryGenerator testSaleHistoryGenerator;
     test += QTest::qExec(&testSaleHistoryGenerator);
 
@@ -39,6 +36,9 @@ int main()
 
     TestCsvFile testCsvFile;
     test += QTest::qExec(&testCsvFile);
+
+    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+    test += QTest::qExec(&testSalesHistoryStreamReader);
 
     if(test == 0)
     {
@@ -50,7 +50,7 @@ int main()
 //        BenchmarkWriteRead::run(720, 10, 300);//40
 
 
-                //        BenchmarkWriteRead::run(30, 1, 100);
+//        BenchmarkWriteRead::run(30, 1, 100);
 //        BenchmarkWriteRead::run(90, 1, 100);
 //        BenchmarkWriteRead::run(30, 10, 100);
 //        BenchmarkWriteRead::run(30, 1, 1000);

@@ -17,21 +17,26 @@
                         37	15          113	42          345	140         347	143     15 min	7 min
 Исправление бенчмарка и селекта в классе SalesHistoryStreamReader
                         250 33          722 77          2486 216        2964 216    150 min 5 min
+Исправление записи в файл
+                        255
 
 */
 
-QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products, const int maxStogare, const int maxProduct)
+QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products)
 {
     QString productPrefix_("prod_");
     QString storagePrefix_("stor_");
 
+    const int maxStogareCount = storages>1?storages/2:storages;
+    const int maxProductCount = products>1?products/2:products;
+
     QList<Item> list;
-    for(int storIndex = 0; storIndex < storages; storIndex++)
+    for(int storIndex = 0; storIndex < maxStogareCount; storIndex++)
     {
-        for(int prodIndex = 0; prodIndex < products; prodIndex++)
+        for(int prodIndex = 0; prodIndex < maxProductCount; prodIndex++)
         {
-            const int storNum = rand() % maxStogare;
-            const int prodNum = rand() % maxProduct;
+            const int storNum = rand() % storages;
+            const int prodNum = rand() % products;
             const Item item(storagePrefix_ + QString::number(storNum),
                       productPrefix_ + QString::number(prodNum));
 
@@ -81,7 +86,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
     QElapsedTimer timer;
     qInfo() << "prepare items list";
-    QList<Item> items = genRandomItemList(5, products/2, storages, products);
+    QList<Item> items = genRandomItemList(storages, products);
     qInfo() << "will select " <<  items.count() << "items";
 
     bool result = false;
@@ -96,7 +101,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                                                                storages,
                                                                products);
 
-            qInfo() << "write data to file" << date <<  date.addMonths(monthCount);
+//            qInfo() << "write data to file" << date <<  date.addMonths(monthCount);
 
             bool isWrited = CsvFile::write(list, fileName);
             if(!isWrited)
@@ -141,15 +146,15 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         }
         timer.start();
         qInfo() << "begin read";
-        int counter = 0;
+//        int counter = 0;
         do
         {
             const SaleHistory history = reader.current();
-            counter++;
-            if(counter%1000 == 0)
-            {
-                qInfo() << "SaleHistory - " << counter;
-            }
+//            counter++;
+//            if(counter%1000 == 0)
+//            {
+//                qInfo() << "SaleHistory - " << counter;
+//            }
         } while (reader.next());
 
         readTime = timer.elapsed() + openTime;
