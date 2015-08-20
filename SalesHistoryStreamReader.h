@@ -16,13 +16,10 @@ private:
     QSqlQuery query_;
     QDate from_;
     QDate to_;
-    QString select_;
-//    QHash<int, Item> itemTable_;
 
 private:
     bool createTempItemsTable();
     void deleteTempItemsTable();
-//    bool fillCaseItemHashTable();
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);

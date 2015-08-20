@@ -20,6 +20,7 @@ private:
     QHash<int, Item> itemTable_;
     bool isFromFile_;
     int maxId_;
+    QSqlQuery queryForHash_;
 
 private:
     bool writeBuffer(const QStringList &list);

@@ -84,6 +84,11 @@ bool DataBase::createEmptyDB()
         {
             return false;
         }
+        if(!executeQuery(db, "create index i_datas_item on t_datas"
+                         "(f_item);"))
+        {
+            return false;
+        }
 
         setPragmaParameters(db);
         db.close();

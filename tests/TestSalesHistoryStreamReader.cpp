@@ -156,15 +156,14 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
             << Date(2015, 8, 12)
 
             << (QList<SaleHistory>()
-                << (SaleHistory(Item(ID("storage1"), ID("product3")))
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 10), 0.0, 0.0)
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 11), 0.0, 0.0)
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 12), 0.0, 0.0))
-
                 << (SaleHistory(Item(ID("storage1"), ID("product1")))
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)));
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0))
+                << (SaleHistory(Item(ID("storage1"), ID("product3")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 10), 0.0, 0.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 11), 0.0, 0.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 12), 0.0, 0.0)));
 
     QTest::newRow("empty case items and date")
             << (QList<SaleHistoryDay>()

@@ -5,9 +5,12 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
       bufferSize_(100000),
       itemTable_(),
       isFromFile_(false),
-      maxId_(0)
+      maxId_(0),
+      queryForHash_()
 {
-
+    queryForHash_  = db_.getAssociatedQuery();
+    queryForHash_.prepare("insert into t_items(f_item, f_storage, f_product) "
+                  "values (?, ?, ?);");
 }
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
@@ -19,16 +22,12 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
             return false;
         }
     }
-    //    QVariantList storageList;
-    //    QVariantList productList;
     QVariantList itemIdList;
     QVariantList dateList;
     QVariantList soldList;
     QVariantList restList;
 
     QSqlQuery query = db_.getAssociatedQuery();
-    //    query.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
-    //                  "values(?, ?, ?, ?, ?);");
     query.prepare("insert into t_datas(f_item, f_date, f_sold, f_rest) "
                   "values(?, ?, ?, ?);");
     int i = 0;
@@ -44,8 +43,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
             delta = bufferSize_;
         }
 
-        //        storageList.clear();
-        //        productList.clear();
         itemIdList.clear();
         dateList.clear();
         soldList.clear();
@@ -56,8 +53,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
             const SaleHistoryDay day = days.at(j);
             if(day.isValid())
             {
-                //                storageList << day.item().storage();
-                //                productList << day.item().product();
                 const int id = getItemId(Item(day.item().storage(), day.item().product()));
                 if(id == -1)
                 {
@@ -71,8 +66,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         }
         i += delta;
 
-        //        query.addBindValue(storageList);
-        //        query.addBindValue(productList);
         query.addBindValue(itemIdList);
         query.addBindValue(dateList);
         query.addBindValue(soldList);
@@ -141,18 +134,15 @@ int SaleHistoryWriter::getItemId(const Item &item)
         id = maxId_ + 1;
         itemTable_.insert(id, item);
 
-        QSqlQuery query = db_.getAssociatedQuery();
-        query.prepare("insert into t_items(f_item, f_storage, f_product) "
-                      "values (?, ?, ?);");
-        query.addBindValue(id);
-        query.addBindValue(item.storage());
-        query.addBindValue(item.product());
+        queryForHash_.addBindValue(id);
+        queryForHash_.addBindValue(item.storage());
+        queryForHash_.addBindValue(item.product());
         db_.beginTransaction();
-        if(!query.exec())
+        if(!queryForHash_.exec())
         {
             db_.rollbackTransaction();
-            qWarning() << query.lastError();
-            qWarning() << query.executedQuery();
+            qWarning() << queryForHash_.lastError();
+            qWarning() << queryForHash_.executedQuery();
 
             return -1;
         }
