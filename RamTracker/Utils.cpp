@@ -47,7 +47,7 @@ double Utils::_runBenchmarking(const QString &tag)
                    "runBenchmarking",
                    "before runBenchmarking stop previous benchmaring by endBenchmarking");
         bchData_.remove(tag);
-        return ;
+        return 0.0;
     }
 
     bchData_[tag] = BenchmarkingData();

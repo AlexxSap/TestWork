@@ -44,10 +44,10 @@ struct BenchmarkingData
 };
 
 class Utils
-{
+{ 
 public:
-    static void _runBenchmarking(const QString &tag);
-    static BenchmarkingReport _endBenchmarking(const QString &tag);
+    static double _runBenchmarking(const QString &tag);
+    static BenchmarkingReport _endBenchmarking(const QString &tag, const double &startData = 0);
 
 private:
     static QHash<QString, BenchmarkingData> bchData_;

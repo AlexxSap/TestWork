@@ -311,5 +311,21 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 13), 220.0, 11.0)));
 
+    QTest::newRow("not full data")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 10), 50.0, 10.0)
+                << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 13), 10.0, 0.0))
+
+            << (QList<Item>() << Item(ID("storage1"), ID("product3")))
+            << Date(2015, 8, 10)
+            << Date(2015, 8, 13)
+
+            << (QList<SaleHistory>()
+                << (SaleHistory(Item(ID("storage1"), ID("product3")))
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 10), 50.0, 10.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 11), 0.0, 10.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 12), 0.0, 10.0)
+                    << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 13), 10.0, 0.0)));
+
 
 }

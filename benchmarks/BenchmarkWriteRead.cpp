@@ -23,12 +23,12 @@
                         227 10          454 44          1530 61         1547 125    120 min 1 min
 
 
----------------даннеы по замеру использования памяти 720 дней 10 складов
+---------------данные по замеру использования памяти 720 дней 10 складов
 читаем с половины складов (если не 1) половину всех товаров за всё время
-запись_общее (только_процедура_записи) - чтение_общее (только_процедура_чтения)
- 10 товаров         100 товаров            1000 товаров
+максимальные значения
+10 товаров                  100 товаров                     1000 товаров
 Исправление записи в файл и исправление перноса остатков
- 17 (5) - 20 (3)    61 (43) - 53 (35)      64 (48) - 399 (372)
+17MB (5MB) - 20MB (3MB)    61MB (43MB) - 53MB (35MB)      64MB (48MB) - 399MB (372MB)
 */
 
 QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products)
@@ -123,11 +123,11 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
         SaleHistoryWriter writer(dbName);
         timer.start();
-        Utils::_runBenchmarking("write");
+        const double sWrite = Utils::_runBenchmarking("write");
 
         result = writer.importFromFile(fileName);
 
-        Utils::_endBenchmarking("write");
+        Utils::_endBenchmarking("write", sWrite);
         writeTime = timer.elapsed();
         qInfo() << "write............." << writeTime << "ms";
     }
@@ -156,7 +156,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         }
 
         qInfo() << "begin read";
-        Utils::_runBenchmarking("read");
+        const double sRead = Utils::_runBenchmarking("read");
         timer.start();
 
 //        QList<SaleHistory> shList;
@@ -168,7 +168,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
 
         readTime = timer.elapsed() + openTime;
-        Utils::_endBenchmarking("read");
+        Utils::_endBenchmarking("read", sRead);
         qInfo() << "read.............."
                 << readTime << "ms";
 
@@ -218,6 +218,10 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                 100000      10000       1000
 первоначальное  17416       43059       68041
 
+Влияние размера буффера записи на память для случая 720/10/100
+максимальные значения
+                100000          10000           1000
+первоначальное  354MB (339MB)   65MB (47MB)     23MB (5MB)
 */
 
 void BenchmarkWriteRead::runForBuffer(const int bufferSize)
@@ -290,10 +294,12 @@ void BenchmarkWriteRead::runForBuffer(const int bufferSize)
 
         SaleHistoryWriter writer(dbName);
         writer.setBufferSize(bufferSize);
+        const double sWrite = Utils::_runBenchmarking("write");
         timer.start();
-        qInfo() << "import from file";
+
         result = writer.importFromFile(fileName);
         qInfo() << "write............." << timer.elapsed() << "ms";
+        Utils::_endBenchmarking("write", sWrite);
     }
     if(!result)
     {
