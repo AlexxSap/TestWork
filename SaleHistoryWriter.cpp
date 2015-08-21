@@ -2,17 +2,16 @@
 
 SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
     :db_(dbName),
-      bufferSize_(100000)
+      bufferSize_(1000000),
+      queryForWrite_()
 {
-
+    queryForWrite_ = db_.getAssociatedQuery();
+    queryForWrite_.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
+                  "values(?, ?, ?, ?, ?);");
 }
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
 {
-    QSqlQuery query = db_.getAssociatedQuery();
-    query.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
-                  "values(?, ?, ?, ?, ?);");
-
     int i = 0;
     while(i < days.count())
     {
@@ -37,28 +36,27 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
             const SaleHistoryDay day = days.at(j);
             if(day.isValid())
             {
-            storageList << day.item().storage();
-            productList << day.item().product();
-            dateList << day.date().toString("yyyy.MM.dd");
-            soldList << day.sold();
-            restList << day.rest();
+                storageList << day.item().storage();
+                productList << day.item().product();
+                dateList << day.date().toString("yyyy.MM.dd");
+                soldList << day.sold();
+                restList << day.rest();
             }
-
         }
         i += delta;
 
-        query.addBindValue(storageList);
-        query.addBindValue(productList);
-        query.addBindValue(dateList);
-        query.addBindValue(soldList);
-        query.addBindValue(restList);
+        queryForWrite_.addBindValue(storageList);
+        queryForWrite_.addBindValue(productList);
+        queryForWrite_.addBindValue(dateList);
+        queryForWrite_.addBindValue(soldList);
+        queryForWrite_.addBindValue(restList);
 
         db_.beginTransaction();
-        if(!query.execBatch())
+        if(!queryForWrite_.execBatch())
         {
             db_.rollbackTransaction();
-            qInfo() << query.lastError().text();
-            qInfo() << query.lastQuery();
+            qInfo() << queryForWrite_.lastError().text();
+            qInfo() << queryForWrite_.lastQuery();
             return false;
         }
         db_.commitTransaction();
@@ -96,22 +94,25 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     ts.setCodec(QTextCodec::codecForName("Windows-1251"));
 
     int counter = 0;
-    QStringList bufferList;
+    QList<SaleHistoryDay> bufferList;
+    SaleHistoryParser parser;
 
     while(!ts.atEnd())
     {
         counter++;
         const QString buffer = ts.readLine().trimmed();
+
         if(!buffer.isEmpty())
         {
-            bufferList.append(buffer);
+            const SaleHistoryDay day = parser.parseString(buffer);
+            bufferList.append(day);
         }
 
         if(counter == bufferSize_ )
         {
             counter = 0;
 
-            bool isWited = writeBuffer(bufferList);
+            bool isWited = write(bufferList);
             if(!isWited)
             {
                 file.close();
@@ -121,8 +122,7 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
         }
     }
     file.close();
-
-    return writeBuffer(bufferList);
+    return write(bufferList);
 }
 
 void SaleHistoryWriter::setBufferSize(const int size)

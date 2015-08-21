@@ -22,7 +22,7 @@
 Исправление записи в файл и исправление перноса остатков
                         227 10          454 44          1530 61         1547 125    120 min 1 min
 Изменение метода SalesHistoryStreamReader::current()
-                        245 11          395 23          1427 58         1578 126    52 min  1 min
+                        245 11          395 23          1427 58         1578 126    50 min  1 min
 
 
 ---------------данные по замеру использования памяти 720 дней 10 складов
@@ -33,7 +33,13 @@
 17MB (5MB) - 20MB (3MB)    61MB (43MB) - 53MB (35MB)      64MB (48MB) - 399MB (372MB)
 Изменение метода SalesHistoryStreamReader::current()
 17MB (5MB) - 17MB (0MB)    61MB (47MB) - 18MB (0MB)       63MB (49MB) - 27MB (0MB)
-1882         73             30818       876                 312055      9309
+1882         73            30818       876                312055      9309
+Увеличение размера буффера записи в 3 раза (300000)
+18MB (6MB) - 17MB (0MB)    152MB (138MB) - 19MB (0MB)     159MB (144MB) - 29MB (0MB)
+1807         73            20638        845                 309908      9338
+Для буффера в 1000000
+18MB (6MB) - 17MB (0MB)    354MB (340MB) - 26MB (7MB)     479MB (464MB) - 29MB (0MB)
+1807         73            15436        863                 239128      9512
 */
 
 QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products)
@@ -52,7 +58,7 @@ QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int 
             const int storNum = rand() % storages;
             const int prodNum = rand() % products;
             const Item item(storagePrefix_ + QString::number(storNum),
-                      productPrefix_ + QString::number(prodNum));
+                            productPrefix_ + QString::number(prodNum));
 
             if(list.contains(item))
             {
@@ -108,12 +114,13 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         const SaleHistoryGenerator gen;
         const int monthCount = 2;
 
+
         for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
         {
             const QList<SaleHistoryDay> list = gen.generateHistory(date,
-                                                               date.addMonths(monthCount),
-                                                               storages,
-                                                               products);
+                                                                   date.addMonths(monthCount),
+                                                                   storages,
+                                                                   products);
 
             bool isWrited = CsvFile::write(list, fileName);
             if(!isWrited)
@@ -129,11 +136,10 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         SaleHistoryWriter writer(dbName);
         timer.start();
         const double sWrite = Utils::_runBenchmarking("write");
-
         result = writer.importFromFile(fileName);
-
         Utils::_endBenchmarking("write", sWrite);
         writeTime = timer.elapsed();
+
         qInfo() << "write............." << writeTime << "ms";
     }
     if(!result)
@@ -162,11 +168,11 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         const double sRead = Utils::_runBenchmarking("read");
         timer.start();
 
-//        QList<SaleHistory> shList;
+        QList<SaleHistory> shList;
         do
         {
             const SaleHistory history = reader.current();
-//            shList.append(history);
+            shList.append(history);
         } while (reader.next());
 
 
@@ -266,11 +272,11 @@ void BenchmarkWriteRead::runForBuffer(const int bufferSize)
         for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
         {
             const QList<SaleHistoryDay> list = gen.generateHistory(date,
-                                                               date.addMonths(monthCount),
-                                                               storages,
-                                                               products);
+                                                                   date.addMonths(monthCount),
+                                                                   storages,
+                                                                   products);
 
-//            qInfo() << "write data to file" << date <<  date.addMonths(monthCount);
+            //            qInfo() << "write data to file" << date <<  date.addMonths(monthCount);
 
             foreach (const SaleHistoryDay &day, list)
             {
@@ -287,13 +293,13 @@ void BenchmarkWriteRead::runForBuffer(const int bufferSize)
                 qWarning() << "cannot write to file";
                 return;
             }
-//            qInfo() << "writed";
+            //            qInfo() << "writed";
         }
         for(int i = items.count() - 1 ; i >= 0; i -= 2)
         {
             items.removeAt(i);
         }
-//        qInfo() << "will select " <<  items.count() << "items";
+        //        qInfo() << "will select " <<  items.count() << "items";
 
         SaleHistoryWriter writer(dbName);
         writer.setBufferSize(bufferSize);

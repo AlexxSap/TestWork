@@ -18,6 +18,7 @@ private:
     bool executeQuery(QSqlDatabase &db, const QString &request);
     bool connect();
     bool disconnect();
+    void setPragmaParameters(QSqlDatabase &db);
 
 public:
     explicit DataBase(const QString &dbName);

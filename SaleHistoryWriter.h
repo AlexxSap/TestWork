@@ -6,6 +6,7 @@
 #include <QTextCodec>
 #include <QDebug>
 #include <QSqlError>
+#include <QElapsedTimer>
 
 #include "SaleHistoryDay.h"
 #include "DataBase.h"
@@ -16,6 +17,7 @@ class SaleHistoryWriter
 private:
     DataBase db_;
     int bufferSize_;
+    QSqlQuery queryForWrite_;
 
 private:
     bool writeBuffer(const QStringList &list);

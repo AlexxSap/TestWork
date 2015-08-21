@@ -33,6 +33,7 @@ bool DataBase::createEmptyDB()
         {
             return false;
         }
+        setPragmaParameters(db);
 
         if(!executeQuery(db, "create table t_datas("
                          "f_storage text not null, "
@@ -45,16 +46,25 @@ bool DataBase::createEmptyDB()
             return false;
         }
 
-        if(!executeQuery(db, "PRAGMA temp_store = MEMORY;"))
-        {
-            return false;
-        }
-
         db.close();
     }
     QSqlDatabase::removeDatabase(connName);
     return true;
 }
+
+void DataBase::setPragmaParameters(QSqlDatabase &db)
+{
+    QSqlQuery query(db);
+    db.transaction();
+    query.exec("PRAGMA temp_store = MEMORY;");
+    query.exec("PRAGMA synchronous = OFF;");
+    query.exec("PRAGMA count_changes = OFF;");
+    query.exec("PRAGMA journal_mode = WAL;");
+    query.exec("PRAGMA foreign_keys = ON;");
+//    query.exec("PRAGMA cache_size = -40;");
+    db.commit();
+}
+
 
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 {

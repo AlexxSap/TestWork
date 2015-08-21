@@ -10,6 +10,7 @@ private:
     QString splitter_;
     QString dateFormat_;
     bool isValid_;
+    QRegExp rx_;
 
 public:
     SaleHistoryParser();
@@ -18,6 +19,7 @@ public:
     bool isValid() const;
 
     QList<SaleHistoryDay> parse(const QStringList &rawData);
+    SaleHistoryDay parseString(const QString &raw);
 };
 
 #endif // SALEHISTORYPARSER_H
