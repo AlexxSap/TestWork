@@ -21,6 +21,8 @@
 
 Исправление записи в файл и исправление перноса остатков
                         227 10          454 44          1530 61         1547 125    120 min 1 min
+Изменение метода SalesHistoryStreamReader::current()
+                        245 11          395 23          1427 58         1578 126    52 min  1 min
 
 
 ---------------данные по замеру использования памяти 720 дней 10 складов
@@ -29,6 +31,9 @@
 10 товаров                  100 товаров                     1000 товаров
 Исправление записи в файл и исправление перноса остатков
 17MB (5MB) - 20MB (3MB)    61MB (43MB) - 53MB (35MB)      64MB (48MB) - 399MB (372MB)
+Изменение метода SalesHistoryStreamReader::current()
+17MB (5MB) - 17MB (0MB)    61MB (47MB) - 18MB (0MB)       63MB (49MB) - 27MB (0MB)
+1882         73             30818       876                 312055      9309
 */
 
 QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products)
@@ -67,8 +72,12 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 {
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
-    const QString dbName("TestDBase.db");
-    const QString fileName("testFile.csv");
+    const QString prefix(QString::number(days) + "_"
+                         + QString::number(storages)+ "_"
+                         + QString::number(products)+ "_");
+
+    const QString dbName(prefix + "TestDBase.db");
+    const QString fileName(prefix + "testFile.csv");
 
     qint64 writeTime = 0;
     qint64 readTime = 0;
@@ -92,9 +101,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     }
 
     QElapsedTimer timer;
-    qInfo() << "prepare items list";
     QList<Item> items = genRandomItemList(storages, products);
-    qInfo() << "will select " <<  items.count() << "items";
 
     bool result = false;
     {
@@ -107,8 +114,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                                                                date.addMonths(monthCount),
                                                                storages,
                                                                products);
-
-//            qInfo() << "write data to file" << date <<  date.addMonths(monthCount);
 
             bool isWrited = CsvFile::write(list, fileName);
             if(!isWrited)
@@ -143,7 +148,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         SalesHistoryStreamReader reader(items, dbName);
 
         timer.start();
-        qInfo() << "open reader";
         bool isOpen = reader.open(Date(), Date());
         const int openTime = timer.elapsed();
 
@@ -155,7 +159,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             return;
         }
 
-        qInfo() << "begin read";
         const double sRead = Utils::_runBenchmarking("read");
         timer.start();
 
@@ -205,7 +208,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     }
 
     qInfo() << "for 10000 products-------";
-    writeTime = 10000/products * writeTime * 2;
+    writeTime = 10000/products * writeTime;
     readTime = 10000/products * readTime;
     qInfo() << "write " << writeTime << "ms or " << writeTime / 60000 << "min";
     qInfo() << "read " << readTime << "ms or " << readTime / 60000 << "min";

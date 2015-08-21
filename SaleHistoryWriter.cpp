@@ -9,21 +9,11 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
 {
-    QVariantList storageList;
-    QVariantList productList;
-    QVariantList dateList;
-    QVariantList soldList;
-    QVariantList restList;
-
     QSqlQuery query = db_.getAssociatedQuery();
     query.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
                   "values(?, ?, ?, ?, ?);");
 
     int i = 0;
-    //затраты памяти при разных bufferSize_
-    // при 1 млн - 530 мб
-    // при 100к - 342 мб
-    // при 10к - 322 мб
     while(i < days.count())
     {
         int delta;
@@ -36,11 +26,11 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
             delta = bufferSize_;
         }
 
-        storageList.clear();
-        productList.clear();
-        dateList.clear();
-        soldList.clear();
-        restList.clear();
+        QVariantList storageList;
+        QVariantList productList;
+        QVariantList dateList;
+        QVariantList soldList;
+        QVariantList restList;
 
         for(int j = i; j < i + delta ; j++)
         {
@@ -73,9 +63,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         }
         db_.commitTransaction();
     }
-
-    //    QSqlQuery query = db_.getAssociatedQuery();
-    //    return query.exec("analyze t_datas;");
 
     return true;
 }

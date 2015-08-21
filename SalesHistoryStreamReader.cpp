@@ -7,7 +7,8 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       query_(),
       from_(),
       to_(),
-      select_()
+      tempHistory_(),
+      isCanNext_(false)
 {
 
 }
@@ -75,17 +76,17 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
         return false;
     }
 
-    select_ = QString("select t_temp_items.f_storage, "
-                      "t_temp_items.f_product, "
-                      "t_datas.f_date, "
-                      "t_datas.f_sold, "
-                      "t_datas.f_rest "
-                      "from t_temp_items "
-                      "left outer join t_datas "
-                      "on t_temp_items.f_storage = t_datas.f_storage "
-                      "and t_temp_items.f_product = t_datas.f_product "
-                      "%1"
-                      "order by t_datas.f_storage, t_datas.f_product, t_datas.f_date;");
+    QString select("select t_temp_items.f_storage, "
+                    "t_temp_items.f_product, "
+                    "t_datas.f_date, "
+                    "t_datas.f_sold, "
+                    "t_datas.f_rest "
+                    "from t_temp_items "
+                    "left outer join t_datas "
+                    "on t_temp_items.f_storage = t_datas.f_storage "
+                    "and t_temp_items.f_product = t_datas.f_product "
+                    "%1"
+                    "order by t_datas.f_storage, t_datas.f_product, t_datas.f_date;");
 
     QString dateCase;
     if(from_ != Date() && to_ != Date())
@@ -112,11 +113,26 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     }
 
 
-    select_ = select_.arg(dateCase);
+    select = select.arg(dateCase);
 
     query_ = db_.getAssociatedQuery();
+    query_.setForwardOnly(true);
 
-    if(!query_.exec(select_))
+    //----расшифровка плана запроса-----
+    //        query_.exec("explain query plan "+ select);
+    //        while(query_.next())
+    //        {
+    //            const QSqlRecord rec = query_.record();
+    //            QStringList val;
+    //            for(int i = 0; i< rec.count(); i++)
+    //            {
+    //                val << rec.value(i).toString();
+    //            }
+    //            qInfo() << val;
+    //        }
+    //----------------------------------
+
+    if(!query_.exec(select))
     {
         qWarning() << query_.lastError().text();
         qWarning() << query_.lastQuery();
@@ -132,52 +148,59 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 
     if(!query_.next())
     {
-        qWarning() << query_.lastQuery();
-        qWarning() << "fail query_.next()";
         return false;
     }
+
+    isCanNext_ = true;
+    const Item item(query_.value(0).toString(), query_.value(1).toString());
+    tempHistory_ = SaleHistory(item);
+    addDayToTempHistory();
+
     return true;
 }
 
 bool SalesHistoryStreamReader::next()
 {
-    if(!query_.next())
+    if(isCanNext_)
+    {
+        return true;
+    }
+    else
     {
         deleteTempItemsTable();
         return false;
     }
-    else
+}
+
+void SalesHistoryStreamReader::addDayToTempHistory()
+{
+    const QVariant date = query_.value(2);
+    const QVariant sold = query_.value(3);
+    const QVariant rest = query_.value(4);
+    if(!date.isNull() && !sold.isNull() && !rest.isNull())
     {
-        return true;
+        tempHistory_.addDay(SaleHistoryDay(tempHistory_.item(),
+                                           date.toDate(),
+                                           sold.toDouble(),
+                                           rest.toDouble()));
     }
 }
 
 SaleHistory SalesHistoryStreamReader::current()
 {
-    const Item item(query_.value(0).toString(), query_.value(1).toString());
-    SaleHistory history(item);
     do
     {
         const Item tempItemp(query_.value(0).toString(), query_.value(1).toString());
-
-        if(item != tempItemp)
+        if(tempHistory_.item() != tempItemp)
         {
-            query_.previous();
-            history = history.normalaze(from_, to_);
-            return history;
+            const SaleHistory returnedHistory = tempHistory_.normalaze(from_, to_);
+            tempHistory_ = SaleHistory(tempItemp);
+            addDayToTempHistory();
+            return returnedHistory;
         }
-
-        const QVariant date = query_.value(2);
-        const QVariant sold = query_.value(3);
-        const QVariant rest = query_.value(4);
-        if(!date.isNull() && !sold.isNull() && !rest.isNull())
-        {
-            history.addDay(SaleHistoryDay(history.item(),
-                                          date.toDate(),
-                                          sold.toDouble(),
-                                          rest.toDouble()));
-        }
+        addDayToTempHistory();
     } while(query_.next());
-    history = history.normalaze(from_, to_);
-    return history;
+    isCanNext_ = false;
+    tempHistory_ = tempHistory_.normalaze(from_, to_);
+    return tempHistory_;
 }

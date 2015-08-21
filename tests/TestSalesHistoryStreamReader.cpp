@@ -31,7 +31,6 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         TestUtility::removeFile(dbName);
         QFAIL("cannot write data to db");
     }
-    qInfo() << "data is writed";
 
     if(caseItems.isEmpty())
     {
@@ -56,7 +55,6 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
             TestUtility::removeFile(dbName);
             QFAIL("something wrong with opening SalesHistoryStreamReader");
         }
-        qInfo() << "SalesHistoryStreamReader is open";
         do
         {
             const SaleHistory history = reader.current();
