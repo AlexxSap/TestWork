@@ -25,6 +25,7 @@ private:
 public:
     explicit SaleHistoryWriter(const QString &dbName);
     bool write(const QList<SaleHistoryDay> &days);
+    bool writeStd(const QList<StdVector> &days);
     bool importFromFile(const QString &fileName);
 
     void setBufferSize(const int size);

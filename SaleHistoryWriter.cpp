@@ -65,6 +65,60 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
     return true;
 }
 
+bool SaleHistoryWriter::writeStd(const QList<StdVector> &days)
+{
+    int i = 0;
+    while(i < days.count())
+    {
+        int delta;
+        if(i + bufferSize_ >= days.count())
+        {
+            delta = days.count() - i;
+        }
+        else
+        {
+            delta = bufferSize_;
+        }
+
+        QVariantList storageList;
+        QVariantList productList;
+        QVariantList dateList;
+        QVariantList soldList;
+        QVariantList restList;
+
+        for(int j = i; j < i + delta ; j++)
+        {
+            const StdVector day = days.at(j);
+
+                storageList << QString::fromStdString(day.at(0));
+                productList << QString::fromStdString(day.at(1));
+                dateList << QString::fromStdString(day.at(2));
+                soldList << QString::fromStdString(day.at(3));
+                restList << QString::fromStdString(day.at(4));
+
+        }
+        i += delta;
+
+        queryForWrite_.addBindValue(storageList);
+        queryForWrite_.addBindValue(productList);
+        queryForWrite_.addBindValue(dateList);
+        queryForWrite_.addBindValue(soldList);
+        queryForWrite_.addBindValue(restList);
+
+        db_.beginTransaction();
+        if(!queryForWrite_.execBatch())
+        {
+            db_.rollbackTransaction();
+            qInfo() << queryForWrite_.lastError().text();
+            qInfo() << queryForWrite_.lastQuery();
+            return false;
+        }
+        db_.commitTransaction();
+    }
+
+    return true;
+}
+
 bool SaleHistoryWriter::writeBuffer(const QStringList &list)
 {
     SaleHistoryParser parser;
@@ -95,6 +149,7 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
 
     int counter = 0;
     QList<SaleHistoryDay> bufferList;
+//    QList<StdVector> bufferList;
     SaleHistoryParser parser;
 
     while(!ts.atEnd())
@@ -105,6 +160,7 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
         if(!buffer.isEmpty())
         {
             const SaleHistoryDay day = parser.parseString(buffer);
+//            StdVector day = parser.parseStdString(buffer.toStdString());
             bufferList.append(day);
         }
 
@@ -113,6 +169,7 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
             counter = 0;
 
             bool isWited = write(bufferList);
+//            bool isWited = writeStd(bufferList);
             if(!isWited)
             {
                 file.close();
@@ -123,6 +180,7 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     }
     file.close();
     return write(bufferList);
+//    return writeStd(bufferList);
 }
 
 void SaleHistoryWriter::setBufferSize(const int size)
