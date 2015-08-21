@@ -57,7 +57,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
             {
                 const SaleHistory history = reader.current();
                 actList.append(history);
-            }while (reader.next());
+            } while (reader.next());
         }
     }
 

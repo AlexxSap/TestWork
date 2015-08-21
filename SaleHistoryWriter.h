@@ -18,14 +18,15 @@ private:
     DataBase db_;
     int bufferSize_;
     QHash<int, Item> itemTable_;
+    QHash<int, Item> deltaItemTable_;
     bool isFromFile_;
     int maxId_;
-    QSqlQuery queryForHash_;
 
 private:
     bool writeBuffer(const QStringList &list);
     bool fillItemHashTable();
     int getItemId(const Item &item);
+    bool appendItemTable();
 
 public:
     explicit SaleHistoryWriter(const QString &dbName);

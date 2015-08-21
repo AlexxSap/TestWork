@@ -4,13 +4,11 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
     :db_(dbName),
       bufferSize_(100000),
       itemTable_(),
+      deltaItemTable_(),
       isFromFile_(false),
-      maxId_(0),
-      queryForHash_()
+      maxId_(0)
 {
-    queryForHash_  = db_.getAssociatedQuery();
-    queryForHash_.prepare("insert into t_items(f_item, f_storage, f_product) "
-                  "values (?, ?, ?);");
+
 }
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
@@ -22,10 +20,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
             return false;
         }
     }
-    QVariantList itemIdList;
-    QVariantList dateList;
-    QVariantList soldList;
-    QVariantList restList;
 
     QSqlQuery query = db_.getAssociatedQuery();
     query.prepare("insert into t_datas(f_item, f_date, f_sold, f_rest) "
@@ -43,10 +37,10 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
             delta = bufferSize_;
         }
 
-        itemIdList.clear();
-        dateList.clear();
-        soldList.clear();
-        restList.clear();
+        QVariantList itemIdList;
+        QVariantList dateList;
+        QVariantList soldList;
+        QVariantList restList;
 
         for(int j = i; j < i + delta ; j++)
         {
@@ -82,6 +76,14 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         db_.commitTransaction();
     }
 
+    if(!isFromFile_)
+    {
+        if(!appendItemTable())
+        {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -93,6 +95,7 @@ bool SaleHistoryWriter::writeBuffer(const QStringList &list)
         return true;
     }
 
+    /// todo: замерить сколько тратиться на распарсивание
     QList<SaleHistoryDay> days = parser.parse(list);
 
     if(!parser.isValid())
@@ -131,25 +134,47 @@ int SaleHistoryWriter::getItemId(const Item &item)
     int id = itemTable_.key(item, -1) ;
     if(id == -1)
     {
-        id = maxId_ + 1;
-        itemTable_.insert(id, item);
-
-        queryForHash_.addBindValue(id);
-        queryForHash_.addBindValue(item.storage());
-        queryForHash_.addBindValue(item.product());
-        db_.beginTransaction();
-        if(!queryForHash_.exec())
-        {
-            db_.rollbackTransaction();
-            qWarning() << queryForHash_.lastError();
-            qWarning() << queryForHash_.executedQuery();
-
-            return -1;
-        }
         maxId_++;
-        db_.commitTransaction();
+        itemTable_.insert(maxId_, item);
+        deltaItemTable_.insert(maxId_, item);
+        return maxId_;
     }
     return id;
+}
+
+bool SaleHistoryWriter::appendItemTable()
+{
+    QSqlQuery query = db_.getAssociatedQuery();
+    query.prepare("insert into t_items(f_item, f_storage, f_product) "
+                  "values (?, ?, ?);");
+
+    QVariantList idList;
+    QVariantList storageList;
+    QVariantList productList;
+    for(QHash<int, Item>::const_iterator id = deltaItemTable_.cbegin();
+        id != deltaItemTable_.cend(); id ++)
+    {
+        idList << id.key();
+        storageList << id.value().storage();
+        productList << id.value().product();
+
+    }
+
+    query.addBindValue(idList);
+    query.addBindValue(storageList);
+    query.addBindValue(productList);
+
+    db_.beginTransaction();
+    if(!query.execBatch())
+    {
+        db_.rollbackTransaction();
+        qWarning() << query.lastError();
+        qWarning() << query.executedQuery();
+
+        return false;
+    }
+    db_.commitTransaction();
+    return true;
 }
 
 bool SaleHistoryWriter::importFromFile(const QString &fileName)
@@ -196,7 +221,13 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     }
     file.close();
 
-    return writeBuffer(bufferList);
+    const bool isWrited = writeBuffer(bufferList);
+    if(!isWrited)
+    {
+        return false;
+    }
+
+    return appendItemTable();
 }
 
 void SaleHistoryWriter::setBufferSize(const int size)
