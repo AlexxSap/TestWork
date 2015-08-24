@@ -18,12 +18,9 @@ private:
     DataBase db_;
     int bufferSize_;
     QSqlQuery queryForWrite_;
-//    QRegExp rxNum_;
-//    QRegExp rxDate_;
 
 private:
     bool checkFile(const QString &fileName);
-//    bool checkLine(const QString &string);
     bool copyDataFromTempTable();
 
 public:

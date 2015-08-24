@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     tests/TestCsvFile.cpp \
     benchmarks/BenchmarkWriteRead.cpp \
     RamTracker/RamTracker.cpp \
-    RamTracker/Utils.cpp
+    RamTracker/Utils.cpp \
+    tests/TAnalogs.cpp \
+    Analogs.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -57,4 +59,6 @@ HEADERS  += mainwindow.h \
     tests/TestCsvFile.h \
     benchmarks/BenchmarkWriteRead.h \
     RamTracker/RamTracker.h \
-    RamTracker/Utils.h
+    RamTracker/Utils.h \
+    tests/TAnalogs.h \
+    Analogs.h

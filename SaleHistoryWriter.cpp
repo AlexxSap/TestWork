@@ -4,8 +4,6 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
     :db_(dbName),
       bufferSize_(1000000),
       queryForWrite_()
-//      rxNum_("(\\d+(\.\\d{0,})?)"),
-//      rxDate_("([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))")
 {
 //    db_.createTempTableForWrite();
     queryForWrite_ = db_.getAssociatedQuery();
@@ -119,54 +117,6 @@ bool SaleHistoryWriter::copyDataFromTempTable()
     db_.commitTransaction();
     return true;
 }
-
-//bool SaleHistoryWriter::checkLine(const QString &string)
-//{
-//    QString temp = string;
-//    int counter = 0;
-//    int pos = 0;
-//    while(counter < 5)
-//    {
-//        pos = temp.indexOf(";");
-//        if(pos == -1)
-//        {
-//            return false;
-//        }
-
-//        if(counter == 2)
-//        {
-//            QString date = temp.left(pos);
-//            if(!rxDate_.exactMatch(date))
-//            {
-//                return false;
-//            }
-
-//        }
-//        if(counter == 3)
-//        {
-//            QString num = temp.left(pos);
-//            if(!rxNum_.exactMatch(num))
-//            {
-//                return false;
-//            }
-//            temp = temp.right(temp.length() - pos - 1);
-//            counter ++;
-//        }
-//        if(counter == 4)
-//        {
-//            if(!rxNum_.exactMatch(temp))
-//            {
-//                return false;
-//            }
-//            //break;
-//        }
-
-//        temp = temp.right(temp.length() - pos - 1);
-//        counter++;
-//    }
-
-//    return true;
-//}
 
 bool SaleHistoryWriter::importFromFile(const QString &fileName)
 {

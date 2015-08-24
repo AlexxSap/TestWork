@@ -9,6 +9,10 @@
 #include "tests/TestSaleHistoryParser.h"
 #include "tests/TestSalesHistoryStreamReader.h"
 #include "tests/TestCsvFile.h"
+#include "tests/TAnalogs.h"
+
+
+
 #include "benchmarks/BenchmarkWriteRead.h"
 #else
 #include <QApplication>
@@ -40,10 +44,13 @@ int main()
     TestSalesHistoryStreamReader testSalesHistoryStreamReader;
     test += QTest::qExec(&testSalesHistoryStreamReader);
 
+    TAnalogs tAnalogs;
+    test += QTest::qExec(&tAnalogs);
+
     if(test == 0)
     {
-        BenchmarkWriteRead::run(720, 10, 10);
-        BenchmarkWriteRead::run(720, 10, 100);
+//        BenchmarkWriteRead::run(720, 10, 10);
+//        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 //        BenchmarkWriteRead::run(720, 10, 10000);
 
