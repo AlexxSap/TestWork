@@ -132,7 +132,7 @@ void DataBase::commitTransaction()
 bool DataBase::createTempTableForWrite()
 {
     QSqlQuery query(db_);
-    return query.exec("create temp if not exists table t_temp_datas("
+    return query.exec("create temp table if not exists t_temp_datas("
                       "f_storage text not null, "
                       "f_product text not null, "
                       "f_date real not null, "
