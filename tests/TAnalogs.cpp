@@ -10,7 +10,7 @@ void TAnalogs::TestAnalogsList()
     QFETCH(Analogs, data);
     QFETCH(QList<ID>, expList);
 
-    QList<ID> actLits = data.analogs();
+    QList<ID> actLits = data.toList();
 
     const bool isEqual = TestUtility::compareListWithoutOrder(actLits, expList);
 
@@ -41,7 +41,7 @@ void TAnalogs::TestIsAnalog()
     QFETCH(ID, art);
     QFETCH(bool, expIsAnalog);
 
-    bool actIsAnalog = data.isAnalog(art);
+    bool actIsAnalog = data.contains(art);
 
     QCOMPARE(actIsAnalog, expIsAnalog);
 }

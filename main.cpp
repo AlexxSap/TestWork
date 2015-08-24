@@ -10,8 +10,7 @@
 #include "tests/TestSalesHistoryStreamReader.h"
 #include "tests/TestCsvFile.h"
 #include "tests/TAnalogs.h"
-
-
+#include "tests/TAnalogsTable.h"
 
 #include "benchmarks/BenchmarkWriteRead.h"
 #else
@@ -23,29 +22,32 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    TestItemOperators testItemOperators;
-    test += QTest::qExec(&testItemOperators);
+//    TestItemOperators testItemOperators;
+//    test += QTest::qExec(&testItemOperators);
 
-    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
-    test += QTest::qExec(&testSaleHistoryDayOperators);
+//    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
+//    test += QTest::qExec(&testSaleHistoryDayOperators);
 
-    TestSaleHistory testSaleHistory;
-    test += QTest::qExec(&testSaleHistory);
+//    TestSaleHistory testSaleHistory;
+//    test += QTest::qExec(&testSaleHistory);
 
-    TestSaleHistoryGenerator testSaleHistoryGenerator;
-    test += QTest::qExec(&testSaleHistoryGenerator);
+//    TestSaleHistoryGenerator testSaleHistoryGenerator;
+//    test += QTest::qExec(&testSaleHistoryGenerator);
 
-    TestSaleHistoryParser testSaleHistoryParser;
-    test += QTest::qExec(&testSaleHistoryParser);
+//    TestSaleHistoryParser testSaleHistoryParser;
+//    test += QTest::qExec(&testSaleHistoryParser);
 
-    TestCsvFile testCsvFile;
-    test += QTest::qExec(&testCsvFile);
+//    TestCsvFile testCsvFile;
+//    test += QTest::qExec(&testCsvFile);
 
-    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-    test += QTest::qExec(&testSalesHistoryStreamReader);
+//    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+//    test += QTest::qExec(&testSalesHistoryStreamReader);
 
     TAnalogs tAnalogs;
     test += QTest::qExec(&tAnalogs);
+
+    TAnalogsTable tAnalogsTable;
+    test += QTest::qExec(&tAnalogsTable);
 
     if(test == 0)
     {

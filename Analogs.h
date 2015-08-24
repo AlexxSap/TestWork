@@ -19,15 +19,14 @@ public:
     Analogs& operator = (const Analogs &other);
     Analogs& operator << (const ID &analog);
 
-    void addAnalogs(const QList<ID> &list);
     void addAnalog(const ID &analog);
 
     ID mainAnalog() const;
-    QList<ID> analogs() const;
+    QList<ID> toList() const;
 
     QString toString() const;
 
-    bool isAnalog(const ID &product) const;
+    bool contains(const ID &product) const;
 
     friend bool operator != (const Analogs &left, const Analogs &right);
     friend bool operator == (const Analogs &left, const Analogs &right);
@@ -43,6 +42,11 @@ inline QDebug operator<< (QDebug debug, const Analogs &analogs)
 {
    debug << analogs.toString();
    return debug;
+}
+
+inline uint qHash(const Analogs &key, uint seed)
+{
+    return qHash(key.mainAnalog(), seed) ^ key.toList().count();
 }
 
 #endif // ANALOGS_H

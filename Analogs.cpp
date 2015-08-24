@@ -29,7 +29,7 @@ Analogs::Analogs(const Analogs &other)
       analogs_()
 {
     main_ = other.mainAnalog();
-    QList<ID> al = other.analogs();
+    QList<ID> al = other.toList();
     foreach (const ID &i, al)
     {
         analogs_.insert(i);
@@ -39,7 +39,7 @@ Analogs::Analogs(const Analogs &other)
 Analogs &Analogs::operator =(const Analogs &other)
 {
     main_ = other.mainAnalog();
-    QList<ID> al = other.analogs();
+    QList<ID> al = other.toList();
     foreach (const ID &i, al)
     {
         analogs_.insert(i);
@@ -49,16 +49,8 @@ Analogs &Analogs::operator =(const Analogs &other)
 
 Analogs &Analogs::operator <<(const ID &analog)
 {
-    addAnalog(analog);
+    analogs_.insert(analog);
     return *this;
-}
-
-void Analogs::addAnalogs(const QList<ID> &list)
-{
-    foreach (const QString &analog, list)
-    {
-        analogs_.insert(analog);
-    }
 }
 
 void Analogs::addAnalog(const ID &analog)
@@ -71,7 +63,7 @@ ID Analogs::mainAnalog() const
     return main_;
 }
 
-QList<ID> Analogs::analogs() const
+QList<ID> Analogs::toList() const
 {
     return analogs_.toList();
 }
@@ -92,7 +84,7 @@ QString Analogs::toString() const
     return string + "]";
 }
 
-bool Analogs::isAnalog(const ID &product) const
+bool Analogs::contains(const ID &product) const
 {
     return analogs_.contains(product);
 }

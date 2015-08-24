@@ -37,7 +37,9 @@ SOURCES += main.cpp\
     RamTracker/RamTracker.cpp \
     RamTracker/Utils.cpp \
     tests/TAnalogs.cpp \
-    Analogs.cpp
+    Analogs.cpp \
+    tests/TAnalogsTable.cpp \
+    AnalogsTable.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -61,4 +63,6 @@ HEADERS  += mainwindow.h \
     RamTracker/RamTracker.h \
     RamTracker/Utils.h \
     tests/TAnalogs.h \
-    Analogs.h
+    Analogs.h \
+    tests/TAnalogsTable.h \
+    AnalogsTable.h
