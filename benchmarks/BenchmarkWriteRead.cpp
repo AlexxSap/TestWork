@@ -91,6 +91,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 {
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
+    Q_UNUSED(toDate)
     const QString prefix(QString::number(days) + "_"
                          + QString::number(storages)+ "_"
                          + QString::number(products)+ "_");

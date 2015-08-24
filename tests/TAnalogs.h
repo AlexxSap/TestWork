@@ -17,6 +17,12 @@ public:
 private slots:
     void TestAnalogsList();
     void TestAnalogsList_data();
+
+    void TestIsAnalog();
+    void TestIsAnalog_data();
+
+    void TestAnalogsAssign();
+    void TestAnalogsAssign_data();
 };
 
 #endif // TANALOGPRODUCT_H

@@ -7,44 +7,87 @@ TAnalogs::TAnalogs(QObject *parent) : QObject(parent)
 
 void TAnalogs::TestAnalogsList()
 {
-    QFETCH(ID, mainAnalog);
-    QFETCH(QList<ID>, analogList);
+    QFETCH(Analogs, data);
     QFETCH(QList<ID>, expList);
 
-    Analogs analog(mainAnalog);
-    analog.addAnalogs(analogList);
-
-    QList<ID> actLits = analog.analogs();
+    QList<ID> actLits = data.analogs();
 
     const bool isEqual = TestUtility::compareListWithoutOrder(actLits, expList);
 
-    if(!isEqual)
-    {
-        qInfo() << actLits;
-        qInfo() << expList;
-    }
     QVERIFY(isEqual);
 }
 
 void TAnalogs::TestAnalogsList_data()
 {
-    QTest::addColumn<ID>("mainAnalog");
-    QTest::addColumn< QList<ID> >("analogList");
+    QTest::addColumn<Analogs>("data");
     QTest::addColumn< QList<ID> >("expList");
 
-    QTest::newRow("simple") << ID("product1")
-                            << (QList<ID>()
+    QTest::newRow("simple") << (Analogs("product1")
                                 << "product2"
                                 << "product3"
                                 << "product5")
                             << (QList<ID>()
-                                << "product1"
                                 << "product2"
                                 << "product3"
                                 << "product5");
 
-    QTest::newRow("empty") << ID("product1")
-                           << QList<ID>()
-                           << (QList<ID>() << "product1");
+    QTest::newRow("empty") << Analogs("product1")
+                           << QList<ID>();
+}
+
+void TAnalogs::TestIsAnalog()
+{
+    QFETCH(Analogs, data);
+    QFETCH(ID, art);
+    QFETCH(bool, expIsAnalog);
+
+    bool actIsAnalog = data.isAnalog(art);
+
+    QCOMPARE(actIsAnalog, expIsAnalog);
+}
+
+void TAnalogs::TestIsAnalog_data()
+{
+    QTest::addColumn<Analogs>("data");
+    QTest::addColumn<ID>("art");
+    QTest::addColumn<bool>("expIsAnalog");
+
+    QTest::newRow("yes") << (Analogs("product1")
+                             << "product1"
+                             << "product2")
+                         << ID("product2")
+                         << true;
+
+    QTest::newRow("no") << (Analogs("product1")
+                            << "product1"
+                            << "product2")
+                        << ID("product3")
+                        << false;
+}
+
+void TAnalogs::TestAnalogsAssign()
+{
+    QFETCH(Analogs, data);
+
+    const Analogs other = data;
+
+    qInfo() << other;
+    qInfo() << data;
+
+    bool eq = data == other;
+    bool notEq = data != other;
+
+    QVERIFY(eq);
+    QVERIFY(!notEq);
+}
+
+void TAnalogs::TestAnalogsAssign_data()
+{
+    QTest::addColumn<Analogs>("data");
+
+    QTest::newRow("") << (Analogs("product1")
+                          << "product1"
+                          << "product2");
+
 }
 
