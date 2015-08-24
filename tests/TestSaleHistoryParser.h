@@ -5,6 +5,7 @@
 #include <QTest>
 
 #include "SaleHistoryParser.h"
+#include "TestUtility.h"
 
 class TestSaleHistoryParser : public QObject
 {

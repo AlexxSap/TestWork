@@ -4,10 +4,18 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
     :db_(dbName),
       bufferSize_(1000000),
       queryForWrite_()
+//      rxNum_("(\\d+(\.\\d{0,})?)"),
+//      rxDate_("([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))")
 {
+//    db_.createTempTableForWrite();
     queryForWrite_ = db_.getAssociatedQuery();
     queryForWrite_.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
-                  "values(?, ?, ?, ?, ?);");
+                           "values(?, ?, ?, ?, ?);");
+}
+
+SaleHistoryWriter::~SaleHistoryWriter()
+{
+//    db_.dropTempTableForWrite();
 }
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
@@ -65,79 +73,108 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
     return true;
 }
 
-bool SaleHistoryWriter::writeStd(const QList<StdVector> &days)
+bool SaleHistoryWriter::checkFile(const QString &fileName)
 {
-    int i = 0;
-    while(i < days.count())
-    {
-        int delta;
-        if(i + bufferSize_ >= days.count())
-        {
-            delta = days.count() - i;
-        }
-        else
-        {
-            delta = bufferSize_;
-        }
-
-        QVariantList storageList;
-        QVariantList productList;
-        QVariantList dateList;
-        QVariantList soldList;
-        QVariantList restList;
-
-        for(int j = i; j < i + delta ; j++)
-        {
-            const StdVector day = days.at(j);
-
-                storageList << QString::fromStdString(day.at(0));
-                productList << QString::fromStdString(day.at(1));
-                dateList << QString::fromStdString(day.at(2));
-                soldList << QString::fromStdString(day.at(3));
-                restList << QString::fromStdString(day.at(4));
-
-        }
-        i += delta;
-
-        queryForWrite_.addBindValue(storageList);
-        queryForWrite_.addBindValue(productList);
-        queryForWrite_.addBindValue(dateList);
-        queryForWrite_.addBindValue(soldList);
-        queryForWrite_.addBindValue(restList);
-
-        db_.beginTransaction();
-        if(!queryForWrite_.execBatch())
-        {
-            db_.rollbackTransaction();
-            qInfo() << queryForWrite_.lastError().text();
-            qInfo() << queryForWrite_.lastQuery();
-            return false;
-        }
-        db_.commitTransaction();
-    }
-
-    return true;
-}
-
-bool SaleHistoryWriter::writeBuffer(const QStringList &list)
-{
-    SaleHistoryParser parser;
-    if(list.isEmpty())
-    {
-        return true;
-    }
-
-    QList<SaleHistoryDay> days = parser.parse(list);
-
-    if(!parser.isValid())
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly))
     {
         return false;
     }
-    return write(days);
+
+    QString splitter(";");
+    QString pattern("(^[^;]+|\"[^\"]+\")%1"
+                    "([^;]+|\"[^\"]+\")%1"
+                    "([0-9]{4}\.(0[1-9]|1[012])\.(0[1-9]|1[0-9]|2[0-9]|3[01]))%1"
+                    "(\\d+(\.\\d{0,})?)%1"
+                    "(\\d+(\.\\d{0,})?)");
+    QRegExp rx = QRegExp(pattern.arg(splitter));
+
+    QTextStream ts(&file);
+    ts.setCodec(QTextCodec::codecForName("Windows-1251"));
+
+    while(!ts.atEnd())
+    {
+        const QString str = ts.readLine().trimmed();
+        if(!rx.exactMatch(str))
+//         if(!checkLine(str))
+        {
+            file.close();
+            return false;
+        }
+    }
+    file.close();
+    return true;
 }
+
+bool SaleHistoryWriter::copyDataFromTempTable()
+{
+    QSqlQuery query = db_.getAssociatedQuery();
+    db_.beginTransaction();
+    if(!query.exec("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
+                  "select f_storage, f_product, f_date, f_sold, f_rest from t_temp_datas;"))
+    {
+        db_.rollbackTransaction();
+        return false;
+    }
+    db_.commitTransaction();
+    return true;
+}
+
+//bool SaleHistoryWriter::checkLine(const QString &string)
+//{
+//    QString temp = string;
+//    int counter = 0;
+//    int pos = 0;
+//    while(counter < 5)
+//    {
+//        pos = temp.indexOf(";");
+//        if(pos == -1)
+//        {
+//            return false;
+//        }
+
+//        if(counter == 2)
+//        {
+//            QString date = temp.left(pos);
+//            if(!rxDate_.exactMatch(date))
+//            {
+//                return false;
+//            }
+
+//        }
+//        if(counter == 3)
+//        {
+//            QString num = temp.left(pos);
+//            if(!rxNum_.exactMatch(num))
+//            {
+//                return false;
+//            }
+//            temp = temp.right(temp.length() - pos - 1);
+//            counter ++;
+//        }
+//        if(counter == 4)
+//        {
+//            if(!rxNum_.exactMatch(temp))
+//            {
+//                return false;
+//            }
+//            //break;
+//        }
+
+//        temp = temp.right(temp.length() - pos - 1);
+//        counter++;
+//    }
+
+//    return true;
+//}
 
 bool SaleHistoryWriter::importFromFile(const QString &fileName)
 {
+    if(!checkFile(fileName))
+    {
+        return false;
+    }
+
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly))
     {
@@ -149,7 +186,6 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
 
     int counter = 0;
     QList<SaleHistoryDay> bufferList;
-//    QList<StdVector> bufferList;
     SaleHistoryParser parser;
 
     while(!ts.atEnd())
@@ -160,7 +196,6 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
         if(!buffer.isEmpty())
         {
             const SaleHistoryDay day = parser.parseString(buffer);
-//            StdVector day = parser.parseStdString(buffer.toStdString());
             bufferList.append(day);
         }
 
@@ -169,7 +204,6 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
             counter = 0;
 
             bool isWited = write(bufferList);
-//            bool isWited = writeStd(bufferList);
             if(!isWited)
             {
                 file.close();
@@ -179,8 +213,11 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
         }
     }
     file.close();
-    return write(bufferList);
-//    return writeStd(bufferList);
+    if(!write(bufferList))
+    {
+        return false;
+    }
+    return true;//copyDataFromTempTable();
 }
 
 void SaleHistoryWriter::setBufferSize(const int size)

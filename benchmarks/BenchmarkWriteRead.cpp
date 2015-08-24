@@ -40,6 +40,19 @@
 Для буффера в 1000000
 18MB (6MB) - 17MB (0MB)    354MB (340MB) - 26MB (7MB)     479MB (464MB) - 29MB (0MB)
 1807         73            15436        863                 239128      9512
+разделение процедуры импорта из файла на 2 прохода, замены преобразования даты из строки
+16MB (4MB) - 16MB (0MB)    254MB (241MB) - 25MB (6MB)     345MB (330MB) - 104MB (76MB)
+1415        74             12215           863             232805         9642
+на проверку каждой строки уходит примерно 1/4 часть времени
+
+для 720/10/10000
+25 мин - 1 мин
+
+опытные данные для 720/10/10000
+356MB (336MB) - 921MB (883MB) - с накоплением
+2912563         1822133
+2912s           122s
+
 */
 
 QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products)
@@ -168,11 +181,11 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         const double sRead = Utils::_runBenchmarking("read");
         timer.start();
 
-        QList<SaleHistory> shList;
+//        QList<SaleHistory> shList;
         do
         {
             const SaleHistory history = reader.current();
-            shList.append(history);
+//            shList.append(history);
         } while (reader.next());
 
 

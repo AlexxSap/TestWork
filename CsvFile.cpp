@@ -10,6 +10,7 @@ bool CsvFile::write(const QList<SaleHistoryDay> &days, const QString &fileName)
     const QString dateFormat = QString("yyyy.MM.dd");
 
     QTextStream out(&file);
+    out.setCodec(QTextCodec::codecForName("Windows-1251"));
 
     foreach (const SaleHistoryDay &day, days)
     {
@@ -18,8 +19,8 @@ bool CsvFile::write(const QList<SaleHistoryDay> &days, const QString &fileName)
             continue;
         }
         QString temp("%1;%2;%3;%4;%5");
-        temp = temp.arg(day.item().product())
-                .arg(day.item().storage())
+        temp = temp.arg(day.item().storage())
+                .arg(day.item().product())
                 .arg(day.date().toString(dateFormat))
                 .arg(QString::number(day.sold(),'f',2))
                 .arg(QString::number(day.rest(),'f',2));

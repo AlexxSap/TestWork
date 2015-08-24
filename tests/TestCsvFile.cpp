@@ -32,7 +32,6 @@ void TestCsvFile::testCsvFile()
     const QList<SaleHistoryDay> actData = CsvFile::read(fileName);
 
     QCOMPARE(actData, expData);
-
     {
         SaleHistoryWriter writer(dbName);
         bool isWritedToDb = writer.importFromFile(fileName);
