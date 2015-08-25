@@ -6,11 +6,10 @@
 class AnalogsTableGenerator
 {
 public:
-    AnalogsTableGenerator();
-
-    AnalogsTable generateTable(const int &groupNum,
+    static AnalogsTable generateTable(const int &groupNum,
                                const int &analogsNumMax,
                                const QString &prodPrefix = "prod");
+    static QList<ID> getRandomIdList(const AnalogsTable &table);
 };
 
 #endif // ANALOGSTABLEGENERATOR_H

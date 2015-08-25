@@ -16,6 +16,8 @@
 #include "tests/TAnalogsTableGenerator.h"
 
 #include "benchmarks/BenchmarkWriteRead.h"
+#include "benchmarks/BenchmarkAnalogsReader.h"
+
 #else
 #include <QApplication>
 #include "mainwindow.h"
@@ -46,20 +48,20 @@ int main()
 //    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
 //    test += QTest::qExec(&testSalesHistoryStreamReader);
 
-    TAnalogs tAnalogs;
-    test += QTest::qExec(&tAnalogs);
+//    TAnalogs tAnalogs;
+//    test += QTest::qExec(&tAnalogs);
 
-    TAnalogsTable tAnalogsTable;
-    test += QTest::qExec(&tAnalogsTable);
+//    TAnalogsTable tAnalogsTable;
+//    test += QTest::qExec(&tAnalogsTable);
 
-    TAnalogsReader tAnalogsReader;
-    test += QTest::qExec(&tAnalogsReader);
+//    TAnalogsReader tAnalogsReader;
+//    test += QTest::qExec(&tAnalogsReader);
 
-    TAnalogsFromFile tAnalogsFromFile;
-    test += QTest::qExec(&tAnalogsFromFile);
+//    TAnalogsFromFile tAnalogsFromFile;
+//    test += QTest::qExec(&tAnalogsFromFile);
 
-    TAnalogsTableGenerator tAnalogsTableGenerator;
-    test += QTest::qExec(&tAnalogsTableGenerator);
+//    TAnalogsTableGenerator tAnalogsTableGenerator;
+//    test += QTest::qExec(&tAnalogsTableGenerator);
 
     if(test == 0)
     {
@@ -76,6 +78,9 @@ int main()
 //        BenchmarkWriteRead::runForBuffer(1000000);
 //        BenchmarkWriteRead::runForBuffer(100000);
 //        BenchmarkWriteRead::runForBuffer(10000);
+
+        BenchmarkAnalogsReader::run(500, 1000);
+
     }
     return test;
 #else

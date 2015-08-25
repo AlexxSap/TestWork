@@ -31,6 +31,39 @@ bool CsvFile::write(const QList<SaleHistoryDay> &days, const QString &fileName)
     return true;
 }
 
+bool CsvFile::write(const AnalogsTable &table, const QString &fileName)
+{
+    QFile file(fileName);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+        return false;
+    }
+
+    QTextStream out(&file);
+    out.setCodec(QTextCodec::codecForName("Windows-1251"));
+
+    QList<Analogs> list = table.toList();
+    foreach (const Analogs &an, list)
+    {
+        if(!an.isValid())
+        {
+            continue;
+        }
+
+        QList<ID> idList = an.toList();
+        QString temp;
+        foreach (const ID id, idList)
+        {
+            temp += id + ";";
+        }
+
+        out << temp.left(temp.length() - 1) << "\n";
+    }
+    file.close();
+    return true;
+
+}
+
 QList<SaleHistoryDay> CsvFile::read(const QString &fileName)
 {
     QFile file(fileName);

@@ -1,10 +1,5 @@
 #include "AnalogsTableGenerator.h"
 
-AnalogsTableGenerator::AnalogsTableGenerator()
-{
-
-}
-
 AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
                                                   const int &analogsNumMax,
                                                   const QString &prodPrefix)
@@ -24,5 +19,19 @@ AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
         table.addAnalogs(analogs);
     }
     return table;
+}
+
+QList<ID> AnalogsTableGenerator::getRandomIdList(const AnalogsTable &table)
+{
+    QList<ID> list;
+    QList<Analogs> anList = table.toList();
+    foreach (const Analogs an, anList)
+    {
+        const QList<ID> idList = an.toList();
+        const int randIndex = ((rand() + 1) % idList.count());
+        list.append(idList.at(randIndex));
+    }
+
+    return list;
 }
 
