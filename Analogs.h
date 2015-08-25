@@ -27,6 +27,7 @@ public:
     QString toString() const;
 
     bool contains(const ID &product) const;
+    bool isValid() const;
 
     friend bool operator != (const Analogs &left, const Analogs &right);
     friend bool operator == (const Analogs &left, const Analogs &right);

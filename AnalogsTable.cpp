@@ -37,6 +37,23 @@ bool AnalogsTable::contains(const Analogs &analogs) const
     return table_.contains(analogs);
 }
 
+Analogs AnalogsTable::analogsForProduct(const ID &product) const
+{
+    if(table_.size() == 0)
+    {
+        return Analogs();
+    }
+    QList<Analogs> list = table_.toList();
+    foreach(const Analogs a, list)
+    {
+        if(a.contains(product))
+        {
+            return a;
+        }
+    }
+    return Analogs();
+}
+
 QString AnalogsTable::toString() const
 {
     QString string;
@@ -47,6 +64,11 @@ QString AnalogsTable::toString() const
     }
 
     return string.left(string.length() - 3);
+}
+
+bool AnalogsTable::isValid() const
+{
+    return !table_.isEmpty();
 }
 
 bool operator !=(const AnalogsTable &left, const AnalogsTable &right)

@@ -30,20 +30,14 @@ Analogs::Analogs(const Analogs &other)
 {
     main_ = other.mainAnalog();
     QList<ID> al = other.toList();
-    foreach (const ID &i, al)
-    {
-        analogs_.insert(i);
-    }
+    analogs_ = al.toSet();
 }
 
 Analogs &Analogs::operator =(const Analogs &other)
 {
     main_ = other.mainAnalog();
     QList<ID> al = other.toList();
-    foreach (const ID &i, al)
-    {
-        analogs_.insert(i);
-    }
+    analogs_ = al.toSet();
     return *this;
 }
 
@@ -86,5 +80,11 @@ QString Analogs::toString() const
 
 bool Analogs::contains(const ID &product) const
 {
-    return analogs_.contains(product);
+    return (QString::compare(main_, product) == 0
+            || analogs_.contains(product));
+}
+
+bool Analogs::isValid() const
+{
+    return !(main_.isEmpty() || analogs_.isEmpty());
 }

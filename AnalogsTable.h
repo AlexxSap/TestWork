@@ -21,7 +21,10 @@ public:
     QList<Analogs> toList() const;
     bool contains(const Analogs &analogs) const;
 
+    Analogs analogsForProduct(const ID &product) const;
+
     QString toString() const;
+    bool isValid() const;
 
     friend bool operator != (const AnalogsTable &left, const AnalogsTable &right);
     friend bool operator == (const AnalogsTable &left, const AnalogsTable &right);

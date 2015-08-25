@@ -22,6 +22,9 @@ private slots:
 
     void TestAssign();
     void TestAssign_data();
+
+    void TestAnalogsForProduct();
+    void TestAnalogsForProduct_data();
 };
 
 #endif // TANALOGSTABLE_H

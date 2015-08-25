@@ -12,6 +12,8 @@ void TAnalogs::TestAnalogsList()
 
     QList<ID> actLits = data.toList();
 
+    qInfo() << expList;
+    qInfo() << actLits;
     const bool isEqual = TestUtility::compareListWithoutOrder(actLits, expList);
 
     QVERIFY(isEqual);
@@ -53,13 +55,19 @@ void TAnalogs::TestIsAnalog_data()
     QTest::addColumn<bool>("expIsAnalog");
 
     QTest::newRow("yes") << (Analogs("product1")
-                             << "product1"
+                             << "product3"
                              << "product2")
                          << ID("product2")
                          << true;
 
+    QTest::newRow("yes2") << (Analogs("product1")
+                             << "product3"
+                             << "product2")
+                         << ID("product1")
+                         << true;
+
     QTest::newRow("no") << (Analogs("product1")
-                            << "product1"
+                            << "product4"
                             << "product2")
                         << ID("product3")
                         << false;

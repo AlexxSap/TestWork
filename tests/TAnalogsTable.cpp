@@ -109,9 +109,6 @@ void TAnalogsTable::TestAssign()
 
     const AnalogsTable other = table;
 
-    qInfo() << table;
-    qInfo() << other;
-
     bool eq = table == other;
     bool notEq = table != other;
 
@@ -130,3 +127,45 @@ void TAnalogsTable::TestAssign_data()
                               << ID("p12")));
 }
 
+void TAnalogsTable::TestAnalogsForProduct()
+{
+    QFETCH(AnalogsTable, table);
+    QFETCH(ID, product);
+    QFETCH(Analogs, expResult);
+
+    const Analogs actResult = table.analogsForProduct(product);
+
+    QCOMPARE(actResult, expResult);
+}
+
+void TAnalogsTable::TestAnalogsForProduct_data()
+{
+    QTest::addColumn<AnalogsTable>("table");
+    QTest::addColumn<ID>("product");
+    QTest::addColumn<Analogs>("expResult");
+
+    QTest::newRow("simple") << (AnalogsTable()
+                                << (Analogs("p01")
+                                    << ID("p02")
+                                    << ID("p03"))
+                                << (Analogs("p11")
+                                    << ID("p12"))
+                                << (Analogs("p21")
+                                    << ID("p22")
+                                    << ID("p23")))
+                            << ID("p11")
+                            << (Analogs("p11")
+                                << ID("p12"));
+
+    QTest::newRow("not found") << (AnalogsTable()
+                                   << (Analogs("p01")
+                                       << ID("p02")
+                                       << ID("p03"))
+                                   << (Analogs("p11")
+                                       << ID("p12"))
+                                   << (Analogs("p21")
+                                       << ID("p22")
+                                       << ID("p23")))
+                               << ID("p31")
+                               << Analogs();
+}
