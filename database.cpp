@@ -46,6 +46,13 @@ bool DataBase::createEmptyDB()
             return false;
         }
 
+        if(!executeQuery(db, "create table t_analogs("
+                         "f_main text not null, "
+                         "f_analog text not null);"))
+        {
+            return false;
+        }
+
         db.close();
     }
     QSqlDatabase::removeDatabase(connName);
@@ -102,11 +109,6 @@ bool DataBase::disconnect()
 bool DataBase::isConnected()
 {
     return db_.isOpen();
-}
-
-const QSqlQuery DataBase::get()
-{
-    return QSqlQuery();
 }
 
 QSqlQuery DataBase::getAssociatedQuery() const

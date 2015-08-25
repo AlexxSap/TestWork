@@ -39,7 +39,10 @@ SOURCES += main.cpp\
     tests/TAnalogs.cpp \
     Analogs.cpp \
     tests/TAnalogsTable.cpp \
-    AnalogsTable.cpp
+    AnalogsTable.cpp \
+    tests/TAnalogsReader.cpp \
+    AnalogsWriter.cpp \
+    AnalogsReader.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -65,4 +68,7 @@ HEADERS  += mainwindow.h \
     tests/TAnalogs.h \
     Analogs.h \
     tests/TAnalogsTable.h \
-    AnalogsTable.h
+    AnalogsTable.h \
+    tests/TAnalogsReader.h \
+    AnalogsWriter.h \
+    AnalogsReader.h

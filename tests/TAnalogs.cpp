@@ -29,12 +29,14 @@ void TAnalogs::TestAnalogsList_data()
                                 << "product3"
                                 << "product5")
                             << (QList<ID>()
+                                << "product1"
                                 << "product2"
                                 << "product3"
                                 << "product5");
 
     QTest::newRow("empty") << Analogs("product1")
-                           << QList<ID>();
+                           << (QList<ID>()
+                               << "product1");
 }
 
 void TAnalogs::TestIsAnalog()

@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QString>
 #include <QFile>
 
@@ -26,7 +27,6 @@ public:
 
     bool isConnected();
 
-    const virtual QSqlQuery get();
     QSqlQuery getAssociatedQuery() const;
 
     void beginTransaction();

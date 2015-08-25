@@ -1,7 +1,6 @@
 #ifndef SALESHISTORYSTREAMREADER_H
 #define SALESHISTORYSTREAMREADER_H
 
-#include <QSqlError>
 #include <QDebug>
 
 #include "SaleHistory.h"

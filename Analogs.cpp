@@ -21,7 +21,7 @@ Analogs::Analogs(const ID &main)
     : main_(main),
       analogs_()
 {
-
+    analogs_.insert(main);
 }
 
 Analogs::Analogs(const Analogs &other)
@@ -80,8 +80,7 @@ QString Analogs::toString() const
 
 bool Analogs::contains(const ID &product) const
 {
-    return (QString::compare(main_, product) == 0
-            || analogs_.contains(product));
+    return (analogs_.contains(product));
 }
 
 bool Analogs::isValid() const

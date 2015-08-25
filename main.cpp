@@ -11,6 +11,7 @@
 #include "tests/TestCsvFile.h"
 #include "tests/TAnalogs.h"
 #include "tests/TAnalogsTable.h"
+#include "tests/TAnalogsReader.h"
 
 #include "benchmarks/BenchmarkWriteRead.h"
 #else
@@ -48,6 +49,9 @@ int main()
 
     TAnalogsTable tAnalogsTable;
     test += QTest::qExec(&tAnalogsTable);
+
+    TAnalogsReader tAnalogsReader;
+    test += QTest::qExec(&tAnalogsReader);
 
     if(test == 0)
     {

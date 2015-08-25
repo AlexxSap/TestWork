@@ -5,7 +5,6 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QDebug>
-#include <QSqlError>
 #include <QRegExp>
 
 #include "SaleHistoryDay.h"
