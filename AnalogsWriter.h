@@ -2,6 +2,8 @@
 #define ANALOGSWRITER_H
 
 #include <QDebug>
+#include <QFile>
+#include <QTextCodec>
 
 #include "AnalogsTable.h"
 #include "database.h"
@@ -14,6 +16,7 @@ private:
 public:
     explicit AnalogsWriter(const QString &dbName);
     bool write(const AnalogsTable &table);
+    bool importFromFile(const QString &fileName);
 };
 
 #endif // ANALOGSWRITER_H

@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     AnalogsTable.cpp \
     tests/TAnalogsReader.cpp \
     AnalogsWriter.cpp \
-    AnalogsReader.cpp
+    AnalogsReader.cpp \
+    tests/TAnalogsFromFile.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -71,4 +72,5 @@ HEADERS  += mainwindow.h \
     AnalogsTable.h \
     tests/TAnalogsReader.h \
     AnalogsWriter.h \
-    AnalogsReader.h
+    AnalogsReader.h \
+    tests/TAnalogsFromFile.h
