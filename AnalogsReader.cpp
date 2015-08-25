@@ -8,8 +8,8 @@ bool AnalogsReader::createTempIdTable()
                    "f_main text, "
                    "f_id text);"))
     {
-//        qInfo() << query.lastError().text();
-//        qInfo() << query.lastQuery();
+        //        qInfo() << query.lastError().text();
+        //        qInfo() << query.lastQuery();
         db_.rollbackTransaction();
         return false;
     }
@@ -19,8 +19,8 @@ bool AnalogsReader::createTempIdTable()
     if(!query.exec("create table if not exists t_temp_ids("
                    "f_id text not null);"))
     {
-//        qInfo() << query.lastError().text();
-//        qInfo() << query.lastQuery();
+        //        qInfo() << query.lastError().text();
+        //        qInfo() << query.lastQuery();
         db_.rollbackTransaction();
         return false;
     }
@@ -56,11 +56,30 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     }
     db_.commitTransaction();
 
+
+    //----расшифровка плана запроса-----
+    //    query.exec("explain query plan insert into t_temp_idmain(f_main, f_id) "
+    //                "select t_analogs.f_main, t_analogs.f_analog "
+    //                "from t_temp_ids left outer join t_analogs "
+    //                "on t_analogs.f_analog = t_temp_ids.f_id;");
+
+    //    while(query.next())
+    //    {
+    //        const QSqlRecord rec = query.record();
+    //        QStringList val;
+    //        for(int i = 0; i< rec.count(); i++)
+    //        {
+    //            val << rec.value(i).toString();
+    //        }
+    //        qInfo() << val;
+    //    }
+    //----------------------------------
+
     db_.beginTransaction();
     if(!query.exec("insert into t_temp_idmain(f_main, f_id) "
-                  "select t_analogs.f_main, t_analogs.f_analog "
-                  "from t_temp_ids left outer join t_analogs "
-                  "on t_analogs.f_analog = t_temp_ids.f_id;"))
+                   "select t_analogs.f_main, t_analogs.f_analog "
+                   "from t_temp_ids left outer join t_analogs "
+                   "on t_analogs.f_analog = t_temp_ids.f_id;"))
     {
         qInfo() << query.lastError().text();
         qInfo() << query.lastQuery();
@@ -69,49 +88,6 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     }
     db_.commitTransaction();
 
-//    query.prepare("insert into t_temp_ids (f_id) values (?);");
-
-//    QVariantList lst ;
-//    foreach (const ID id, IdList)
-//    {
-//        lst << id;
-//    }
-//    query.addBindValue(lst);
-
-//    db_.beginTransaction();
-//    if(!query.execBatch())
-//    {
-//        db_.rollbackTransaction();
-//        return false;
-//    }
-//    db_.commitTransaction();
-
-//    db_.beginTransaction();
-//    if(!query.exec("update t_temp_ids set f_main = ("
-//                   "select t_analogs.f_main from t_analogs "
-//                   "where t_analogs.f_analog = t_temp_ids.f_id);"))
-//    {
-//        qInfo() << query.lastError().text();
-//        qInfo() << query.lastQuery();
-//        db_.rollbackTransaction();
-//        return false;
-//    }
-//    db_.commitTransaction();
-
-
-//        if(!query.exec("select f_main, f_id from t_temp_idmain;"))
-//        {
-//            qInfo() << query.lastError().text();
-//            qInfo() << query.lastQuery();
-//            db_.rollbackTransaction();
-//            return false;
-//        }
-//        while(query.next())
-//        {
-//            qInfo() << query.value(0).toString() << query.value(1).toString();
-//        }
-
-
     return true;
 }
 
@@ -119,6 +95,25 @@ AnalogsTable AnalogsReader::getTable()
 {
     QSqlQuery query = db_.getAssociatedQuery();
     query.setForwardOnly(true);
+
+    //----расшифровка плана запроса-----
+//    query.exec("explain query plan select t_analogs.f_main, t_analogs.f_analog "
+//               "from t_temp_idmain left outer join t_analogs "
+//               "on t_analogs.f_main = t_temp_idmain.f_main "
+//               "where t_temp_idmain.f_main is not null "
+//               "order by t_analogs.f_main;");
+
+//    while(query.next())
+//    {
+//        const QSqlRecord rec = query.record();
+//        QStringList val;
+//        for(int i = 0; i< rec.count(); i++)
+//        {
+//            val << rec.value(i).toString();
+//        }
+//        qInfo() << val;
+//    }
+    //----------------------------------
 
     if(!query.exec("select t_analogs.f_main, t_analogs.f_analog "
                    "from t_temp_idmain left outer join t_analogs "
