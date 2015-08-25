@@ -13,8 +13,6 @@ void SaleHistoryGenerator::setMaxValue(const int &max)
     maxVal_ = max;
 }
 
-
-
 QList<SaleHistoryDay> SaleHistoryGenerator::generateHistory(const Date &from,
                                                             const Date &to,
                                                             const int storageNum,

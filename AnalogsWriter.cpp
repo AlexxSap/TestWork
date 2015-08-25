@@ -25,8 +25,6 @@ bool AnalogsWriter::write(const AnalogsTable &table)
     {
         const ID mainAn = an.mainAnalog();
         const QList<ID> analogs = an.toList();
-//        mains << mainAn;
-//        anVarLits << mainAn;
         foreach (const ID id, analogs)
         {
             mains << mainAn;
@@ -46,19 +44,6 @@ bool AnalogsWriter::write(const AnalogsTable &table)
         return false;
     }
     db_.commitTransaction();
-
-//    if(!query.exec("select f_main, f_analog from t_analogs;"))
-//    {
-//        qInfo() << query.lastError().text();
-//        qInfo() << query.lastQuery();
-//        db_.rollbackTransaction();
-//        return false;
-//    }
-//    while(query.next())
-//    {
-//        qInfo() << query.value(0).toString() << query.value(1).toString();
-//    }
-
     return true;
 }
 

@@ -13,6 +13,7 @@
 #include "tests/TAnalogsTable.h"
 #include "tests/TAnalogsReader.h"
 #include "tests/TAnalogsFromFile.h"
+#include "tests/TAnalogsTableGenerator.h"
 
 #include "benchmarks/BenchmarkWriteRead.h"
 #else
@@ -56,6 +57,9 @@ int main()
 
     TAnalogsFromFile tAnalogsFromFile;
     test += QTest::qExec(&tAnalogsFromFile);
+
+    TAnalogsTableGenerator tAnalogsTableGenerator;
+    test += QTest::qExec(&tAnalogsTableGenerator);
 
     if(test == 0)
     {
