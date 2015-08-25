@@ -14,7 +14,7 @@
 class BenchmarkAnalogsReader
 {
 public:
-    static void run(const int &groupNum, const int &analogsNumMax);
+    static void run(const int &groupNum, const int &analogsNum);
 };
 
 #endif // BENCHMARKANALOGSREADER_H

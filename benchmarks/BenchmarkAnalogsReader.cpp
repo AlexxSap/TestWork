@@ -1,19 +1,19 @@
 #include "BenchmarkAnalogsReader.h"
 
-void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNumMax)
+void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 {
     const QString dbName(QString::number(groupNum) + "_"
-                         + QString::number(analogsNumMax) + "_"
+                         + QString::number(analogsNum) + "_"
                          + "TestDBase.db");
 
     const QString fileName(QString::number(groupNum) + "_"
-                           + QString::number(analogsNumMax) + "_"
+                           + QString::number(analogsNum) + "_"
                            + "TestFile.csv");
 
     QThread::msleep(100);
     qInfo() << "-------Benchmark for write and read analogs-------";
     qInfo() << groupNum << " groupNum, "
-            << analogsNumMax << " analogsNumMax";
+            << analogsNum << " analogsNum";
 
     if(!TestUtility::removeFile(dbName))
     {
@@ -30,7 +30,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNumMax)
     QList<ID> IdList;
     {//запись в файл
         AnalogsTable table = AnalogsTableGenerator::generateTable(groupNum,
-                                                                 analogsNumMax);
+                                                                 analogsNum);
         IdList = AnalogsTableGenerator::getRandomIdList(table);
 
         const bool isWritedToFile = CsvFile::write(table, fileName);
@@ -59,12 +59,11 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNumMax)
         return;
     }
 
-
-
     {//чтение из базы
         AnalogsReader reader(dbName);
         timer.start();
         const AnalogsTable table = reader.read(IdList);
+        Q_UNUSED(table)
         qInfo() << "read from db " << timer.elapsed();
     }
 

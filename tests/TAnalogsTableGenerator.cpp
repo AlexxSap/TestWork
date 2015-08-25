@@ -8,10 +8,10 @@ TAnalogsTableGenerator::TAnalogsTableGenerator(QObject *parent) : QObject(parent
 void TAnalogsTableGenerator::TestGenerate()
 {
     QFETCH(int, groupNum);
-    QFETCH(int, analogsNumMax);
+    QFETCH(int, analogsNum);
 
     AnalogsTableGenerator gen;
-    const AnalogsTable table = gen.generateTable(groupNum, analogsNumMax);
+    const AnalogsTable table = gen.generateTable(groupNum, analogsNum);
 
     const QList<Analogs> list = table.toList();
 
@@ -20,9 +20,9 @@ void TAnalogsTableGenerator::TestGenerate()
 
     foreach (Analogs an, list)
     {
-        if(an.toList().count() > analogsNumMax)
+        if(an.toList().count() == analogsNum)
         {
-            QFAIL("analogsNumMax not ok");
+            QFAIL("analogsNum not ok");
         }
     }
 }
@@ -30,7 +30,7 @@ void TAnalogsTableGenerator::TestGenerate()
 void TAnalogsTableGenerator::TestGenerate_data()
 {
     QTest::addColumn<int>("groupNum");
-    QTest::addColumn<int>("analogsNumMax");
+    QTest::addColumn<int>("analogsNum");
 
     QTest::newRow("") << 50
                       << 23;

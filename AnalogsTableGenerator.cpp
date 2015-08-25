@@ -1,7 +1,7 @@
 #include "AnalogsTableGenerator.h"
 
 AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
-                                                  const int &analogsNumMax,
+                                                  const int &analogsNum,
                                                   const QString &prodPrefix)
 {
     AnalogsTable table;
@@ -9,8 +9,7 @@ AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
     {
         QString add = QString::number(group);
         Analogs analogs(ID(prodPrefix + add));
-        int analogsCount = rand() % analogsNumMax;
-        for(int an = 0; an < analogsCount; an++)
+        for(int an = 0; an < analogsNum; an++)
         {
             const ID id("_" + prodPrefix + add + "_" + QString::number(an));
             analogs.addAnalog(id);
