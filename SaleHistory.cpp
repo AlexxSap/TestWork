@@ -229,36 +229,41 @@ QString SaleHistory::toString() const
     return str;
 }
 
-
-//void SaleHistory::normalazeByAnalogs()
-//{
-//    QList<Date> keys = days_.keys().toSet().toList();
-//    qSort(keys);
-//    foreach (const Date &date, keys)
-//    {
-//        QList<Day> lst = days_.values(date);
-
-//        Amount sold = 0.0;
-//        Amount rest = 0.0;
-
-//        if(lst.count() > 1)
-//        {
-//            foreach (const Day day, lst)
-//            {
-//                sold += day.sold();
-//                rest += day.rest();
-//            }
-//            days_.remove(date);
-//            days_.insert(date, Day(sold, rest));
-//        }
-
-//    }
-//}
-
 void SaleHistory::normalaze(const Date &nFrom, const Date &nTo)
 {
-//    normalazeByAnalogs();
     days_ = normalazeData(days_, nFrom, nTo);
+
+    if(analoglist_.isEmpty())
+    {
+        return;
+    }
+
+    for(int i = 0; i < analogData_.count(); i++)
+    {
+        SHData temp =  analogData_.takeAt(i);
+        temp = normalazeData(temp, nFrom, nTo);
+        analogData_.insert(i, temp);
+    }
+
+    const Date fD = from();
+    const Date fT = to();
+
+    for(Date date = fD; date <= fT; date = date.addDays(1))
+    {
+        Day day = days_.take(date);
+        Amount sold = day.sold();
+        Amount rest = day.rest();
+        foreach (const SHData data, analogData_)
+        {
+            const Day temp = data.value(date);
+            sold += temp.sold();
+            rest += temp.rest();
+        }
+        day = Day(sold, rest);
+        days_.insert(date, day);
+    }
+    analogData_.clear();
+    analoglist_.clear();
 }
 
 SaleHistory::Day::Day()

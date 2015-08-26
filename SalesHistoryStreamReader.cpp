@@ -146,21 +146,21 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to, const bool
     //----------------------------------
 
     //------вывод результатов------
-    if(query_.exec(select))
-    {
-        while(query_.next())
-        {
-            QSqlRecord rec = query_.record();
-            int c = rec.count();
-            QStringList lst;
-            for(int i = 0; i < c; i++)
-            {
-                lst.append(rec.value(i).toString());
-            }
-            qInfo() << lst;
+//    if(query_.exec(select))
+//    {
+//        while(query_.next())
+//        {
+//            QSqlRecord rec = query_.record();
+//            int c = rec.count();
+//            QStringList lst;
+//            for(int i = 0; i < c; i++)
+//            {
+//                lst.append(rec.value(i).toString());
+//            }
+//            qInfo() << lst;
 
-        }
-    }
+//        }
+//    }
     //-----------------------------
 
     if(!query_.exec(select))
@@ -250,7 +250,6 @@ SaleHistory SalesHistoryStreamReader::current()
         const Item tempItemp(query_.value(0).toString(), query_.value(1).toString());
         if(isCanReturnHistory(tempItemp))
         {
-            qInfo() << "110" << tempHistory_;
             tempHistory_.normalaze(from_, to_);
             const SaleHistory returnedHistory = tempHistory_;
             tempHistory_ = SaleHistory(tempItemp);
@@ -260,7 +259,6 @@ SaleHistory SalesHistoryStreamReader::current()
         addDayToTempHistory();
     }
     isCanNext_ = false;
-    qInfo() << "11" << tempHistory_;
     tempHistory_.normalaze(from_, to_);
     return tempHistory_;
 }

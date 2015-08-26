@@ -39,7 +39,6 @@ private:
     SHData normalazeData(const SHData &days,
                        const Date &nFrom,
                        const Date &nTo) const;
-//    void normalazeByAnalogs();
 
 public:
     SaleHistory();
