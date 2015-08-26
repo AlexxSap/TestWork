@@ -250,7 +250,12 @@ SaleHistory SalesHistoryStreamReader::current()
         const Item tempItemp(query_.value(0).toString(), query_.value(1).toString());
         if(isCanReturnHistory(tempItemp))
         {
-            tempHistory_.normalaze(from_, to_);
+            ID mainAnalog;
+            if(analogsTable_.isValid())
+            {
+                mainAnalog =analogsTable_.analogsForProduct(tempHistory_.item().product()).mainAnalog();
+            }
+            tempHistory_.normalaze(from_, to_, mainAnalog);
             const SaleHistory returnedHistory = tempHistory_;
             tempHistory_ = SaleHistory(tempItemp);
             addDayToTempHistory();
@@ -259,6 +264,11 @@ SaleHistory SalesHistoryStreamReader::current()
         addDayToTempHistory();
     }
     isCanNext_ = false;
-    tempHistory_.normalaze(from_, to_);
+    ID mainAnalog;
+    if(analogsTable_.isValid())
+    {
+        mainAnalog =analogsTable_.analogsForProduct(tempHistory_.item().product()).mainAnalog();
+    }
+    tempHistory_.normalaze(from_, to_, mainAnalog);
     return tempHistory_;
 }

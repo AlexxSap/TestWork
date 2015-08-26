@@ -229,9 +229,13 @@ QString SaleHistory::toString() const
     return str;
 }
 
-void SaleHistory::normalaze(const Date &nFrom, const Date &nTo)
+void SaleHistory::normalaze(const Date &nFrom, const Date &nTo, const ID &mainAnalog)
 {
     days_ = normalazeData(days_, nFrom, nTo);
+    if(!mainAnalog.isEmpty())
+    {
+        item_ = Item(item_.storage(), mainAnalog);
+    }
 
     if(analoglist_.isEmpty())
     {
