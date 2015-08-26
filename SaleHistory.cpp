@@ -10,9 +10,81 @@ bool operator == (const SaleHistory &left, const SaleHistory &right)
     return (left.item() == right.item() && left.days() == right.days());
 }
 
+SaleHistory::SHData SaleHistory::normalazeData(const SaleHistory::SHData &days,
+                                const Date &nFrom,
+                                const Date &nTo) const
+{
+    SaleHistory::SHData returnedData = days;
+    Date factFrom = from();
+    Date factTo = to();
+    Date normFrom = nFrom;
+    Date normTo = nTo;
+
+    if(factFrom == Date() && factTo == Date()
+            && normFrom == Date() && normTo == Date())
+    {
+        return returnedData;
+    }
+
+    if(nFrom == Date())
+    {
+        normFrom = factFrom;
+    }
+
+    if(nTo == Date())
+    {
+        normTo = factTo;
+    }
+
+    if(returnedData.isEmpty())
+    {
+        returnedData.insert(normFrom, Day(0.0, 0.0));
+        factFrom = normFrom;
+        factTo = normFrom;
+    }
+    // от даты начала до первой фактической
+    if(normFrom < factFrom)
+    {
+        for(Date d = normFrom; d < factFrom; d = d.addDays(1))
+        {
+            returnedData.insert(d, Day(0.0, 0.0));
+        }
+    }
+    //от последней фактической до конечной даты
+    if(normTo > factTo)
+    {
+        Amount lastRest = returnedData.last().rest();
+        for(Date d = factTo.addDays(1); d <= normTo; d = d.addDays(1))
+        {
+            returnedData.insert(d, Day(0.0, lastRest));
+        }
+    }
+
+    //в промежутке от первой фактической до последней фактической
+    Amount prevRest = returnedData.value(factFrom).rest();
+    Amount prevSold = returnedData.value(factFrom).sold();
+
+    for(Date d = factFrom; d <= factTo; d = d.addDays(1))
+    {
+        if(returnedData.contains(d))
+        {
+            prevRest = returnedData.value(d).rest();
+            prevSold = returnedData.value(d).sold();
+            returnedData.insert(d, Day(prevSold, prevRest));
+        }
+        else
+        {
+            returnedData.insert(d, Day(0.0, prevRest));
+        }
+    }
+    return returnedData;
+}
+
 SaleHistory::SaleHistory()
     :item_(),
-      days_()
+      days_(),
+      analoglist_(),
+      analogData_()
 {
 
 }
@@ -66,23 +138,29 @@ Date SaleHistory::to() const
 
 void SaleHistory::addDay(const SaleHistoryDay &day)
 {
-    // if(item() == day.item())
-    // {
-    days_.insert(day.date(), Day(day.sold(), day.rest()));
-    // }
-}
-
-void SaleHistory::remDay(const Date &date)
-{
-
-        days_.remove(date);
-
-//    QList<Day> lst = days_.values(date);
-//    foreach (const Day day, lst)
-//    {
-//        days_.remove(date, day);
-//    }
-
+    const ID product = day.item().product();
+    if(product != item_.product())
+    {
+        int index = 0;
+        if(analoglist_.isEmpty())
+        {
+            analoglist_.append(product);
+            QMap<Date, Day> map;
+            map.insert(day.date(), Day(day.sold(), day.rest()));
+            analogData_.append(map);
+        }
+        else
+        {
+            index = analoglist_.indexOf(product);
+            QMap<Date, Day> map = analogData_.takeAt(index);
+            map.insert(day.date(), Day(day.sold(), day.rest()));
+            analogData_.insert(index, map);
+        }
+    }
+    else
+    {
+        days_.insert(day.date(), Day(day.sold(), day.rest()));
+    }
 }
 
 SaleHistory &SaleHistory::operator <<(const SaleHistoryDay &day)
@@ -152,103 +230,35 @@ QString SaleHistory::toString() const
 }
 
 
-void SaleHistory::normalazeByAnalogs()
-{
-    QList<Date> keys = days_.keys().toSet().toList();
-    qSort(keys);
-    foreach (const Date &date, keys)
-    {
-        QList<Day> lst = days_.values(date);
+//void SaleHistory::normalazeByAnalogs()
+//{
+//    QList<Date> keys = days_.keys().toSet().toList();
+//    qSort(keys);
+//    foreach (const Date &date, keys)
+//    {
+//        QList<Day> lst = days_.values(date);
 
-        Amount sold = 0.0;
-        Amount rest = 0.0;
+//        Amount sold = 0.0;
+//        Amount rest = 0.0;
 
-        if(lst.count() > 1)
-        {
-            foreach (const Day day, lst)
-            {
-                sold += day.sold();
-                rest += day.rest();
-            }
-            days_.remove(date);
-            days_.insert(date, Day(sold, rest));
-        }
+//        if(lst.count() > 1)
+//        {
+//            foreach (const Day day, lst)
+//            {
+//                sold += day.sold();
+//                rest += day.rest();
+//            }
+//            days_.remove(date);
+//            days_.insert(date, Day(sold, rest));
+//        }
 
-    }
-}
+//    }
+//}
 
-SaleHistory SaleHistory::normalaze(const Date &nFrom, const Date &nTo)
+void SaleHistory::normalaze(const Date &nFrom, const Date &nTo)
 {
 //    normalazeByAnalogs();
-    SaleHistory history(item_);
-
-    Date factFrom = from();
-    Date factTo = to();
-    Date normFrom = nFrom;
-    Date normTo = nTo;
-
-    if(factFrom == Date() && factTo == Date() && normFrom == Date() && normTo == Date())
-    {
-        return history;
-    }
-
-    if(nFrom == Date())
-    {
-        normFrom = factFrom;
-    }
-
-    if(nTo == Date())
-    {
-        normTo = factTo;
-    }
-
-    if(days_.isEmpty())
-    {
-        history.addDay(SaleHistoryDay(item_, normFrom, 0.0, 0.0));
-        factFrom = normFrom;
-        factTo = normFrom;
-    }
-    if(normFrom < factFrom)
-    {
-        for(Date d = normFrom; d < factFrom; d = d.addDays(1))
-        {
-            history.addDay(SaleHistoryDay(item_, d, 0.0, 0.0));
-        }
-    }
-
-    if(normTo > factTo)
-    {
-        Amount lastRest = 0.0;
-        if(!days_.isEmpty())
-        {
-            lastRest = days_.last().rest();
-        }
-        for(Date d = factTo.addDays(1); d <= normTo; d = d.addDays(1))
-        {
-            history.addDay(SaleHistoryDay(item_, d, 0.0, lastRest));
-        }
-    }
-    if(days_.isEmpty())
-    {
-        return history;
-    }
-
-    Amount prevRest = days_.value(factFrom).rest();
-
-    for(Date d = factFrom; d <= factTo; d = d.addDays(1))
-    {
-        if(days_.contains(d))
-        {
-            prevRest = days_.value(d).rest();
-            history.addDay(SaleHistoryDay(item_, d, days_.value(d).sold(), prevRest));
-        }
-        else
-        {
-            history.addDay(SaleHistoryDay(item_, d, 0.0, prevRest));
-        }
-    }
-
-    return history;
+    days_ = normalazeData(days_, nFrom, nTo);
 }
 
 SaleHistory::Day::Day()

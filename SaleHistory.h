@@ -8,9 +8,12 @@
 #include "Item.h"
 #include "SaleHistoryDay.h"
 
+
+
 class SaleHistory
 {
 private:
+
     class Day
     {
     private:
@@ -23,13 +26,20 @@ private:
         Amount rest() const;
     };
 
-private:
-    Item item_;
-    QMultiMap<Date, Day> days_;
+    typedef QMap<Date, Day> SHData;
 
 private:
-    void normalazeByAnalogs();
-    void remDay(const Date &date);
+    Item item_;
+    SHData days_;
+
+    QList<ID> analoglist_;
+    QList<SHData> analogData_;
+
+private:
+    SHData normalazeData(const SHData &days,
+                       const Date &nFrom,
+                       const Date &nTo) const;
+//    void normalazeByAnalogs();
 
 public:
     SaleHistory();
@@ -52,7 +62,7 @@ public:
 
     QString toString() const;
 
-    SaleHistory normalaze(const Date &nFrom, const Date &nTo);
+    void normalaze(const Date &nFrom, const Date &nTo);
 };
 
 Q_DECLARE_METATYPE(SaleHistory)

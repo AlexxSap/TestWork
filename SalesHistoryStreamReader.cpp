@@ -205,12 +205,14 @@ bool SalesHistoryStreamReader::next()
 
 void SalesHistoryStreamReader::addDayToTempHistory()
 {
+    const Item item(query_.value(0).toString(),
+                    query_.value(1).toString());
     const QVariant date = query_.value(2);
     const QVariant sold = query_.value(3);
     const QVariant rest = query_.value(4);
     if(!date.isNull() && !sold.isNull() && !rest.isNull())
     {
-        tempHistory_.addDay(SaleHistoryDay(tempHistory_.item(),
+        tempHistory_.addDay(SaleHistoryDay(item,
                                            date.toDate(),
                                            sold.toDouble(),
                                            rest.toDouble()));
@@ -238,7 +240,6 @@ bool SalesHistoryStreamReader::isCanReturnHistory(const Item &tempItemp)
         return false;
     }
 
-
     return tempHistory_.item() != tempItemp;
 }
 
@@ -250,8 +251,8 @@ SaleHistory SalesHistoryStreamReader::current()
         if(isCanReturnHistory(tempItemp))
         {
             qInfo() << "110" << tempHistory_;
-            const SaleHistory returnedHistory = tempHistory_.normalaze(from_, to_);
-//            qInfo() << "220" << returnedHistory;
+            tempHistory_.normalaze(from_, to_);
+            const SaleHistory returnedHistory = tempHistory_;
             tempHistory_ = SaleHistory(tempItemp);
             addDayToTempHistory();
             return returnedHistory;
@@ -260,7 +261,6 @@ SaleHistory SalesHistoryStreamReader::current()
     }
     isCanNext_ = false;
     qInfo() << "11" << tempHistory_;
-    tempHistory_ = tempHistory_.normalaze(from_, to_);
-//    qInfo() << "22" << tempHistory_;
+    tempHistory_.normalaze(from_, to_);
     return tempHistory_;
 }

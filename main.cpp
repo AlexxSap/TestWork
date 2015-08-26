@@ -19,6 +19,8 @@
 #include "benchmarks/BenchmarkWriteRead.h"
 #include "benchmarks/BenchmarkAnalogsReader.h"
 
+#include <QVector>
+
 #else
 #include <QApplication>
 #include "mainwindow.h"
