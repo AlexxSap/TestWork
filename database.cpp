@@ -52,6 +52,11 @@ bool DataBase::createEmptyDB()
         {
             return false;
         }
+        executeQuery(db, "create index i_analogs_analog on t_analogs"
+                         "(f_analog);");
+        executeQuery(db, "create index i_analogs_main on t_analogs"
+                         "(f_main);");
+
 
         db.close();
     }

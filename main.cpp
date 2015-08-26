@@ -14,6 +14,7 @@
 #include "tests/TAnalogsReader.h"
 #include "tests/TAnalogsFromFile.h"
 #include "tests/TAnalogsTableGenerator.h"
+#include "tests/TSalesHistoryReaderWithAnalogs.h"
 
 #include "benchmarks/BenchmarkWriteRead.h"
 #include "benchmarks/BenchmarkAnalogsReader.h"
@@ -27,41 +28,44 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    TestItemOperators testItemOperators;
-    test += QTest::qExec(&testItemOperators);
+//    TestItemOperators testItemOperators;
+//    test += QTest::qExec(&testItemOperators);
 
-    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
-    test += QTest::qExec(&testSaleHistoryDayOperators);
+//    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
+//    test += QTest::qExec(&testSaleHistoryDayOperators);
 
-    TestSaleHistory testSaleHistory;
-    test += QTest::qExec(&testSaleHistory);
+//    TestSaleHistory testSaleHistory;
+//    test += QTest::qExec(&testSaleHistory);
 
-    TestSaleHistoryGenerator testSaleHistoryGenerator;
-    test += QTest::qExec(&testSaleHistoryGenerator);
+//    TestSaleHistoryGenerator testSaleHistoryGenerator;
+//    test += QTest::qExec(&testSaleHistoryGenerator);
 
-    TestSaleHistoryParser testSaleHistoryParser;
-    test += QTest::qExec(&testSaleHistoryParser);
+//    TestSaleHistoryParser testSaleHistoryParser;
+//    test += QTest::qExec(&testSaleHistoryParser);
 
-    TestCsvFile testCsvFile;
-    test += QTest::qExec(&testCsvFile);
+//    TestCsvFile testCsvFile;
+//    test += QTest::qExec(&testCsvFile);
 
     TestSalesHistoryStreamReader testSalesHistoryStreamReader;
     test += QTest::qExec(&testSalesHistoryStreamReader);
 
-    TAnalogs tAnalogs;
-    test += QTest::qExec(&tAnalogs);
+//    TAnalogs tAnalogs;
+//    test += QTest::qExec(&tAnalogs);
 
-    TAnalogsTable tAnalogsTable;
-    test += QTest::qExec(&tAnalogsTable);
+//    TAnalogsTable tAnalogsTable;
+//    test += QTest::qExec(&tAnalogsTable);
 
-    TAnalogsReader tAnalogsReader;
-    test += QTest::qExec(&tAnalogsReader);
+//    TAnalogsReader tAnalogsReader;
+//    test += QTest::qExec(&tAnalogsReader);
 
-    TAnalogsFromFile tAnalogsFromFile;
-    test += QTest::qExec(&tAnalogsFromFile);
+//    TAnalogsFromFile tAnalogsFromFile;
+//    test += QTest::qExec(&tAnalogsFromFile);
 
-    TAnalogsTableGenerator tAnalogsTableGenerator;
-    test += QTest::qExec(&tAnalogsTableGenerator);
+//    TAnalogsTableGenerator tAnalogsTableGenerator;
+//    test += QTest::qExec(&tAnalogsTableGenerator);
+
+    TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
+    test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
 
     if(test == 0)
     {
@@ -79,9 +83,9 @@ int main()
 //        BenchmarkWriteRead::runForBuffer(100000);
 //        BenchmarkWriteRead::runForBuffer(10000);
 
-        BenchmarkAnalogsReader::run(500, 100);
-        BenchmarkAnalogsReader::run(500, 1000);
-        BenchmarkAnalogsReader::run(1000, 1000);
+//        BenchmarkAnalogsReader::run(500, 100);
+//        BenchmarkAnalogsReader::run(500, 1000);
+//        BenchmarkAnalogsReader::run(1000, 1000);
 
     }
     return test;

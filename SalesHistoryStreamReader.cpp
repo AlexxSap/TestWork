@@ -66,7 +66,7 @@ void SalesHistoryStreamReader::deleteTempItemsTable()
     db_.commitTransaction();
 }
 
-bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
+bool SalesHistoryStreamReader::open(const Date &from, const Date &to, const bool &analogs)
 {
     from_ = from;
     to_ = to;
