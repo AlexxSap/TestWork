@@ -1,13 +1,13 @@
 #include "DataBase.h"
 
-DataBase::DataBase(const QString &dbName)
+DataBase::DataBase(const QString &dbName, const QString &connName)
     :dbName_(dbName)
 {
     if(!QFile::exists(dbName))
     {
         createEmptyDB();
     }
-    db_ = QSqlDatabase::addDatabase("QSQLITE");
+    db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
     db_.setDatabaseName(dbName_);
     connect();
 }
@@ -119,6 +119,11 @@ bool DataBase::isConnected()
 QSqlQuery DataBase::getAssociatedQuery() const
 {
     return QSqlQuery(db_);
+}
+
+const QString DataBase::name() const
+{
+    return dbName_;
 }
 
 void DataBase::beginTransaction()

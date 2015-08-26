@@ -22,6 +22,7 @@ public:
     bool contains(const Analogs &analogs) const;
 
     Analogs analogsForProduct(const ID &product) const;
+    const ID isAnalogical(const ID &left, const ID &right) const;
 
     QString toString() const;
     bool isValid() const;

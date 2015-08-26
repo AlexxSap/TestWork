@@ -54,6 +54,20 @@ Analogs AnalogsTable::analogsForProduct(const ID &product) const
     return Analogs();
 }
 
+const ID AnalogsTable::isAnalogical(const ID &left, const ID &right) const
+{
+    const Analogs aLeft = analogsForProduct(left);
+    const Analogs aRight = analogsForProduct(right);
+    if(aLeft == aRight)
+    {
+        return aLeft.mainAnalog();
+    }
+    else
+    {
+        return ID();
+    }
+}
+
 QString AnalogsTable::toString() const
 {
     QString string;

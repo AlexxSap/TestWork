@@ -8,7 +8,8 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       from_(),
       to_(),
       tempHistory_(),
-      isCanNext_(false)
+      isCanNext_(false),
+      analogsTable_()
 {
 
 }
@@ -44,6 +45,7 @@ bool SalesHistoryStreamReader::createTempItemsTable()
     query.addBindValue(storageList);
     query.addBindValue(productList);
     db_.beginTransaction();
+
     if(!query.execBatch())
     {
         db_.rollbackTransaction();
@@ -76,17 +78,28 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to, const bool
         return false;
     }
 
+    if(analogs)
+    {
+        AnalogsReader reader(db_.name());
+        QList<ID> idList;
+        foreach (const Item &item, items_)
+        {
+            idList.append(item.product());
+        }
+        analogsTable_ = reader.read(idList);
+    }
+
     QString select("select t_temp_items.f_storage, "
-                    "t_temp_items.f_product, "
-                    "t_datas.f_date, "
-                    "t_datas.f_sold, "
-                    "t_datas.f_rest "
-                    "from t_temp_items "
-                    "left outer join t_datas "
-                    "on t_temp_items.f_storage = t_datas.f_storage "
-                    "and t_temp_items.f_product = t_datas.f_product "
-                    "%1"
-                    "order by t_datas.f_storage, t_datas.f_product, t_datas.f_date;");
+                   "t_temp_items.f_product, "
+                   "t_datas.f_date, "
+                   "t_datas.f_sold, "
+                   "t_datas.f_rest "
+                   "from t_temp_items "
+                   "left outer join t_datas "
+                   "on t_temp_items.f_storage = t_datas.f_storage "
+                   "and t_temp_items.f_product = t_datas.f_product "
+                   "%1"
+                   "order by t_datas.f_storage, t_datas.f_product, t_datas.f_date;");
 
     QString dateCase;
     if(from_ != Date() && to_ != Date())
@@ -131,6 +144,24 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to, const bool
     //            qInfo() << val;
     //        }
     //----------------------------------
+
+    //------вывод результатов------
+    if(query_.exec(select))
+    {
+        while(query_.next())
+        {
+            QSqlRecord rec = query_.record();
+            int c = rec.count();
+            QStringList lst;
+            for(int i = 0; i < c; i++)
+            {
+                lst.append(rec.value(i).toString());
+            }
+            qInfo() << lst;
+
+        }
+    }
+    //-----------------------------
 
     if(!query_.exec(select))
     {
@@ -186,21 +217,50 @@ void SalesHistoryStreamReader::addDayToTempHistory()
     }
 }
 
+bool SalesHistoryStreamReader::isCanReturnHistory(const Item &tempItemp)
+{
+    const ID tempStorage = tempHistory_.item().storage();
+    const ID storage = tempItemp.storage();
+    const ID tempProduct = tempHistory_.item().product();
+    const ID product = tempItemp.product();
+
+    if(tempHistory_.item() != tempItemp)
+    {
+        if(tempStorage != storage)
+        {
+            return true;
+        }
+        const ID mainAnalog = analogsTable_.isAnalogical(tempProduct, product);
+        return mainAnalog.isEmpty();
+    }
+    else
+    {
+        return false;
+    }
+
+
+    return tempHistory_.item() != tempItemp;
+}
+
 SaleHistory SalesHistoryStreamReader::current()
 {
-    do
+    while(query_.next())
     {
         const Item tempItemp(query_.value(0).toString(), query_.value(1).toString());
-        if(tempHistory_.item() != tempItemp)
+        if(isCanReturnHistory(tempItemp))
         {
+            qInfo() << "110" << tempHistory_;
             const SaleHistory returnedHistory = tempHistory_.normalaze(from_, to_);
+//            qInfo() << "220" << returnedHistory;
             tempHistory_ = SaleHistory(tempItemp);
             addDayToTempHistory();
             return returnedHistory;
         }
         addDayToTempHistory();
-    } while(query_.next());
+    }
     isCanNext_ = false;
+    qInfo() << "11" << tempHistory_;
     tempHistory_ = tempHistory_.normalaze(from_, to_);
+//    qInfo() << "22" << tempHistory_;
     return tempHistory_;
 }

@@ -66,10 +66,23 @@ Date SaleHistory::to() const
 
 void SaleHistory::addDay(const SaleHistoryDay &day)
 {
-    if(item() == day.item())
-    {
-        days_.insert(day.date(), Day(day.sold(), day.rest()));
-    }
+    // if(item() == day.item())
+    // {
+    days_.insert(day.date(), Day(day.sold(), day.rest()));
+    // }
+}
+
+void SaleHistory::remDay(const Date &date)
+{
+
+        days_.remove(date);
+
+//    QList<Day> lst = days_.values(date);
+//    foreach (const Day day, lst)
+//    {
+//        days_.remove(date, day);
+//    }
+
 }
 
 SaleHistory &SaleHistory::operator <<(const SaleHistoryDay &day)
@@ -138,8 +151,35 @@ QString SaleHistory::toString() const
     return str;
 }
 
-SaleHistory SaleHistory::normalaze(const Date &nFrom, const Date &nTo) const
+
+void SaleHistory::normalazeByAnalogs()
 {
+    QList<Date> keys = days_.keys().toSet().toList();
+    qSort(keys);
+    foreach (const Date &date, keys)
+    {
+        QList<Day> lst = days_.values(date);
+
+        Amount sold = 0.0;
+        Amount rest = 0.0;
+
+        if(lst.count() > 1)
+        {
+            foreach (const Day day, lst)
+            {
+                sold += day.sold();
+                rest += day.rest();
+            }
+            days_.remove(date);
+            days_.insert(date, Day(sold, rest));
+        }
+
+    }
+}
+
+SaleHistory SaleHistory::normalaze(const Date &nFrom, const Date &nTo)
+{
+//    normalazeByAnalogs();
     SaleHistory history(item_);
 
     Date factFrom = from();
@@ -168,7 +208,6 @@ SaleHistory SaleHistory::normalaze(const Date &nFrom, const Date &nTo) const
         factFrom = normFrom;
         factTo = normFrom;
     }
-
     if(normFrom < factFrom)
     {
         for(Date d = normFrom; d < factFrom; d = d.addDays(1))
@@ -189,12 +228,13 @@ SaleHistory SaleHistory::normalaze(const Date &nFrom, const Date &nTo) const
             history.addDay(SaleHistoryDay(item_, d, 0.0, lastRest));
         }
     }
-
-    Amount prevRest = 0.0;
-    if(!days_.isEmpty())
+    if(days_.isEmpty())
     {
-        prevRest = days_.value(factFrom).rest();
+        return history;
     }
+
+    Amount prevRest = days_.value(factFrom).rest();
+
     for(Date d = factFrom; d <= factTo; d = d.addDays(1))
     {
         if(days_.contains(d))
@@ -234,3 +274,4 @@ Amount SaleHistory::Day::rest() const
 {
     return rest_;
 }
+

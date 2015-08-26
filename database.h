@@ -24,12 +24,14 @@ private:
     void setPragmaParameters(QSqlDatabase &db);
 
 public:
-    explicit DataBase(const QString &dbName);
+    explicit DataBase(const QString &dbName, const QString &connName = "qt_sql_default_connection");
+
     ~DataBase();
 
     bool isConnected();
 
     QSqlQuery getAssociatedQuery() const;
+    const QString name() const;
 
     void beginTransaction();
     void rollbackTransaction();

@@ -1,7 +1,7 @@
 #ifndef SALEHISTORY_H
 #define SALEHISTORY_H
 
-#include <QMap>
+#include <QMultiMap>
 #include <QMetaType>
 #include <QDebug>
 
@@ -25,7 +25,11 @@ private:
 
 private:
     Item item_;
-    QMap<Date, Day> days_;
+    QMultiMap<Date, Day> days_;
+
+private:
+    void normalazeByAnalogs();
+    void remDay(const Date &date);
 
 public:
     SaleHistory();
@@ -38,8 +42,8 @@ public:
     Date to() const;
 
     void addDay(const SaleHistoryDay &day);
-    SaleHistory& operator << (const SaleHistoryDay &day);
 
+    SaleHistory& operator << (const SaleHistoryDay &day);
 
     SaleHistoryDay day(const Date &date) const;
     QList<SaleHistoryDay> days() const;
@@ -48,7 +52,7 @@ public:
 
     QString toString() const;
 
-    SaleHistory normalaze(const Date &nFrom, const Date &nTo) const;
+    SaleHistory normalaze(const Date &nFrom, const Date &nTo);
 };
 
 Q_DECLARE_METATYPE(SaleHistory)
@@ -56,7 +60,7 @@ Q_DECLARE_METATYPE(SaleHistory)
 bool operator != (const SaleHistory &left, const SaleHistory &right);
 bool operator == (const SaleHistory &left, const SaleHistory &right);
 
-inline QDebug& operator<<(QDebug &debug, const SaleHistory &history)
+inline QDebug operator<<(QDebug debug, const SaleHistory &history)
 {
    debug << history.toString();
    return debug;

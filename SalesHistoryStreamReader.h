@@ -3,8 +3,10 @@
 
 #include <QDebug>
 
+#include "AnalogsReader.h"
 #include "SaleHistory.h"
 #include "DataBase.h"
+#include "Analogs.h"
 
 class SalesHistoryStreamReader
 {
@@ -16,11 +18,13 @@ private:
     QDate to_;
     SaleHistory tempHistory_;
     bool isCanNext_;
+    AnalogsTable analogsTable_;
 
 private:
     bool createTempItemsTable();
     void deleteTempItemsTable();
     void addDayToTempHistory();
+    bool isCanReturnHistory(const Item &tempItemp);
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);
