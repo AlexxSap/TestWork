@@ -18,6 +18,7 @@
 
 #include "benchmarks/BenchmarkWriteRead.h"
 #include "benchmarks/BenchmarkAnalogsReader.h"
+#include "benchmarks/BenchmarkWriteReadWithAnalogs.h"
 
 #include <QVector>
 
@@ -48,9 +49,6 @@ int main()
     TestCsvFile testCsvFile;
     test += QTest::qExec(&testCsvFile);
 
-    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-    test += QTest::qExec(&testSalesHistoryStreamReader);
-
     TAnalogs tAnalogs;
     test += QTest::qExec(&tAnalogs);
 
@@ -65,6 +63,9 @@ int main()
 
     TAnalogsTableGenerator tAnalogsTableGenerator;
     test += QTest::qExec(&tAnalogsTableGenerator);
+
+    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+    test += QTest::qExec(&testSalesHistoryStreamReader);
 
     TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
     test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
@@ -88,6 +89,8 @@ int main()
 //        BenchmarkAnalogsReader::run(500, 100);
 //        BenchmarkAnalogsReader::run(500, 1000);
 //        BenchmarkAnalogsReader::run(1000, 1000);
+
+//        BenchmarkWriteReadWithAnalogs::run(720, 10, 1000, 50, 100);
 
     }
     return test;

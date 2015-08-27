@@ -25,7 +25,7 @@ private:
     void remDuplicates(QVariantList &first, QVariantList &second, QVariantList &mainAn);
     void deleteTempItemsTable();
     void addDayToTempHistory();
-    bool isCanReturnHistory(const Item &tempItemp);
+    bool isCanReturnHistory(const Item &item);
     void loadAnalogsTable();
     QString buildSelectString();
     void normalazeTempHistory();

@@ -4,23 +4,17 @@ bool AnalogsReader::createTempIdTable()
 {
     QSqlQuery query = db_.getAssociatedQuery();
     db_.beginTransaction();
-    if(!query.exec("create table if not exists t_temp_idmain("
+    if(!query.exec("create temp table if not exists t_temp_idmain("
                    "f_main text, "
                    "f_id text);"))
     {
-        //        qInfo() << query.lastError().text();
-        //        qInfo() << query.lastQuery();
         db_.rollbackTransaction();
         return false;
     }
-    db_.commitTransaction();
 
-    db_.beginTransaction();
-    if(!query.exec("create table if not exists t_temp_ids("
+    if(!query.exec("create temp table if not exists t_temp_ids("
                    "f_id text not null);"))
     {
-        //        qInfo() << query.lastError().text();
-        //        qInfo() << query.lastQuery();
         db_.rollbackTransaction();
         return false;
     }
@@ -56,6 +50,8 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     }
     db_.commitTransaction();
 
+    //qInfo() << query.exec("create index i_temp_ids on t_temp_ids (f_id)");
+
 
     //----расшифровка плана запроса-----
     //        query.exec("explain query plan insert into t_temp_idmain(f_main, f_id) "
@@ -88,6 +84,8 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     }
     db_.commitTransaction();
 
+//    qInfo() << query.exec("create index i_temp_idmain on t_temp_idmain (f_main)");
+
     return true;
 }
 
@@ -97,22 +95,22 @@ AnalogsTable AnalogsReader::getTable()
     query.setForwardOnly(true);
 
     //----расшифровка плана запроса-----
-    //        query.exec("explain query plan select t_analogs.f_main, t_analogs.f_analog "
-    //                   "from t_temp_idmain left outer join t_analogs "
-    //                   "on t_analogs.f_main = t_temp_idmain.f_main "
-    //                   "where t_temp_idmain.f_main is not null "
-    //                   "order by t_analogs.f_main;");
+//    query.exec("explain query plan select t_analogs.f_main, t_analogs.f_analog "
+//               "from t_temp_idmain left outer join t_analogs "
+//               "on t_analogs.f_main = t_temp_idmain.f_main "
+//               "where t_temp_idmain.f_main is not null "
+//               "order by t_analogs.f_main;");
 
-    //        while(query.next())
-    //        {
-    //            const QSqlRecord rec = query.record();
-    //            QStringList val;
-    //            for(int i = 0; i< rec.count(); i++)
-    //            {
-    //                val << rec.value(i).toString();
-    //            }
-    //            qInfo() << val;
-    //        }
+//    while(query.next())
+//    {
+//        const QSqlRecord rec = query.record();
+//        QStringList val;
+//        for(int i = 0; i< rec.count(); i++)
+//        {
+//            val << rec.value(i).toString();
+//        }
+//        qInfo() << val;
+//    }
     //----------------------------------
 
     if(!query.exec("select t_analogs.f_main, t_analogs.f_analog "

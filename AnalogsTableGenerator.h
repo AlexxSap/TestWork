@@ -7,8 +7,9 @@ class AnalogsTableGenerator
 {
 public:
     static AnalogsTable generateTable(const int &groupNum,
-                               const int &analogsNum,
-                               const QString &prodPrefix = "prod");
+                                      const int &analogsNum,
+                                      const int &maxProdNumFromSHG = 1000000);
+
     static QList<ID> getRandomIdList(const AnalogsTable &table);
 };
 

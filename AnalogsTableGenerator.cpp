@@ -2,19 +2,38 @@
 
 AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
                                                   const int &analogsNum,
-                                                  const QString &prodPrefix)
+                                                  const int &maxProdNumFromSHG)
 {
+    const QString prodPrefix = "prod_";
     AnalogsTable table;
+    QList<int> past;
     for(int group = 0; group < groupNum; group++)
     {
-        QString add = QString::number(group);
-        Analogs analogs(ID(prodPrefix + add));
+        int randProdNum = 0;
+        while(true)
+        {
+            randProdNum =  rand() % maxProdNumFromSHG;
+            if(!past.contains(randProdNum))
+            {
+                past.append(randProdNum);
+                break;
+            }
+        }
+        Analogs analogs(ID(prodPrefix + QString::number(randProdNum)));
         for(int an = 0; an < analogsNum; an++)
         {
-            const ID id("_" + prodPrefix + add + "_" + QString::number(an));
-            analogs.addAnalog(id);
+            int randAnNum = 0;
+            while(true)
+            {
+                randAnNum =  rand() % maxProdNumFromSHG;
+                if(!past.contains(randAnNum))
+                {
+                    past.append(randAnNum);
+                    break;
+                }
+            }
+            analogs.addAnalog(ID(prodPrefix + QString::number(randAnNum)));
         }
-
         table.addAnalogs(analogs);
     }
     return table;

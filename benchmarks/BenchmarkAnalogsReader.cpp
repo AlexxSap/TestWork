@@ -1,14 +1,21 @@
 #include "BenchmarkAnalogsReader.h"
 
+
+/*
+groupNum/analogsNum     500/100     500/1000    1000/1000
+                        608 576     4490 1770   8291 3205
+временные табл          567 127     4477 1289   7829 2741
+
+*/
 void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 {
     const QString dbName(QString::number(groupNum) + "_"
                          + QString::number(analogsNum) + "_"
-                         + "TestDBase.db");
+                         + "_BAR_TestDBase.db");
 
     const QString fileName(QString::number(groupNum) + "_"
                            + QString::number(analogsNum) + "_"
-                           + "TestFile.csv");
+                           + "_BAR_TestFile.csv");
 
     QThread::msleep(100);
     qInfo() << "-------Benchmark for write and read analogs-------";

@@ -6,20 +6,12 @@
 
 class SaleHistoryGenerator
 {
-private:
-    int maxVal_;
-    QString productPrefix_;
-    QString storagePrefix_;
-
 public:
-    SaleHistoryGenerator();
-
-    void setMaxValue(const int &max);
-
-    QList<SaleHistoryDay> generateHistory(const Date &from,
-                                          const Date &to,
-                                          const int storageNum,
-                                          const int productNum) const;
+    static QList<SaleHistoryDay> generateHistory(const Date &from,
+                                                 const Date &to,
+                                                 const int &storageNum,
+                                                 const int &productNum,
+                                                 const int &maxVal = 10000);
 };
 
 #endif // SALEHISTORYGENERATOR_H

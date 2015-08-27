@@ -36,12 +36,11 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator()
     QFETCH(int, expNumber);
     QFETCH(int, maxVal);
 
-    SaleHistoryGenerator gen;
-    gen.setMaxValue(maxVal);
-    const QList<SaleHistoryDay> list = gen.generateHistory(fromDate,
-                                                     toDate,
-                                                     storageNum,
-                                                     productNum);
+    const QList<SaleHistoryDay> list = SaleHistoryGenerator::generateHistory(fromDate,
+                                                                             toDate,
+                                                                             storageNum,
+                                                                             productNum,
+                                                                             maxVal);
 
     bool comp = compareData(list, maxVal);
 
@@ -73,9 +72,9 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator_data()
                                 << 1000;
 
     QTest::newRow("wronge gen test") << QDate(2015, 3, 20)
-                                << QDate(2015, 3, 4)
-                                << 3
-                                << 15
-                                << 0
-                                << 1000;
+                                     << QDate(2015, 3, 4)
+                                     << 3
+                                     << 15
+                                     << 0
+                                     << 1000;
 }

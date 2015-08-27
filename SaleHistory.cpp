@@ -240,6 +240,7 @@ void SaleHistory::normalaze(const Date &nFrom, const Date &nTo, const ID &mainAn
     {
         return;
     }
+
     if(!mainAnalog.isEmpty())
     {
         item_ = Item(item_.storage(), mainAnalog);

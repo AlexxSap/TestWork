@@ -19,7 +19,9 @@ private:
     static QList<Item> genRandomItemList(const int storages,
                                   const int products);
 public:
-    static void run(const int &days, const int &storages, const int &products);
+    static void run(const int &days,
+                    const int &storages,
+                    const int &products);
     static void runForBuffer(const int bufferSize);
 };
 

@@ -34,13 +34,14 @@ bool SalesHistoryStreamReader::createTempItemsTable()
     QVariantList productList;
     QVariantList mainAnList;
 
+    const bool isAnalogs = analogsTable_.isValid();
     foreach (const Item &item, items_)
     {
         const ID product = item.product();
         storageList << item.storage();
         productList << product;
         ID mainAn;
-        if(analogsTable_.isValid())
+        if(isAnalogs)
         {
             mainAn = analogsTable_.analogsForProduct(product).mainAnalog();
         }
@@ -63,8 +64,8 @@ bool SalesHistoryStreamReader::createTempItemsTable()
                 mainAnList << mainAn;
             }
         }
+        remDuplicates(storageList, productList, mainAnList);
     }
-    remDuplicates(storageList, productList, mainAnList);
 
     query.prepare("insert into t_temp_items(f_storage, f_product, f_main_an) "
                   "values (?, ?, ?);");
@@ -82,6 +83,9 @@ bool SalesHistoryStreamReader::createTempItemsTable()
         return false;
     }
     db_.commitTransaction();
+
+    query.exec("create index i_temp_items1 on t_temp_items(f_main_an);");
+    query.exec("create index i_temp_items2 on t_temp_items(f_storage);");
 
     return true;
 }
@@ -114,6 +118,8 @@ void SalesHistoryStreamReader::deleteTempItemsTable()
     QSqlQuery query = db_.getAssociatedQuery();
     db_.beginTransaction();
     query.exec("drop table if exists t_temp_items;");
+    query.exec("drop index if exists i_temp_items1;");
+    query.exec("drop index if exists i_temp_items2;");
     db_.commitTransaction();
 }
 
@@ -140,17 +146,17 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     query_.setForwardOnly(true);
 
     //----расшифровка плана запроса-----
-    //            query_.exec("explain query plan "+ select);
-    //            while(query_.next())
-    //            {
-    //                const QSqlRecord rec = query_.record();
-    //                QStringList val;
-    //                for(int i = 0; i< rec.count(); i++)
-    //                {
-    //                    val << rec.value(i).toString();
-    //                }
-    //                qInfo() << val;
-    //            }
+//    query_.exec("explain query plan "+ select);
+//    while(query_.next())
+//    {
+//        const QSqlRecord rec = query_.record();
+//        QStringList val;
+//        for(int i = 0; i< rec.count(); i++)
+//        {
+//            val << rec.value(i).toString();
+//        }
+//        qInfo() << val;
+//    }
     //----------------------------------
 
     //------вывод результатов------
@@ -222,21 +228,18 @@ void SalesHistoryStreamReader::addDayToTempHistory()
     }
 }
 
-bool SalesHistoryStreamReader::isCanReturnHistory(const Item &tempItemp)
+bool SalesHistoryStreamReader::isCanReturnHistory(const Item &item)
 {
-    const ID tempStorage = tempHistory_.item().storage();
-    const ID storage = tempItemp.storage();
-
-    if(tempHistory_.item() != tempItemp)
+    const Item tempItem = tempHistory_.item();
+    if(tempItem != item)
     {
-        if(tempStorage != storage)
+        if(tempItem.storage() != item.storage())
         {
             return true;
         }
-        const ID tempProduct = tempHistory_.item().product();
-        const ID product = tempItemp.product();
-        bool res = analogsTable_.isAnalogical(tempProduct, product).isEmpty();
-        return res;
+        const ID tempProduct = tempItem.product();
+        const ID product = item.product();
+        return analogsTable_.isAnalogical(tempProduct, product).isEmpty();
     }
     return false;
 }
