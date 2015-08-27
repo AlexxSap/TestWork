@@ -22,6 +22,7 @@ private:
 
 private:
     bool createTempItemsTable();
+    bool fillTempItemsTable();
     void remDuplicates(QVariantList &first, QVariantList &second, QVariantList &mainAn);
     void deleteTempItemsTable();
     void addDayToTempHistory();

@@ -73,7 +73,7 @@ void DataBase::setPragmaParameters(QSqlDatabase &db)
     query.exec("PRAGMA count_changes = OFF;");
     query.exec("PRAGMA journal_mode = WAL;");
     query.exec("PRAGMA foreign_keys = ON;");
-    //    query.exec("PRAGMA cache_size = -40;");
+//        query.exec("PRAGMA cache_size = -10;");
     db.commit();
 }
 

@@ -61,7 +61,9 @@ public:
 
     QString toString() const;
 
-    void normalaze(const Date &nFrom, const Date &nTo, const ID &mainAnalog);
+    void normalaze(const Date &nFrom,
+                   const Date &nTo,
+                   const ID &mainAnalog);
 };
 
 Q_DECLARE_METATYPE(SaleHistory)

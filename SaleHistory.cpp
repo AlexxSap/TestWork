@@ -232,7 +232,9 @@ QString SaleHistory::toString() const
     return str;
 }
 
-void SaleHistory::normalaze(const Date &nFrom, const Date &nTo, const ID &mainAnalog)
+void SaleHistory::normalaze(const Date &nFrom,
+                            const Date &nTo,
+                            const ID &mainAnalog)
 {
     days_ = normalazeData(days_, nFrom, nTo);
 

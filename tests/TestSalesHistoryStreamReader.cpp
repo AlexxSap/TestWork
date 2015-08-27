@@ -65,15 +65,14 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
             QFAIL("cannot remove test-db in ending of test");
         }
 
-        bool res = actList == expList;
+        bool res = TestUtility::compareListWithoutOrder(actList, expList);
 
         if(!res)
         {
             qInfo() << "actList - " << actList;
             qInfo() << "expList - " << expList;
         }
-        QCOMPARE(actList, expList);
-
+        QVERIFY(res);
 }
 
 void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
