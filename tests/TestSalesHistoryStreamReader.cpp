@@ -32,17 +32,17 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         QFAIL("cannot write data to db");
     }
 
-    if(caseItems.isEmpty())
-    {
-        foreach (const SaleHistoryDay &day, data)
-        {
-            const Item item = day.item();
-            if(!caseItems.contains(item))
-            {
-                caseItems.append(item);
-            }
-        }
-    }
+    //    if(caseItems.isEmpty())
+    //    {
+    //        foreach (const SaleHistoryDay &day, data)
+    //        {
+    //            const Item item = day.item();
+    //            if(!caseItems.contains(item))
+    //            {
+    //                caseItems.append(item);
+    //            }
+    //        }
+    //    }
 
     //qInfo() << caseItems;
 
@@ -50,31 +50,30 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
     {
         SalesHistoryStreamReader reader(caseItems, dbName);
         bool isOpen = reader.open(caseDateFrom, caseDateTo);
-        if(!isOpen)
+        if(isOpen)
         {
-            TestUtility::removeFile(dbName);
-            QFAIL("something wrong with opening SalesHistoryStreamReader");
+            do
+            {
+                const SaleHistory history = reader.current();
+                actList.append(history);
+            }while (reader.next());
         }
-        do
+    }
+
+        if(!TestUtility::removeFile(dbName))
         {
-            const SaleHistory history = reader.current();
-            actList.append(history);
-        }while (reader.next());
-    }
+            QFAIL("cannot remove test-db in ending of test");
+        }
 
-    if(!TestUtility::removeFile(dbName))
-    {
-        QFAIL("cannot remove test-db in ending of test");
-    }
+        bool res = actList == expList;
 
-    bool res = actList == expList;
+        if(!res)
+        {
+            qInfo() << "actList - " << actList;
+            qInfo() << "expList - " << expList;
+        }
+        QCOMPARE(actList, expList);
 
-    if(!res)
-    {
-        qInfo() << "actList - " << actList;
-        qInfo() << "expList - " << expList;
-    }
-    QCOMPARE(actList, expList);
 }
 
 void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
@@ -141,16 +140,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 11)
 
-            << (QList<SaleHistory>()
-                << (SaleHistory(Item(ID("storage1"), ID("product1")))
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0))
-                << (SaleHistory(Item(ID("storage1"), ID("product2")))
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0)
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 11), 0.0, 11.0))
-                << (SaleHistory(Item(ID("storage2"), ID("product2")))
-                    << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)
-                    << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 11), 0.0, 1.0)));
+            << QList<SaleHistory>();
 
     QTest::newRow("empty Item")
             << (QList<SaleHistoryDay>()
@@ -176,31 +166,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)));
 
-    QTest::newRow("empty case items and date")
-            << (QList<SaleHistoryDay>()
-                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
-                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
-                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
-                << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0)
-                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0))
-
-            << QList<Item>()
-            << Date()
-            << Date()
-
-            << (QList<SaleHistory>()
-                << (SaleHistory(Item(ID("storage1"), ID("product1")))
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0))
-
-                << (SaleHistory(Item(ID("storage1"), ID("product2")))
-                    << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0))
-
-                << (SaleHistory(Item(ID("storage2"), ID("product2")))
-                    << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0)));
-
-    QTest::newRow("empty case items and first date")
+    QTest::newRow("empty  first date")
             << (QList<SaleHistoryDay>()
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
@@ -210,7 +176,10 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                 << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 11), 2.0, 1.0)
                 << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 12), 212.0, 13.0))
 
-            << QList<Item>()
+            << (QList<Item>()
+                << Item(ID("storage1"), ID("product1"))
+                << Item(ID("storage1"), ID("product2"))
+                << Item(ID("storage2"), ID("product2")))
             << Date()
             << Date(2015, 8, 11)
 
@@ -230,7 +199,8 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
             << (QList<SaleHistoryDay>()
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0))
 
-            << QList<Item>()
+            << (QList<Item>()
+                << Item(ID("storage1"), ID("product1")))
             << Date(2015, 8, 9)
             << Date(2015, 8, 11)
 

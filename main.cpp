@@ -48,8 +48,8 @@ int main()
 //    TestCsvFile testCsvFile;
 //    test += QTest::qExec(&testCsvFile);
 
-//    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-//    test += QTest::qExec(&testSalesHistoryStreamReader);
+    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+    test += QTest::qExec(&testSalesHistoryStreamReader);
 
 //    TAnalogs tAnalogs;
 //    test += QTest::qExec(&tAnalogs);

@@ -25,11 +25,16 @@ private:
     void deleteTempItemsTable();
     void addDayToTempHistory();
     bool isCanReturnHistory(const Item &tempItemp);
+    void loadAnalogsTable();
+    QString buildSelectString();
+    void normalazeTempHistory();
 
 public:
-    SalesHistoryStreamReader(const QList<Item> &items, const QString &dbName);
+    SalesHistoryStreamReader(const QList<Item> &items,
+                             const QString &dbName);
 
-    bool open(const Date &from, const Date &to, const bool &analogs = false);
+    bool open(const Date &from,
+              const Date &to);
     bool next();
     SaleHistory current();
 };
