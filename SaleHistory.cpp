@@ -11,8 +11,8 @@ bool operator == (const SaleHistory &left, const SaleHistory &right)
 }
 
 SaleHistory::SHData SaleHistory::normalazeData(const SaleHistory::SHData &days,
-                                const Date &nFrom,
-                                const Date &nTo) const
+                                               const Date &nFrom,
+                                               const Date &nTo) const
 {
     SaleHistory::SHData returnedData = days;
     Date factFrom = from();
@@ -142,7 +142,7 @@ void SaleHistory::addDay(const SaleHistoryDay &day)
     if(product != item_.product())
     {
         int index = 0;
-        if(analoglist_.isEmpty())
+        if(!analoglist_.contains(product))
         {
             analoglist_.append(product);
             QMap<Date, Day> map;
@@ -152,9 +152,12 @@ void SaleHistory::addDay(const SaleHistoryDay &day)
         else
         {
             index = analoglist_.indexOf(product);
-            QMap<Date, Day> map = analogData_.takeAt(index);
-            map.insert(day.date(), Day(day.sold(), day.rest()));
-            analogData_.insert(index, map);
+            if(index >= 0)
+            {
+                QMap<Date, Day> map = analogData_.takeAt(index);
+                map.insert(day.date(), Day(day.sold(), day.rest()));
+                analogData_.insert(index, map);
+            }
         }
     }
     else
@@ -232,14 +235,14 @@ QString SaleHistory::toString() const
 void SaleHistory::normalaze(const Date &nFrom, const Date &nTo, const ID &mainAnalog)
 {
     days_ = normalazeData(days_, nFrom, nTo);
-    if(!mainAnalog.isEmpty())
-    {
-        item_ = Item(item_.storage(), mainAnalog);
-    }
 
     if(analoglist_.isEmpty())
     {
         return;
+    }
+    if(!mainAnalog.isEmpty())
+    {
+        item_ = Item(item_.storage(), mainAnalog);
     }
 
     for(int i = 0; i < analogData_.count(); i++)

@@ -22,6 +22,7 @@ private:
 
 private:
     bool createTempItemsTable();
+    void remDuplicates(QVariantList &first, QVariantList &second, QVariantList &mainAn);
     void deleteTempItemsTable();
     void addDayToTempHistory();
     bool isCanReturnHistory(const Item &tempItemp);

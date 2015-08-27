@@ -91,7 +91,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 {
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
-    Q_UNUSED(toDate)
     const QString prefix(QString::number(days) + "_"
                          + QString::number(storages)+ "_"
                          + QString::number(products)+ "_");
@@ -108,61 +107,60 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             << storages << " storages, "
             << products << " products";
 
-    //    if(!TestUtility::removeFile(dbName))
-    //    {
-    //        qWarning() << "cannot remove test-db in begining of benchmark";
-    //        return;
-    //    }
-
-    //    if(!TestUtility::removeFile(fileName))
-    //    {
-    //        qWarning() << "cannot remove test-file in begining of benchmark";
-    //        return;
-    //    }
+//    if(!TestUtility::removeFile(dbName))
+//    {
+//        qWarning() << "cannot remove test-db in begining of benchmark";
+//        return;
+//    }
+//    if(!TestUtility::removeFile(fileName))
+//    {
+//        qWarning() << "cannot remove test-file in begining of benchmark";
+//        return;
+//    }
 
     QElapsedTimer timer;
     QList<Item> items = genRandomItemList(storages, products);
 
-    //    bool result = false;
-    //    {
-    //        const SaleHistoryGenerator gen;
-    //        const int monthCount = 2;
+//    bool result = false;
+//    {
+//        const SaleHistoryGenerator gen;
+//        const int monthCount = 2;
 
 
-    //        for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
-    //        {
-    //            const QList<SaleHistoryDay> list = gen.generateHistory(date,
-    //                                                                   date.addMonths(monthCount),
-    //                                                                   storages,
-    //                                                                   products);
+//        for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
+//        {
+//            const QList<SaleHistoryDay> list = gen.generateHistory(date,
+//                                                                   date.addMonths(monthCount),
+//                                                                   storages,
+//                                                                   products);
 
-    //            bool isWrited = CsvFile::write(list, fileName);
-    //            if(!isWrited)
-    //            {
-    ////                TestUtility::removeFile(dbName);
-    ////                TestUtility::removeFile(fileName);
-    //                qWarning() << "cannot write to file";
-    //                return;
-    //            }
-    //        }
+//            bool isWrited = CsvFile::write(list, fileName);
+//            if(!isWrited)
+//            {
+//                TestUtility::removeFile(dbName);
+//                TestUtility::removeFile(fileName);
+//                qWarning() << "cannot write to file";
+//                return;
+//            }
+//        }
 
 
-    //        SaleHistoryWriter writer(dbName);
-    //        timer.start();
-    //        const double sWrite = Utils::_runBenchmarking("write");
-    //        result = writer.importFromFile(fileName);
-    //        Utils::_endBenchmarking("write", sWrite);
-    //        writeTime = timer.elapsed();
+//        SaleHistoryWriter writer(dbName);
+//        timer.start();
+//        const double sWrite = Utils::_runBenchmarking("write");
+//        result = writer.importFromFile(fileName);
+//        Utils::_endBenchmarking("write", sWrite);
+//        writeTime = timer.elapsed();
 
-    //        qInfo() << "write............." << writeTime << "ms";
-    //    }
-    //    if(!result)
-    //    {
-    ////        TestUtility::removeFile(dbName);
-    ////        TestUtility::removeFile(fileName);
-    //        qWarning() << "cannot write data to db";
-    //        return;
-    //    }
+//        qInfo() << "write............." << writeTime << "ms";
+//    }
+//    if(!result)
+//    {
+//        TestUtility::removeFile(dbName);
+//        TestUtility::removeFile(fileName);
+//        qWarning() << "cannot write data to db";
+//        return;
+//    }
 
     {
         SalesHistoryStreamReader reader(items, dbName);
@@ -189,46 +187,47 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         qInfo() << "read.............."
                 << readTime << "ms";
 
-        //        QList<Item> actList;
-        //        foreach (const SaleHistory &history, shList)
-        //        {
-        //            if(!actList.contains(history.item()))
-        //            {
-        //                actList.append(history.item());
-        //            }
-        //        }
+        //-----сравнение результатов
+        //                QList<Item> actList;
+        //                foreach (const SaleHistory &history, shList)
+        //                {
+        //                    if(!actList.contains(history.item()))
+        //                    {
+        //                        actList.append(history.item());
+        //                    }
+        //                }
 
-        //        if(!TestUtility::compareListWithoutOrder(actList, items))
-        //        {
-        //            qWarning() << "item lists not equal";
-        //            qWarning() << "writed list-------";
-        //            qWarning() << items;
-        //            qWarning() << "readed list-------";
-        //            qWarning() << actList;
+        //                if(!TestUtility::compareListWithoutOrder(actList, items))
+        //                {
+        //                    qWarning() << "item lists not equal";
+        //                    qWarning() << "writed list-------";
+        //                    qWarning() << items;
+        //                    qWarning() << "readed list-------";
+        //                    qWarning() << actList;
 
-        //        }
+        //                }
 
-
-        //    if(!TestUtility::removeFile(dbName))
-        //    {
-        //        qWarning() << "cannot remove test-db in ending of benchmark";
-        //        return;
-        //    }
-
-        //    if(!TestUtility::removeFile(fileName))
-        //    {
-        //        qWarning() << "cannot remove test-file in ending of benchmark";
-        //        return;
-        //    }
-
-        qInfo() << "for 10000 products-------";
-        writeTime = 10000/products * writeTime;
-        readTime = 10000/products * readTime;
-        qInfo() << "write " << writeTime << "ms or " << writeTime / 60000 << "min";
-        qInfo() << "read " << readTime << "ms or " << readTime / 60000 << "min";
-
-        qInfo() << "----End of benchmark for write and read data---" << endl;
     }
+//    if(!TestUtility::removeFile(dbName))
+//    {
+//        qWarning() << "cannot remove test-db in ending of benchmark";
+//        return;
+//    }
+
+//    if(!TestUtility::removeFile(fileName))
+//    {
+//        qWarning() << "cannot remove test-file in ending of benchmark";
+//        return;
+//    }
+
+    qInfo() << "for 10000 products-------";
+    writeTime = 10000/products * writeTime;
+    readTime = 10000/products * readTime;
+    qInfo() << "write " << writeTime << "ms or " << writeTime / 60000 << "min";
+    qInfo() << "read " << readTime << "ms or " << readTime / 60000 << "min";
+
+    qInfo() << "----End of benchmark for write and read data---" << endl;
+
 }
 
 /*
