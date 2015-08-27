@@ -15,9 +15,6 @@
 
 class BenchmarkWriteRead
 {
-private:
-    static QList<Item> genRandomItemList(const int storages,
-                                  const int products);
 public:
     static void run(const int &days,
                     const int &storages,

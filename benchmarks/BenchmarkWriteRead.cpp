@@ -54,39 +54,6 @@
 2912s           122s
 
 */
-
-QList<Item> BenchmarkWriteRead::genRandomItemList(const int storages, const int products)
-{
-    QString productPrefix_("prod_");
-    QString storagePrefix_("stor_");
-
-    const int maxStogareCount = storages>1?storages/2:storages;
-    const int maxProductCount = products>1?products/2:products;
-
-    QList<Item> list;
-    for(int storIndex = 0; storIndex < maxStogareCount; storIndex++)
-    {
-        for(int prodIndex = 0; prodIndex < maxProductCount; prodIndex++)
-        {
-            const int storNum = rand() % storages;
-            const int prodNum = rand() % products;
-            const Item item(storagePrefix_ + QString::number(storNum),
-                            productPrefix_ + QString::number(prodNum));
-
-            if(list.contains(item))
-            {
-                prodIndex--;
-            }
-            else
-            {
-                list.append(item);
-
-            }
-        }
-    }
-    return list;
-}
-
 void BenchmarkWriteRead::run(const int &days, const int &storages, const int &products)
 {
     const Date fromDate = Date(2015, 1, 1);
@@ -119,17 +86,15 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     //    }
 
     QElapsedTimer timer;
-    QList<Item> items = genRandomItemList(storages, products);
 
     //    bool result = false;
     //    {
-    //        const SaleHistoryGenerator gen;
     //        const int monthCount = 2;
 
 
     //        for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
     //        {
-    //            const QList<SaleHistoryDay> list = gen.generateHistory(date,
+    //            const QList<SaleHistoryDay> list = SaleHistoryGenerator::generateHistory(date,
     //                                                                   date.addMonths(monthCount),
     //                                                                   storages,
     //                                                                   products);
@@ -162,6 +127,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     //    }
 
     {
+        const QList<Item> items = TestUtility::genRandomItemList(storages, products);
         SalesHistoryStreamReader reader(items, dbName);
 
         timer.start();
@@ -174,7 +140,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         //        QList<SaleHistory> shList;
         if(isOpen)
         {
-
             do
             {
                 const SaleHistory history = reader.current();
@@ -188,24 +153,22 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                 << readTime << "ms";
 
         //-----сравнение результатов
-        //        QList<Item> actList;
-        //        foreach (const SaleHistory &history, shList)
-        //        {
-        //            if(!actList.contains(history.item()))
-        //            {
-        //                actList.append(history.item());
-        //            }
-        //        }
-
-        //        if(!TestUtility::compareListWithoutOrder(actList, items))
-        //        {
-        //            qWarning() << "item lists not equal";
-        //            qWarning() << "writed list-------";
-        //            qWarning() << items;
-        //            qWarning() << "readed list-------";
-        //            qWarning() << actList;
-
-        //        }
+//        QList<Item> actList;
+//        foreach (const SaleHistory &history, shList)
+//        {
+//            if(!actList.contains(history.item()))
+//            {
+//                actList.append(history.item());
+//            }
+//        }
+//        if(!TestUtility::compareListWithoutOrder(actList, items))
+//        {
+//            qWarning() << "item lists not equal";
+//            qWarning() << "writed list-------";
+//            qWarning() << items;
+//            qWarning() << "readed list-------";
+//            qWarning() << actList;
+//        }
 
     }
     //    if(!TestUtility::removeFile(dbName))
