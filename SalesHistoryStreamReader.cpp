@@ -19,20 +19,24 @@ bool SalesHistoryStreamReader::createTempItemsTable()
     QSqlQuery query = db_.getAssociatedQuery();
     db_.beginTransaction();
 
-    ///todo
-    /// а если из этой таблицы убрать unique
-    /// и убрать проверку дублей
-    /// сделать еще одну таблицу с полем f_id - порядок выборки
-    /// и записать в неё из t_temp_items данные через distinct
-    /// c нужным порядком
     if(!query.exec("create temp table t_temp_items("
-//                   "f_id integer primary key asc autoincrement, "
+                   "f_storage text not null, "
+                   "f_product text not null, "
+                   "f_main_an text);"))
+    {
+        qInfo()  << "cannot create temp table t_temp_items";
+        db_.rollbackTransaction();
+        return false;
+    }
+
+    if(!query.exec("create temp table t_temp_order("
+                   "f_id integer primary key asc autoincrement, "
                    "f_storage text not null, "
                    "f_product text not null, "
                    "f_main_an text, "
                    "unique(f_storage, f_product));"))
     {
-        qInfo()  << "cannot create temp table";
+        qInfo()  << "cannot create temp table t_temp_order";
         db_.rollbackTransaction();
         return false;
     }
@@ -43,9 +47,6 @@ bool SalesHistoryStreamReader::createTempItemsTable()
     {
         return false;
     }
-
-    query.exec("create index i_temp_items1 on t_temp_items(f_main_an);");
-    query.exec("create index i_temp_items2 on t_temp_items(f_storage);");
 
     return true;
 }
@@ -76,19 +77,17 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
     {
         foreach (const Item &item, items_)
         {
-            const ID product = item.product();
-            const ID storage = item.storage();
-            const Analogs analogs = analogsTable_.analogsForProduct(product);
+            const Analogs analogs = analogsTable_.analogsForProduct(item.product());
             const ID mainAn = analogs.mainAnalog();
             const QList<ID> analogsIDs = analogs.toList();
             foreach (const ID temp, analogsIDs)
             {
-                storageList << storage;
+                storageList << item.storage();
                 productList << temp;
                 mainAnList << mainAn;
             }
         }
-        remDuplicates(storageList, productList, mainAnList);
+//        remDuplicates(storageList, productList, mainAnList);
     }
 
     QSqlQuery query = db_.getAssociatedQuery();
@@ -107,38 +106,58 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         deleteTempItemsTable();
         return false;
     }
+//    query.exec("create index i_temp_items1 on t_temp_items(f_main_an);");
+
+    if(!query.exec("insert into t_temp_order(f_storage, f_product, f_main_an) "
+                  "select distinct f_storage, f_product, f_main_an from t_temp_items "
+                   "order by  t_temp_items.f_main_an, "
+                   "t_temp_items.f_storage, "
+                   "t_temp_items.f_product;"))
+    {
+        db_.rollbackTransaction();
+        qInfo() << query.lastError().text();
+        qInfo() << query.lastQuery();
+        deleteTempItemsTable();
+        return false;
+    }
+
+//    query.exec("create index i_temp_order1 on t_temp_order(f_main_an);");
+//    query.exec("create index i_temp_order2 on t_temp_order(f_storage, f_product);");
+//    query.exec("create index i_temp_order3 on t_temp_order(f_id);");
+
     db_.commitTransaction();
     return true;
 }
 
-void SalesHistoryStreamReader::remDuplicates(QVariantList &first,
-                                             QVariantList &second,
-                                             QVariantList &mainAn)
-{
-    for(int i = 0; i < first.count() - 1; i++)
-    {
-        const QVariant fi = first.at(i);
-        const QVariant si = second.at(i);
-        for(int j = i+1; j < first.count(); j++)
-        {
-            const QVariant fj = first.at(j);
-            const QVariant sj = second.at(j);
-            if(fi == fj && si == sj)
-            {
-                first.removeAt(j);
-                second.removeAt(j);
-                mainAn.removeAt(j);
-                j--;
-            }
-        }
-    }
-}
+//void SalesHistoryStreamReader::remDuplicates(QVariantList &first,
+//                                             QVariantList &second,
+//                                             QVariantList &mainAn)
+//{
+//    for(int i = 0; i < first.count() - 1; i++)
+//    {
+//        const QVariant fi = first.at(i);
+//        const QVariant si = second.at(i);
+//        for(int j = i+1; j < first.count(); j++)
+//        {
+//            const QVariant fj = first.at(j);
+//            const QVariant sj = second.at(j);
+//            if(fi == fj && si == sj)
+//            {
+//                first.removeAt(j);
+//                second.removeAt(j);
+//                mainAn.removeAt(j);
+//                j--;
+//            }
+//        }
+//    }
+//}
 
 void SalesHistoryStreamReader::deleteTempItemsTable()
 {
     QSqlQuery query = db_.getAssociatedQuery();
     db_.beginTransaction();
     query.exec("drop table if exists t_temp_items;");
+    query.exec("drop table if exists t_temp_order;");
     db_.commitTransaction();
 }
 
@@ -165,17 +184,17 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     query_.setForwardOnly(true);
 
     //----расшифровка плана запроса-----
-    //        query_.exec("explain query plan "+ select);
-    //        while(query_.next())
-    //        {
-    //            const QSqlRecord rec = query_.record();
-    //            QStringList val;
-    //            for(int i = 0; i< rec.count(); i++)
-    //            {
-    //                val << rec.value(i).toString();
-    //            }
-    //            qInfo() << val;
-    //        }
+//            query_.exec("explain query plan "+ select);
+//            while(query_.next())
+//            {
+//                const QSqlRecord rec = query_.record();
+//                QStringList val;
+//                for(int i = 0; i< rec.count(); i++)
+//                {
+//                    val << rec.value(i).toString();
+//                }
+//                qInfo() << val;
+//            }
     //----------------------------------
 
     //------вывод результатов------
@@ -279,19 +298,17 @@ void SalesHistoryStreamReader::loadAnalogsTable()
 
 QString SalesHistoryStreamReader::buildSelectString()
 {
-    QString select("select t_temp_items.f_storage, "
-                   "t_temp_items.f_product, "
+    QString select("select t_temp_order.f_storage, "
+                   "t_temp_order.f_product, "
                    "t_datas.f_date, "
                    "t_datas.f_sold, "
                    "t_datas.f_rest "
-                   "from t_temp_items "
+                   "from t_temp_order "
                    "left outer join t_datas "
-                   "on t_temp_items.f_storage = t_datas.f_storage "
-                   "and t_temp_items.f_product = t_datas.f_product "
+                   "on t_temp_order.f_storage = t_datas.f_storage "
+                   "and t_temp_order.f_product = t_datas.f_product "
                    "%1"
-                   "order by t_temp_items.f_main_an, "
-                   "t_temp_items.f_storage, "
-                   "t_temp_items.f_product;");
+                   "order by t_temp_order.f_id;");
 
     QString dateCase;
     if(from_ != Date() && to_ != Date())

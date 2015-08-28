@@ -1,5 +1,11 @@
 #include "BenchmarkWriteReadWithAnalogs.h"
 
+/*
+720, 10, 100, 5, 5
+первоначальное 13651  - 3739
+
+
+*/
 void BenchmarkWriteReadWithAnalogs::run(const int &days,
                                         const int &storages,
                                         const int &products,
