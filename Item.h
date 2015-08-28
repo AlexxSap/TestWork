@@ -1,42 +1,43 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include <QDate>
-#include <QString>
-#include <QMetaType>
+#include <QSharedDataPointer>
 #include <QDebug>
+#include <QDate>
+#include <QSharedData>
 
-typedef double Amount;  // тип для выражения "кол-во товара"
-typedef QDate Date;     // дата
-typedef QString ID;     // текстовый идентификатор
+#include "ItemImpl.h"
 
-class Item  // идентификатор товара - пара Склад и Артикул
+typedef double Amount;
+typedef QDate Date;
+typedef QString ID;
+
+class ItemImpl;
+
+class Item
 {
 private:
-    ID storage_;
-    ID product_;
+    QSharedDataPointer<ItemImpl> impl_;
 
-public:   
+public:
     Item();
     Item(const ID &storage, const ID &product);
-    Item(const Item &item);
+    Item(const Item &other);
 
     ID storage() const;
     ID product() const;
 
     bool isValid() const;
-
-    Item& operator = (const Item &anotherItem);
-
+    Item& operator = (const Item &other);
     QString toString() const;
 };
 
 Q_DECLARE_METATYPE(Item)
 
-bool operator!= (const Item &left, const Item &right);
-bool operator== (const Item &left, const Item &right);
+bool operator != (const Item &left, const Item &right);
+bool operator == (const Item &left, const Item &right);
 
-inline QDebug operator << (QDebug debug, const Item &item)
+inline QDebug& operator << (QDebug &debug, const Item &item)
 {
    debug << item.toString();
    return debug;
