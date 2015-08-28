@@ -73,7 +73,7 @@ void DataBase::setPragmaParameters(QSqlDatabase &db)
     query.exec("PRAGMA count_changes = OFF;");
     query.exec("PRAGMA journal_mode = WAL;");
     query.exec("PRAGMA foreign_keys = ON;");
-//        query.exec("PRAGMA cache_size = -10;");
+//        query.exec("PRAGMA cache_size = -50;");
     db.commit();
 }
 
@@ -141,20 +141,20 @@ void DataBase::commitTransaction()
     db_.commit();
 }
 
-bool DataBase::createTempTableForWrite()
-{
-    QSqlQuery query(db_);
-    return query.exec("create temp table if not exists t_temp_datas("
-                      "f_storage text not null, "
-                      "f_product text not null, "
-                      "f_date real not null, "
-                      "f_sold real not null, "
-                      "f_rest real not null, "
-                      "primary key(f_storage, f_product, f_date));");
-}
+//bool DataBase::createTempTableForWrite()
+//{
+//    QSqlQuery query(db_);
+//    return query.exec("create temp table if not exists t_temp_datas("
+//                      "f_storage text not null, "
+//                      "f_product text not null, "
+//                      "f_date real not null, "
+//                      "f_sold real not null, "
+//                      "f_rest real not null, "
+//                      "primary key(f_storage, f_product, f_date));");
+//}
 
-bool DataBase::dropTempTableForWrite()
-{
-    QSqlQuery query(db_);
-    return query.exec("drop table if exists t_temp_datas;");
-}
+//bool DataBase::dropTempTableForWrite()
+//{
+//    QSqlQuery query(db_);
+//    return query.exec("drop table if exists t_temp_datas;");
+//}

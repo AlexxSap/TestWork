@@ -110,7 +110,8 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
     }
 
     if(!query.exec("insert into t_temp_order(f_storage, f_product, f_main_an) "
-                  "select distinct f_storage, f_product, f_main_an from t_temp_items "
+                  "select distinct f_storage, f_product, f_main_an "
+                   "from t_temp_items "
                    "order by  t_temp_items.f_main_an, "
                    "t_temp_items.f_storage, "
                    "t_temp_items.f_product;"))

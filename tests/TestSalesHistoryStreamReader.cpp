@@ -293,4 +293,5 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 11), 0.0, 10.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 12), 0.0, 10.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 8, 13), 10.0, 0.0)));
+
 }

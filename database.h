@@ -7,6 +7,7 @@
 #include <QSqlError>
 #include <QString>
 #include <QFile>
+#include <QSqlRecord>
 
 #include <QDebug>
 
@@ -37,8 +38,8 @@ public:
     void rollbackTransaction();
     void commitTransaction();
 
-    bool createTempTableForWrite();
-    bool dropTempTableForWrite();
+//    bool createTempTableForWrite();
+//    bool dropTempTableForWrite();
 };
 
 #endif // DATABASE_H

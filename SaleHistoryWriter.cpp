@@ -67,7 +67,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         }
         db_.commitTransaction();
     }
-
     return true;
 }
 
@@ -103,19 +102,24 @@ bool SaleHistoryWriter::checkFile(const QString &fileName)
     return true;
 }
 
-bool SaleHistoryWriter::copyDataFromTempTable()
-{
-    QSqlQuery query = db_.getAssociatedQuery();
-    db_.beginTransaction();
-    if(!query.exec("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
-                  "select f_storage, f_product, f_date, f_sold, f_rest from t_temp_datas;"))
-    {
-        db_.rollbackTransaction();
-        return false;
-    }
-    db_.commitTransaction();
-    return true;
-}
+//bool SaleHistoryWriter::copyDataFromTempTable()
+//{
+//    QSqlQuery query = db_.getAssociatedQuery();
+
+//    db_.beginTransaction();
+//    if(!query.exec("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
+//                  "select t_temp_datas.f_storage, "
+//                   "t_temp_datas.f_product, "
+//                   "t_temp_datas.f_date, "
+//                   "t_temp_datas.f_sold, "
+//                   "t_temp_datas.f_rest from t_temp_datas;"))
+//    {
+//        db_.rollbackTransaction();
+//        return false;
+//    }
+//    db_.commitTransaction();
+//    return true;
+//}
 
 bool SaleHistoryWriter::importFromFile(const QString &fileName)
 {
@@ -166,7 +170,8 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     {
         return false;
     }
-    return true;//copyDataFromTempTable();
+
+    return true;
 }
 
 void SaleHistoryWriter::setBufferSize(const int size)

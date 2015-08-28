@@ -20,7 +20,7 @@ private:
 
 private:
     bool checkFile(const QString &fileName);
-    bool copyDataFromTempTable();
+//    bool copyDataFromTempTable();
 
 public:
     explicit SaleHistoryWriter(const QString &dbName);
