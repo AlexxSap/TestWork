@@ -37,9 +37,6 @@ public:
     void beginTransaction();
     void rollbackTransaction();
     void commitTransaction();
-
-//    bool createTempTableForWrite();
-//    bool dropTempTableForWrite();
 };
 
 #endif // DATABASE_H

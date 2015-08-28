@@ -93,7 +93,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
         AnalogsTable table = AnalogsTableGenerator::generateTable(analogsGroupNum,
                                                                   analogsInGroupNum,
                                                                   products);
-
+//        qInfo() << table;
         AnalogsWriter writer(dbName);
         if(!writer.write(table))
         {
@@ -107,7 +107,6 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
     {
         const QList<Item> items = TestUtility::genRandomItemList(storages, products);
         SalesHistoryStreamReader reader(items, dbName);
-
         timer.start();
         bool isOpen = reader.open(Date(), Date());
         const int openTime = timer.elapsed();
@@ -121,6 +120,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
             do
             {
                 const SaleHistory history = reader.current();
+//                qInfo() << history;
                 //                shList.append(history);
             } while (reader.next());
         }

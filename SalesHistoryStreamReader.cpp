@@ -19,7 +19,7 @@ bool SalesHistoryStreamReader::createTempItemsTable()
     QSqlQuery query = db_.getAssociatedQuery();
     db_.beginTransaction();
 
-    if(!query.exec("create temp table t_temp_items("
+    if(!query.exec("create temporary table t_temp_items("
                    "f_storage text not null, "
                    "f_product text not null, "
                    "f_main_an text);"))
@@ -29,7 +29,8 @@ bool SalesHistoryStreamReader::createTempItemsTable()
         return false;
     }
 
-    if(!query.exec("create temp table t_temp_order("
+    if(!query.exec("create temporary table t_temp_order("
+                   "f_order integer primary key asc autoincrement, "
                    "f_storage text not null, "
                    "f_product text not null, "
                    "f_main_an text, "
@@ -122,6 +123,23 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         deleteTempTables();
         return false;
     }
+    //------вывод результатов------
+//    if(query_.exec("select * from t_temp_order;"))
+//    {
+//        while(query_.next())
+//        {
+//            QSqlRecord rec = query_.record();
+//            int c = rec.count();
+//            QStringList lst;
+//            for(int i = 0; i < c; i++)
+//            {
+//                lst.append(rec.value(i).toString());
+//            }
+//            qInfo() << lst;
+//        }
+//    }
+    //-----------------------------
+
     query.exec("drop table if exists t_temp_items;");
     db_.commitTransaction();
     return true;
@@ -148,7 +166,7 @@ QString SalesHistoryStreamReader::buildSelectString() const
                    "on t_temp_order.f_storage = t_datas.f_storage "
                    "and t_temp_order.f_product = t_datas.f_product "
                    "%1"
-                   "order by t_temp_order.rowid;");
+                   "order by t_temp_order.f_order;");
 
     QString dateCase;
     if(from_ != Date() && to_ != Date())
@@ -197,19 +215,6 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     query_ = db_.getAssociatedQuery();
     query_.setForwardOnly(true);
 
-    //----расшифровка плана запроса-----
-//    query_.exec("explain query plan "+ select);
-//    while(query_.next())
-//    {
-//        const QSqlRecord rec = query_.record();
-//        QStringList val;
-//        for(int i = 0; i< rec.count(); i++)
-//        {
-//            val << rec.value(i).toString();
-//        }
-//        qInfo() << val;
-//    }
-    //----------------------------------
     //------вывод результатов------
 //    if(query_.exec(select))
 //    {
@@ -268,6 +273,7 @@ void SalesHistoryStreamReader::addDayToTempHistory()
     const QVariant date = query_.value(2);
     const QVariant sold = query_.value(3);
     const QVariant rest = query_.value(4);
+
     if(!date.isNull() && !sold.isNull() && !rest.isNull())
     {
         tempHistory_.addDay(SaleHistoryDay(item,
@@ -315,6 +321,7 @@ void SalesHistoryStreamReader::normalazeTempHistory()
         mainAnalog = analogsTable_.analogsForProduct(
                     tempHistory_.item().product()).mainAnalog();
     }
+//    qInfo() << "normalazeTempHistory" << from_ << to_ << mainAnalog;
     tempHistory_.normalaze(from_, to_, mainAnalog);
 }
 

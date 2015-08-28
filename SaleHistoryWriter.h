@@ -20,11 +20,9 @@ private:
 
 private:
     bool checkFile(const QString &fileName);
-//    bool copyDataFromTempTable();
 
 public:
     explicit SaleHistoryWriter(const QString &dbName);
-    ~SaleHistoryWriter();
     bool write(const QList<SaleHistoryDay> &days);
     bool importFromFile(const QString &fileName);
 

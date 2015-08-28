@@ -2,6 +2,7 @@
 #define SALESHISTORYSTREAMREADER_H
 
 #include <QDebug>
+#include <QElapsedTimer>
 
 #include "AnalogsReader.h"
 #include "SaleHistory.h"
@@ -19,6 +20,7 @@ private:
     SaleHistory tempHistory_;
     bool isCanNext_;
     AnalogsTable analogsTable_;
+
 
 private:
     bool createTempItemsTable();

@@ -4,6 +4,15 @@ AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
                                                   const int &analogsNum,
                                                   const int &maxProdNumFromSHG)
 {
+    int maxProdNum = maxProdNumFromSHG;
+    if(groupNum * (analogsNum + 1) > maxProdNumFromSHG)
+    {
+        qWarning() << "Warning in AnalogsTableGenerator::generateTable "
+                   << "maxProdNumFromSHG is small for this groupNum and analogsNum";
+
+        maxProdNum = groupNum * (analogsNum + 1);
+        qWarning() << "set maxProdNum = " << maxProdNum;
+    }
     const QString prodPrefix = "prod_";
     AnalogsTable table;
     QList<int> past;
@@ -12,7 +21,7 @@ AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
         int randProdNum = 0;
         while(true)
         {
-            randProdNum =  rand() % maxProdNumFromSHG;
+            randProdNum =  rand() % maxProdNum;
             if(!past.contains(randProdNum))
             {
                 past.append(randProdNum);
@@ -25,7 +34,7 @@ AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
             int randAnNum = 0;
             while(true)
             {
-                randAnNum =  rand() % maxProdNumFromSHG;
+                randAnNum =  rand() % maxProdNum;
                 if(!past.contains(randAnNum))
                 {
                     past.append(randAnNum);
