@@ -58,36 +58,32 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
     QVariantList mainAnList;
 
     const bool isAnalogs = analogsTable_.isValid();
-    //заносим items_ в списки для временной таблици
+
     foreach (const Item &item, items_)
     {
         const ID product = item.product();
-        storageList << item.storage();
+        const ID storage = item.storage();
+        storageList << storage;
         productList << product;
-        ID mainAn;
+
         if(isAnalogs)
         {
-            mainAn = analogsTable_.analogsForProduct(product).mainAnalog();
-        }
-        mainAnList << mainAn;
-    }
-
-    //заносим в списки для временной таблици аналоги товаров из items_
-    if(isAnalogs)
-    {
-        foreach (const Item &item, items_)
-        {
-            const Analogs analogs = analogsTable_.analogsForProduct(item.product());
+            const Analogs analogs =analogsTable_.analogsForProduct(product);
             const ID mainAn = analogs.mainAnalog();
+            mainAnList << mainAn;
+
             const QList<ID> analogsIDs = analogs.toList();
             foreach (const ID temp, analogsIDs)
             {
-                storageList << item.storage();
+                storageList << storage;
                 productList << temp;
                 mainAnList << mainAn;
             }
         }
-//        remDuplicates(storageList, productList, mainAnList);
+        else
+        {
+            mainAnList << "";
+        }
     }
 
     QSqlQuery query = db_.getAssociatedQuery();
@@ -106,7 +102,6 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         deleteTempItemsTable();
         return false;
     }
-//    query.exec("create index i_temp_items1 on t_temp_items(f_main_an);");
 
     if(!query.exec("insert into t_temp_order(f_storage, f_product, f_main_an) "
                   "select distinct f_storage, f_product, f_main_an from t_temp_items "
@@ -121,36 +116,9 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         return false;
     }
 
-//    query.exec("create index i_temp_order1 on t_temp_order(f_main_an);");
-//    query.exec("create index i_temp_order2 on t_temp_order(f_storage, f_product);");
-//    query.exec("create index i_temp_order3 on t_temp_order(f_id);");
-
     db_.commitTransaction();
     return true;
 }
-
-//void SalesHistoryStreamReader::remDuplicates(QVariantList &first,
-//                                             QVariantList &second,
-//                                             QVariantList &mainAn)
-//{
-//    for(int i = 0; i < first.count() - 1; i++)
-//    {
-//        const QVariant fi = first.at(i);
-//        const QVariant si = second.at(i);
-//        for(int j = i+1; j < first.count(); j++)
-//        {
-//            const QVariant fj = first.at(j);
-//            const QVariant sj = second.at(j);
-//            if(fi == fj && si == sj)
-//            {
-//                first.removeAt(j);
-//                second.removeAt(j);
-//                mainAn.removeAt(j);
-//                j--;
-//            }
-//        }
-//    }
-//}
 
 void SalesHistoryStreamReader::deleteTempItemsTable()
 {
@@ -159,6 +127,45 @@ void SalesHistoryStreamReader::deleteTempItemsTable()
     query.exec("drop table if exists t_temp_items;");
     query.exec("drop table if exists t_temp_order;");
     db_.commitTransaction();
+}
+
+QString SalesHistoryStreamReader::buildSelectString()
+{
+    QString select("select t_temp_order.f_storage, "
+                   "t_temp_order.f_product, "
+                   "t_datas.f_date, "
+                   "t_datas.f_sold, "
+                   "t_datas.f_rest "
+                   "from t_temp_order "
+                   "left outer join t_datas "
+                   "on t_temp_order.f_storage = t_datas.f_storage "
+                   "and t_temp_order.f_product = t_datas.f_product "
+                   "%1"
+                   "order by t_temp_order.f_id;");
+
+    QString dateCase;
+    if(from_ != Date() && to_ != Date())
+    {
+        dateCase = "where (t_datas.f_date >= '%1' and "
+                   "t_datas.f_date <= '%2') "
+                   "or t_datas.f_date is null ";
+        dateCase = dateCase.arg(from_.toString("yyyy.MM.dd"))
+                .arg(to_.toString("yyyy.MM.dd"));
+    }
+    else if (from_ == Date() && to_ != Date())
+    {
+        dateCase = "where t_datas.f_date <= '%1' "
+                   "or t_datas.f_date is null ";
+        dateCase = dateCase.arg(to_.toString("yyyy.MM.dd"));
+    }
+    else if (to_ == Date() && from_ != Date())
+    {
+        dateCase = "where t_datas.f_date >= '%1' "
+                   "or t_datas.f_date is null ";
+        dateCase = dateCase.arg(from_.toString("yyyy.MM.dd"));
+    }
+    select = select.arg(dateCase);
+    return select;
 }
 
 bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
@@ -184,17 +191,17 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     query_.setForwardOnly(true);
 
     //----расшифровка плана запроса-----
-//            query_.exec("explain query plan "+ select);
-//            while(query_.next())
-//            {
-//                const QSqlRecord rec = query_.record();
-//                QStringList val;
-//                for(int i = 0; i< rec.count(); i++)
-//                {
-//                    val << rec.value(i).toString();
-//                }
-//                qInfo() << val;
-//            }
+//    query_.exec("explain query plan "+ select);
+//    while(query_.next())
+//    {
+//        const QSqlRecord rec = query_.record();
+//        QStringList val;
+//        for(int i = 0; i< rec.count(); i++)
+//        {
+//            val << rec.value(i).toString();
+//        }
+//        qInfo() << val;
+//    }
     //----------------------------------
 
     //------вывод результатов------
@@ -294,45 +301,6 @@ void SalesHistoryStreamReader::loadAnalogsTable()
         }
     }
     analogsTable_ = reader.read(idList);
-}
-
-QString SalesHistoryStreamReader::buildSelectString()
-{
-    QString select("select t_temp_order.f_storage, "
-                   "t_temp_order.f_product, "
-                   "t_datas.f_date, "
-                   "t_datas.f_sold, "
-                   "t_datas.f_rest "
-                   "from t_temp_order "
-                   "left outer join t_datas "
-                   "on t_temp_order.f_storage = t_datas.f_storage "
-                   "and t_temp_order.f_product = t_datas.f_product "
-                   "%1"
-                   "order by t_temp_order.f_id;");
-
-    QString dateCase;
-    if(from_ != Date() && to_ != Date())
-    {
-        dateCase = "where (t_datas.f_date >= '%1' and "
-                   "t_datas.f_date <= '%2') "
-                   "or t_datas.f_date is null ";
-        dateCase = dateCase.arg(from_.toString("yyyy.MM.dd"))
-                .arg(to_.toString("yyyy.MM.dd"));
-    }
-    else if (from_ == Date() && to_ != Date())
-    {
-        dateCase = "where t_datas.f_date <= '%1' "
-                   "or t_datas.f_date is null ";
-        dateCase = dateCase.arg(to_.toString("yyyy.MM.dd"));
-    }
-    else if (to_ == Date() && from_ != Date())
-    {
-        dateCase = "where t_datas.f_date >= '%1' "
-                   "or t_datas.f_date is null ";
-        dateCase = dateCase.arg(from_.toString("yyyy.MM.dd"));
-    }
-    select = select.arg(dateCase);
-    return select;
 }
 
 void SalesHistoryStreamReader::normalazeTempHistory()
