@@ -94,7 +94,6 @@ bool SaleHistoryWriter::checkFile(const QString &fileName)
     {
         const QString str = ts.readLine().trimmed();
         if(!rx.exactMatch(str))
-//         if(!checkLine(str))
         {
             file.close();
             return false;
