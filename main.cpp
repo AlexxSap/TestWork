@@ -20,6 +20,8 @@
 #include "benchmarks/BenchmarkAnalogsReader.h"
 #include "benchmarks/BenchmarkWriteReadWithAnalogs.h"
 
+#include "DataBaseInfo.h"
+
 #include <QVector>
 
 #else
@@ -31,6 +33,7 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
+    DataBaseInfo::setDataBaseType(DataBase::SQLITE);
     TestItemOperators testItemOperators;
     test += QTest::qExec(&testItemOperators);
 

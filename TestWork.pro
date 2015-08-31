@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     benchmarks/BenchmarkAnalogsReader.cpp \
     tests/TSalesHistoryReaderWithAnalogs.cpp \
     benchmarks/BenchmarkWriteReadWithAnalogs.cpp \
-    SqliteDataBase.cpp
+    SqliteDataBase.cpp \
+    DataBaseInfo.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -85,4 +86,5 @@ HEADERS  += mainwindow.h \
     benchmarks/BenchmarkAnalogsReader.h \
     tests/TSalesHistoryReaderWithAnalogs.h \
     benchmarks/BenchmarkWriteReadWithAnalogs.h \
-    SqliteDataBase.h
+    SqliteDataBase.h \
+    DataBaseInfo.h

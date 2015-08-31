@@ -1,6 +1,8 @@
 #include "DataBase.h"
 #include "SqliteDataBase.h"
 
+#include "DataBaseInfo.h"
+
 DataBase::DataBase(const QString &dbName,
                    const QString &connName)
     : QObject(0),
@@ -104,11 +106,6 @@ void DataBase::rollbackTransaction()
 void DataBase::commitTransaction()
 {
     db_.commit();
-}
-
-DataBase::Type DataBase::type() const
-{
-    return type_;
 }
 
 const QString DataBase::connectionName() const

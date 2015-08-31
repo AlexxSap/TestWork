@@ -42,7 +42,6 @@ public:
     virtual ~DataBase();
 
     const QString name() const;
-    Type type() const;
     const QString connectionName() const;
 
     void beginTransaction();
