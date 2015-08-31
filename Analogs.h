@@ -29,6 +29,7 @@ public:
     bool contains(const ID &product) const;
     bool isValid() const;
 
+    ///notes почему использование внешних операторов лучше, чем использование собственных операторов класса?
     friend bool operator != (const Analogs &left, const Analogs &right);
     friend bool operator == (const Analogs &left, const Analogs &right);
 };
@@ -47,6 +48,7 @@ inline QDebug operator<< (QDebug debug, const Analogs &analogs)
 
 inline uint qHash(const Analogs &key, uint seed)
 {
+    ///notes чем обоснована такая сложная функция кэширования?
     return qHash(key.mainAnalog(), seed) ^ key.toList().count();
 }
 

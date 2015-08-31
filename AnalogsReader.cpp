@@ -4,6 +4,7 @@ bool AnalogsReader::createTempIdTable()
 {
     QSqlQuery query = db_.getAssociatedQuery();
     db_.beginTransaction();
+    ///notes таблицы называем по тем же правилам, как поля в классах. с маленькой буквы в верблюжьем регистре
     if(!query.exec("create temporary table if not exists t_temp_idmain("
                    "f_main text, "
                    "f_id text);"))
@@ -45,6 +46,7 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     db_.beginTransaction();
     if(!query.execBatch())
     {
+        ///notes ролбэки это хорошо. но в текущей задаче они ничем не обоснованы, и более того, автоматически не протестерованы.
         db_.rollbackTransaction();
         return false;
     }
@@ -142,6 +144,7 @@ AnalogsTable AnalogsReader::read(const QList<ID> IdList)
     AnalogsTable table;
     if(IdList.isEmpty())
     {
+        ///notes в таких случая лучше возвращать в явном виде  AnalogsTable, что бы избежать ошибок, когда table будет модифицрован до if
         return table;
     }
     if(!createTempIdTable())

@@ -79,11 +79,14 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
     QTest::addColumn<AnalogsTable>("analogsTable");
 
     QTest::addColumn< QList<Item> >("caseItems");
+    ///notes если в предметной области появляются даты, то чаще всего надо добавить специальный тест на 29 февраля
     QTest::addColumn<Date>("caseDateFrom");
     QTest::addColumn<Date>("caseDateTo");
 
     QTest::addColumn< QList<SaleHistory> >("expResult");
 
+    ///notes закомментированные тестовые данные всегда вызывают очень сильные подозрения в корректности тестирования
+    /// поэтому их быть не должно. Так же как закомментированных тестов или проверок в тестах.
 //    QTest::newRow("simple")
 //            << (QList<SaleHistoryDay>()
 //                << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 10), 1.0, 2.0)

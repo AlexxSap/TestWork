@@ -21,6 +21,7 @@ bool AnalogsWriter::write(const AnalogsTable &table)
     QVariantList mains;
     QVariantList anVarLits;
 
+    ///notes в итераторах обычно используем константные ссылки для текущего значения итератора
     foreach(const Analogs an, anList)
     {
         const ID mainAn = an.mainAnalog();

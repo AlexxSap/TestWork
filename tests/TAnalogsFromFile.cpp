@@ -66,6 +66,7 @@ void TAnalogsFromFile::TestImportFromFile_data()
     QTest::addColumn<QList<ID> >("idList");
     QTest::addColumn<AnalogsTable>("expResult");
 
+    ///notes если имеем дело с текстовыми данными, то обязательно тестируем совместимость с utf-8, а так же сместь 4 байтных симоволов с 8 байтными
     QTest::newRow("simple") << (QStringList()
                                 << "prod01;prod02;prod03"
                                 << "prod11"

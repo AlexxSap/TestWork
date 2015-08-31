@@ -8,6 +8,9 @@ TAnalogs::TAnalogs(QObject *parent) : QObject(parent)
 void TAnalogs::TestAnalogsList()
 {
     QFETCH(Analogs, data);
+    ///notes если в тестах используем QList, то это скорее всего означает, что нам важен порядок либо возможность иметь повторяющиейся элементы
+    /// если ни то ни то не важно, то используем QSet.
+    ///  в данном случае это бы заодно избавило от использования TestUtility::compareListWithoutOrder(довольно сложной функции, которая сама по себе требует тестирования)
     QFETCH(QList<ID>, expList);
 
     QList<ID> actLits = data.toList();
@@ -50,6 +53,7 @@ void TAnalogs::TestIsAnalog()
     QCOMPARE(actIsAnalog, expIsAnalog);
 }
 
+///notes в тестах обязательно должны присутвовать краевые значения. тут - это аналоги из одного товара
 void TAnalogs::TestIsAnalog_data()
 {
     QTest::addColumn<Analogs>("data");
