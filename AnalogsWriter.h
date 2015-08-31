@@ -11,7 +11,7 @@
 class AnalogsWriter
 {
 private:
-    DataBase db_;
+    QPointer<DataBase> db_;
 
 public:
     explicit AnalogsWriter(const QString &dbName);

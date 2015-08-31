@@ -1,15 +1,18 @@
 #include "AnalogsWriter.h"
 
 AnalogsWriter::AnalogsWriter(const QString &dbName)
-    : db_(dbName)
+    : db_(getDataBase(dbName,
+                      DataBase::SQLITE,
+                      "con_for_analogs_reader"))
 
 {
-    db_.connect();
+    db_->connect();
 }
 
 AnalogsWriter::~AnalogsWriter()
 {
-    db_.disconnect();
+    db_->disconnect();
+    delete db_;
 }
 
 bool AnalogsWriter::write(const AnalogsTable &table)
@@ -20,7 +23,7 @@ bool AnalogsWriter::write(const AnalogsTable &table)
         return true;
     }
 
-    QSqlQuery query = db_.getAssociatedQuery();
+    QSqlQuery query = db_->getAssociatedQuery();
     query.prepare("insert into t_analogs (f_main, f_analog) "
                   "values(?, ?);");
 
@@ -41,15 +44,15 @@ bool AnalogsWriter::write(const AnalogsTable &table)
     query.addBindValue(mains);
     query.addBindValue(anVarLits);
 
-    db_.beginTransaction();
+    db_->beginTransaction();
     if(!query.execBatch())
     {
         qInfo() << query.lastError().text();
         qInfo() << query.executedQuery();
-        db_.rollbackTransaction();
+        db_->rollbackTransaction();
         return false;
     }
-    db_.commitTransaction();
+    db_->commitTransaction();
     return true;
 }
 

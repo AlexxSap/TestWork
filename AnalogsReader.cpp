@@ -2,7 +2,7 @@
 
 bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
 {
-    QSqlQuery query = db_.getAssociatedQuery();
+    QSqlQuery query = db_->getAssociatedQuery();
     query.prepare("insert into t_temp_ids (f_id) values (?);");
     QVariantList lst ;
     foreach (const ID id, IdList)
@@ -11,15 +11,15 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     }
     query.addBindValue(lst);
 
-    db_.beginTransaction();
+    db_->beginTransaction();
     if(!query.execBatch())
     {
-        db_.rollbackTransaction();
+        db_->rollbackTransaction();
         return false;
     }
-    db_.commitTransaction();
+    db_->commitTransaction();
 
-    db_.beginTransaction();
+    db_->beginTransaction();
     if(!query.exec("insert into t_temp_idmain(f_main, f_id) "
                    "select t_analogs.f_main, t_analogs.f_analog "
                    "from t_temp_ids left outer join t_analogs "
@@ -27,17 +27,17 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     {
         qInfo() << query.lastError().text();
         qInfo() << query.lastQuery();
-        db_.rollbackTransaction();
+        db_->rollbackTransaction();
         return false;
     }
-    db_.commitTransaction();
+    db_->commitTransaction();
 
     return true;
 }
 
 AnalogsTable AnalogsReader::getTable()
 {
-    QSqlQuery query = db_.getAssociatedQuery();
+    QSqlQuery query = db_->getAssociatedQuery();
     query.setForwardOnly(true);
 
     if(!query.exec("select t_analogs.f_main, t_analogs.f_analog "
@@ -104,14 +104,14 @@ AnalogsReader::AnalogsReader(const QString &dbName)
                       DataBase::SQLITE,
                       "con_for_analogs_reader"))
 {
-    db_.connect();
+    db_->connect();
 }
 
 AnalogsReader::~AnalogsReader()
 {
-    db_.disconnect();
+    db_->disconnect();
+    delete db_;
 }
-
 
 AnalogsTable AnalogsReader::read(const QList<ID> IdList)
 {
@@ -120,7 +120,7 @@ AnalogsTable AnalogsReader::read(const QList<ID> IdList)
     {
         return table;
     }
-    if(!db_.createTempTableForAnalogsReader())
+    if(!db_->createTempTableForAnalogsReader())
     {
         return table;
     }
@@ -131,7 +131,7 @@ AnalogsTable AnalogsReader::read(const QList<ID> IdList)
 
     table = getTable();
 
-    db_.dropTempTableForAnalogsReader();
+    db_->dropTempTableForAnalogsReader();
     return table;
 }
 

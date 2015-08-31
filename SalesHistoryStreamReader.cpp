@@ -11,12 +11,13 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       isCanNext_(false),
       analogsTable_()
 {
-    db_.connect();
+    db_->connect();
 }
 
 SalesHistoryStreamReader::~SalesHistoryStreamReader()
 {
-    db_.disconnect();
+    db_->disconnect();
+    delete db_;
 }
 
 void SalesHistoryStreamReader::fillInsLists(QVariantList &stor,
@@ -61,20 +62,20 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
 
     fillInsLists(storageList, productList, mainAnList);
 
-    QSqlQuery query = db_.getAssociatedQuery();
+    QSqlQuery query = db_->getAssociatedQuery();
     query.prepare("insert into t_temp_items(f_storage, f_product, f_main_an) "
                   "values (?, ?, ?);");
     query.addBindValue(storageList);
     query.addBindValue(productList);
     query.addBindValue(mainAnList);
 
-    db_.beginTransaction();
+    db_->beginTransaction();
     if(!query.execBatch())
     {
-        db_.rollbackTransaction();
+        db_->rollbackTransaction();
         qInfo() << query.lastError().text();
         qInfo() << query.lastQuery();
-        db_.dropTempTableForSalesHistoryStreamReader();
+        db_->dropTempTableForSalesHistoryStreamReader();
         return false;
     }
 
@@ -85,10 +86,10 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
                    "t_temp_items.f_storage, "
                    "t_temp_items.f_product;"))
     {
-        db_.rollbackTransaction();
+        db_->rollbackTransaction();
         qInfo() << query.lastError().text();
         qInfo() << query.lastQuery();
-        db_.dropTempTableForSalesHistoryStreamReader();
+        db_->dropTempTableForSalesHistoryStreamReader();
         return false;
     }
     //------вывод результатов------
@@ -108,7 +109,7 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
 //    }
     //-----------------------------
 
-    db_.commitTransaction();
+    db_->commitTransaction();
     return true;
 }
 
@@ -163,7 +164,7 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 
     loadAnalogsTable();
 
-    if(!db_.createTempTableForSalesHistoryStreamReader())
+    if(!db_->createTempTableForSalesHistoryStreamReader())
     {
         return false;
     }
@@ -175,7 +176,7 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 
     QString select = buildSelectString();
 
-    query_ = db_.getAssociatedQuery();
+    query_ = db_->getAssociatedQuery();
     query_.setForwardOnly(true);
 
     //------вывод результатов------
@@ -224,7 +225,7 @@ bool SalesHistoryStreamReader::next()
     }
     else
     {
-        db_.dropTempTableForSalesHistoryStreamReader();
+        db_->dropTempTableForSalesHistoryStreamReader();
         return false;
     }
 }
@@ -263,7 +264,7 @@ bool SalesHistoryStreamReader::isCanReturnHistory(const Item &item) const
 
 void SalesHistoryStreamReader::loadAnalogsTable()
 {
-    AnalogsReader reader(db_.name());
+    AnalogsReader reader(db_->name());
     QList<ID> idList;
     foreach (const Item &item, items_)
     {

@@ -8,10 +8,11 @@
 #include <QString>
 #include <QFile>
 #include <QSqlRecord>
+#include <QPointer>
 
 #include <QDebug>
 
-class DataBase
+class DataBase : public QObject
 {
 public:
     enum Type
@@ -24,11 +25,11 @@ private:
     QSqlDatabase db_;
     Type type_;
 
-
 private:
-    virtual bool createEmptyDB();
+    virtual bool createEmptyDB() = 0;
+
+protected:
     bool executeQuery(QSqlDatabase &db, const QString &request);
-    void setPragmaParameters(QSqlDatabase &db);
 
 public:
     DataBase();
@@ -57,7 +58,7 @@ public:
     virtual void dropTempTableForSalesHistoryStreamReader();
 };
 
-DataBase& getDataBase(const QString &dbName,
+QPointer<DataBase> getDataBase(const QString &dbName,
                      const DataBase::Type &type = DataBase::SQLITE,
                      const QString &connName = "qt_sql_default_connection");
 

@@ -1,19 +1,22 @@
 #include "SaleHistoryWriter.h"
 
 SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
-    : db_(dbName),
+    : db_(getDataBase(dbName,
+                      DataBase::SQLITE,
+                      "con_for_analogs_reader")),
       bufferSize_(1000000),
       queryForWrite_()
 {
-    db_.connect();
-    queryForWrite_ = db_.getAssociatedQuery();
+    db_->connect();
+    queryForWrite_ = db_->getAssociatedQuery();
     queryForWrite_.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
                            "values(?, ?, ?, ?, ?);");
 }
 
 SaleHistoryWriter::~SaleHistoryWriter()
 {
-    db_.disconnect();
+    db_->disconnect();
+    delete db_;
 }
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
@@ -57,15 +60,15 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         queryForWrite_.addBindValue(soldList);
         queryForWrite_.addBindValue(restList);
 
-        db_.beginTransaction();
+        db_->beginTransaction();
         if(!queryForWrite_.execBatch())
         {
-            db_.rollbackTransaction();
+            db_->rollbackTransaction();
             qInfo() << queryForWrite_.lastError().text();
             qInfo() << queryForWrite_.lastQuery();
             return false;
         }
-        db_.commitTransaction();
+        db_->commitTransaction();
     }
     return true;
 }

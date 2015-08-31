@@ -9,7 +9,7 @@
 class AnalogsReader
 {
 private:
-    DataBase db_;
+    QPointer<DataBase> db_;
 
 private:
     bool fillTempIdTable(const QList<ID> IdList);

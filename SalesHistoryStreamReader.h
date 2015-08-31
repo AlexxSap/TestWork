@@ -13,7 +13,7 @@ class SalesHistoryStreamReader
 {
 private:
     QList<Item> items_;
-    DataBase db_;
+    QPointer<DataBase> db_;
     QSqlQuery query_;
     QDate from_;
     QDate to_;

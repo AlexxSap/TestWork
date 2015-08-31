@@ -1,4 +1,5 @@
 #include "DataBase.h"
+#include "SqliteDataBase.h"
 
 DataBase::DataBase(const QString &dbName,
                    const QString &connName)
@@ -6,10 +7,7 @@ DataBase::DataBase(const QString &dbName,
       db_(),
       type_()
 {
-    if(!QFile::exists(dbName))
-    {
-        createEmptyDB();
-    }
+
     db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
     db_.setDatabaseName(dbName_);
 }
@@ -36,64 +34,6 @@ DataBase::~DataBase()
 
 }
 
-bool DataBase::createEmptyDB()
-{
-    const QString connName("createEmptyDB");
-    {
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
-        db.setDatabaseName(dbName_);
-        if(!db.open())
-        {
-            return false;
-        }
-        db.close();
-
-        if(!db.open())
-        {
-            return false;
-        }
-        setPragmaParameters(db);
-
-        if(!executeQuery(db, "create table t_datas("
-                         "f_storage text not null, "
-                         "f_product text not null, "
-                         "f_date real not null, "
-                         "f_sold real not null, "
-                         "f_rest real not null, "
-                         "primary key(f_storage, f_product, f_date));"))
-        {
-            return false;
-        }
-
-        if(!executeQuery(db, "create table t_analogs("
-                         "f_main text not null, "
-                         "f_analog text not null);"))
-        {
-            return false;
-        }
-        executeQuery(db, "create index i_analogs_analog on t_analogs"
-                         "(f_analog);");
-        executeQuery(db, "create index i_analogs_main on t_analogs"
-                         "(f_main);");
-
-
-        db.close();
-    }
-    QSqlDatabase::removeDatabase(connName);
-    return true;
-}
-
-void DataBase::setPragmaParameters(QSqlDatabase &db)
-{
-    QSqlQuery query(db);
-    db.transaction();
-    query.exec("PRAGMA temp_store = MEMORY;");
-    query.exec("PRAGMA synchronous = OFF;");
-    query.exec("PRAGMA count_changes = OFF;");
-    query.exec("PRAGMA journal_mode = WAL;");
-    query.exec("PRAGMA foreign_keys = ON;");
-    db.commit();
-}
 
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 {
@@ -111,6 +51,11 @@ bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 
 bool DataBase::connect()
 {
+    if(!QFile::exists(dbName_))
+    {
+        createEmptyDB();
+    }
+
     return db_.open();
 }
 
@@ -235,14 +180,14 @@ void DataBase::dropTempTableForSalesHistoryStreamReader()
     db_.commit();
 }
 
-DataBase& getDataBase(const QString &dbName,
+QPointer<DataBase> getDataBase(const QString &dbName,
                       const DataBase::Type &type,
                       const QString &connName)
 {
     switch (type) {
     case DataBase::SQLITE:
     {
-        DataBase db(dbName, connName);
+        QPointer<DataBase> db = new SqliteDataBase(dbName, connName);
         return db;
     }
 

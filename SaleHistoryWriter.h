@@ -14,7 +14,7 @@
 class SaleHistoryWriter
 {
 private:
-    DataBase db_;
+    QPointer<DataBase> db_;
     int bufferSize_;
     QSqlQuery queryForWrite_;
 
