@@ -10,7 +10,6 @@ DataBase::DataBase(const QString &dbName,
       connectionName_(connName)
 {
 
-
 }
 
 DataBase::DataBase(const DataBase &other)
@@ -247,10 +246,16 @@ QSqlQuery DataBase::queryForSalesHistoryStreamReader(const QDate &from,
     return query;
 }
 
-QPointer<DataBase> getDataBase(const QString &dbName,
+QPointer<DataBase> DataBase::getDataBase(const QString &dbName,
                                const DataBase::Type &type,
+                               const QString &user,
+                               const QString &password,
                                const QString &connName)
 {
+    Q_UNUSED(user)
+    Q_UNUSED(password)
+    Q_UNUSED(connName)
+
     switch (type) {
     case DataBase::SQLITE:
     {

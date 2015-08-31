@@ -94,8 +94,10 @@ AnalogsTable AnalogsReader::getTable()
 }
 
 AnalogsReader::AnalogsReader(const QString &dbName)
-    : db_(getDataBase(dbName,
+    : db_(DataBase::getDataBase(dbName,
                       DataBase::SQLITE,
+                      "",
+                      "",
                       "con_for_analogs_reader"))
 {
     db_->connect();

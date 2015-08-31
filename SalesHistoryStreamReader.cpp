@@ -3,7 +3,7 @@
 SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
                                                    const QString &dbName)
     :items_(items),
-      db_(getDataBase(dbName)),
+      db_(DataBase::getDataBase(dbName)),
       query_(),
       from_(),
       to_(),

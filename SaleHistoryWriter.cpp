@@ -1,9 +1,7 @@
 #include "SaleHistoryWriter.h"
 
 SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
-    : db_(getDataBase(dbName,
-                      DataBase::SQLITE,
-                      "con_for_analogs_reader")),
+    : db_(DataBase::getDataBase(dbName)),
       bufferSize_(1000000),
       queryForWrite_()
 {

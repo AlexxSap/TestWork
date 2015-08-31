@@ -1,9 +1,7 @@
 #include "AnalogsWriter.h"
 
 AnalogsWriter::AnalogsWriter(const QString &dbName)
-    : db_(getDataBase(dbName,
-                      DataBase::SQLITE,
-                      "con_for_analogs_reader"))
+    : db_(DataBase::getDataBase(dbName))
 
 {
     db_->connect();

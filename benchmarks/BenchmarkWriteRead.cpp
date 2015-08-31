@@ -60,6 +60,7 @@
 */
 void BenchmarkWriteRead::run(const int &days, const int &storages, const int &products)
 {
+
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
     const QString prefix(QString::number(days) + "_"
@@ -68,6 +69,9 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
     const QString dbName(prefix + "TestDBase.db");
     const QString fileName(prefix + "testFile.csv");
+
+    Q_UNUSED(toDate)
+    Q_UNUSED(fileName)
 
     qint64 writeTime = 0;
     qint64 readTime = 0;

@@ -13,6 +13,7 @@
 
 #include <QDebug>
 
+
 class DataBase : public QObject
 {
 public:
@@ -64,10 +65,15 @@ public:
     virtual QSqlQuery queryForSalesHistoryStreamReader(const QDate &from,
                                                        const QDate &to,
                                                        const bool &forward = true);
+
+
+    static QPointer<DataBase> getDataBase(const QString &dbName,
+                                          const DataBase::Type &type = DataBase::SQLITE,
+                                          const QString &user = "",
+                                          const QString &password = "",
+                                          const QString &connName = "qt_sql_default_connection");
 };
 
-QPointer<DataBase> getDataBase(const QString &dbName,
-                               const DataBase::Type &type = DataBase::SQLITE,
-                               const QString &connName = "qt_sql_default_connection");
+
 
 #endif // DATABASE_H
