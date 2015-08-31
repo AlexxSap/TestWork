@@ -3,28 +3,32 @@
 
 DataBase::DataBase(const QString &dbName,
                    const QString &connName)
-    :dbName_(dbName),
+    : QObject(0),
+      dbName_(dbName),
       db_(),
-      type_()
+      type_(),
+      connectionName_(connName)
 {
 
-    db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
-    db_.setDatabaseName(dbName_);
+
 }
 
 DataBase::DataBase(const DataBase &other)
-    :dbName_(other.name()),
+    : QObject(0),
+      dbName_(other.name()),
       db_(),
-      type_()
+      type_(),
+      connectionName_(other.connectionName())
 {
-    db_ = QSqlDatabase::addDatabase("QSQLITE", other.db_.connectionName());
-    db_.setDatabaseName(dbName_);
+
 }
 
 DataBase::DataBase()
-    :dbName_(),
+    : QObject(0),
+      dbName_(),
       db_(),
-      type_()
+      type_(),
+      connectionName_()
 {
 
 }
@@ -33,7 +37,6 @@ DataBase::~DataBase()
 {
 
 }
-
 
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 {
@@ -88,6 +91,7 @@ const QString DataBase::name() const
     return dbName_;
 }
 
+
 void DataBase::beginTransaction()
 {
     db_.transaction();
@@ -103,9 +107,14 @@ void DataBase::commitTransaction()
     db_.commit();
 }
 
-DataBase::Type DataBase::type()
+DataBase::Type DataBase::type() const
 {
     return type_;
+}
+
+const QString DataBase::connectionName() const
+{
+    return connectionName_;
 }
 
 bool DataBase::createTempTableForAnalogsReader()
@@ -180,9 +189,67 @@ void DataBase::dropTempTableForSalesHistoryStreamReader()
     db_.commit();
 }
 
+QSqlQuery DataBase::queryForAnalogsReader(const bool &forward)
+{
+    QSqlQuery query(db_);
+    query.setForwardOnly(forward);
+    query.prepare("select t_analogs.f_main, t_analogs.f_analog "
+                  "from t_temp_idmain left outer join t_analogs "
+                  "on t_analogs.f_main = t_temp_idmain.f_main "
+                  "where t_temp_idmain.f_main is not null "
+                  "order by t_analogs.f_main;");
+    return query;
+}
+
+QSqlQuery DataBase::queryForSalesHistoryStreamReader(const QDate &from,
+                                                     const QDate &to,
+                                                     const bool &forward)
+{
+    QSqlQuery query(db_);
+    query.setForwardOnly(forward);
+
+    QString select("select t_temp_order.f_storage, "
+                   "t_temp_order.f_product, "
+                   "t_datas.f_date, "
+                   "t_datas.f_sold, "
+                   "t_datas.f_rest "
+                   "from t_temp_order "
+                   "left outer join t_datas "
+                   "on t_temp_order.f_storage = t_datas.f_storage "
+                   "and t_temp_order.f_product = t_datas.f_product "
+                   "%1"
+                   "order by t_temp_order.f_order;");
+
+    QString dateCase;
+    if(from != QDate() && to != QDate())
+    {
+        dateCase = "where (t_datas.f_date >= '%1' and "
+                   "t_datas.f_date <= '%2') "
+                   "or t_datas.f_date is null ";
+        dateCase = dateCase.arg(from.toString("yyyy.MM.dd"))
+                .arg(to.toString("yyyy.MM.dd"));
+    }
+    else if (from == QDate() && to != QDate())
+    {
+        dateCase = "where t_datas.f_date <= '%1' "
+                   "or t_datas.f_date is null ";
+        dateCase = dateCase.arg(to.toString("yyyy.MM.dd"));
+    }
+    else if (to == QDate() && from != QDate())
+    {
+        dateCase = "where t_datas.f_date >= '%1' "
+                   "or t_datas.f_date is null ";
+        dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
+    }
+    select = select.arg(dateCase);
+
+    query.prepare(select);
+    return query;
+}
+
 QPointer<DataBase> getDataBase(const QString &dbName,
-                      const DataBase::Type &type,
-                      const QString &connName)
+                               const DataBase::Type &type,
+                               const QString &connName)
 {
     switch (type) {
     case DataBase::SQLITE:
@@ -190,9 +257,9 @@ QPointer<DataBase> getDataBase(const QString &dbName,
         QPointer<DataBase> db = new SqliteDataBase(dbName, connName);
         return db;
     }
-
-
     default:
         break;
     }
+
+    return QPointer<DataBase>();
 }

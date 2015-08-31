@@ -37,14 +37,8 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
 
 AnalogsTable AnalogsReader::getTable()
 {
-    QSqlQuery query = db_->getAssociatedQuery();
-    query.setForwardOnly(true);
-
-    if(!query.exec("select t_analogs.f_main, t_analogs.f_analog "
-                   "from t_temp_idmain left outer join t_analogs "
-                   "on t_analogs.f_main = t_temp_idmain.f_main "
-                   "where t_temp_idmain.f_main is not null "
-                   "order by t_analogs.f_main;"))
+    QSqlQuery query = db_->queryForAnalogsReader();
+    if(!query.exec())
     {
         return AnalogsTable();
     }

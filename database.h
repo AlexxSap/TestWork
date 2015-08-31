@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QSqlRecord>
 #include <QPointer>
+#include <QDate>
 
 #include <QDebug>
 
@@ -20,10 +21,11 @@ public:
         SQLITE
     };
 
-private:
+protected:
     QString dbName_;
     QSqlDatabase db_;
     Type type_;
+    QString connectionName_;
 
 private:
     virtual bool createEmptyDB() = 0;
@@ -39,7 +41,8 @@ public:
     virtual ~DataBase();
 
     const QString name() const;
-    Type type();
+    Type type() const;
+    const QString connectionName() const;
 
     void beginTransaction();
     void rollbackTransaction();
@@ -56,17 +59,15 @@ public:
 
     virtual bool createTempTableForSalesHistoryStreamReader();
     virtual void dropTempTableForSalesHistoryStreamReader();
+
+    virtual QSqlQuery queryForAnalogsReader(const bool &forward = true);
+    virtual QSqlQuery queryForSalesHistoryStreamReader(const QDate &from,
+                                                       const QDate &to,
+                                                       const bool &forward = true);
 };
 
 QPointer<DataBase> getDataBase(const QString &dbName,
-                     const DataBase::Type &type = DataBase::SQLITE,
-                     const QString &connName = "qt_sql_default_connection");
+                               const DataBase::Type &type = DataBase::SQLITE,
+                               const QString &connName = "qt_sql_default_connection");
 
 #endif // DATABASE_H
-
-/*
-отличия sqlite от mysql
-тип данных для даты
-QSqlDatabase::addDatabase
-setPragmaParameters
-*/

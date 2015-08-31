@@ -10,13 +10,16 @@ SqliteDataBase::SqliteDataBase(const QString &dbName,
                                const QString &connName)
     :DataBase(dbName, connName)
 {
-
+    db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
+    db_.setDatabaseName(dbName_);
 }
 
 SqliteDataBase::SqliteDataBase(const DataBase &other)
     :DataBase(other)
 {
-
+    db_ = QSqlDatabase::addDatabase("QSQLITE",
+                                    other.connectionName());
+    db_.setDatabaseName(dbName_);
 }
 
 SqliteDataBase::~SqliteDataBase()

@@ -92,64 +92,9 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         db_->dropTempTableForSalesHistoryStreamReader();
         return false;
     }
-    //------вывод результатов------
-//    if(query_.exec("select * from t_temp_order;"))
-//    {
-//        while(query_.next())
-//        {
-//            QSqlRecord rec = query_.record();
-//            int c = rec.count();
-//            QStringList lst;
-//            for(int i = 0; i < c; i++)
-//            {
-//                lst.append(rec.value(i).toString());
-//            }
-//            qInfo() << lst;
-//        }
-//    }
-    //-----------------------------
 
     db_->commitTransaction();
     return true;
-}
-
-QString SalesHistoryStreamReader::buildSelectString() const
-{
-    QString select("select t_temp_order.f_storage, "
-                   "t_temp_order.f_product, "
-                   "t_datas.f_date, "
-                   "t_datas.f_sold, "
-                   "t_datas.f_rest "
-                   "from t_temp_order "
-                   "left outer join t_datas "
-                   "on t_temp_order.f_storage = t_datas.f_storage "
-                   "and t_temp_order.f_product = t_datas.f_product "
-                   "%1"
-                   "order by t_temp_order.f_order;");
-
-    QString dateCase;
-    if(from_ != Date() && to_ != Date())
-    {
-        dateCase = "where (t_datas.f_date >= '%1' and "
-                   "t_datas.f_date <= '%2') "
-                   "or t_datas.f_date is null ";
-        dateCase = dateCase.arg(from_.toString("yyyy.MM.dd"))
-                .arg(to_.toString("yyyy.MM.dd"));
-    }
-    else if (from_ == Date() && to_ != Date())
-    {
-        dateCase = "where t_datas.f_date <= '%1' "
-                   "or t_datas.f_date is null ";
-        dateCase = dateCase.arg(to_.toString("yyyy.MM.dd"));
-    }
-    else if (to_ == Date() && from_ != Date())
-    {
-        dateCase = "where t_datas.f_date >= '%1' "
-                   "or t_datas.f_date is null ";
-        dateCase = dateCase.arg(from_.toString("yyyy.MM.dd"));
-    }
-    select = select.arg(dateCase);
-    return select;
 }
 
 bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
@@ -174,29 +119,9 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
         return false;
     }
 
-    QString select = buildSelectString();
+    query_ = db_->queryForSalesHistoryStreamReader(from_, to_);
 
-    query_ = db_->getAssociatedQuery();
-    query_.setForwardOnly(true);
-
-    //------вывод результатов------
-//    if(query_.exec(select))
-//    {
-//        while(query_.next())
-//        {
-//            QSqlRecord rec = query_.record();
-//            int c = rec.count();
-//            QStringList lst;
-//            for(int i = 0; i < c; i++)
-//            {
-//                lst.append(rec.value(i).toString());
-//            }
-//            qInfo() << lst;
-//        }
-//    }
-    //-----------------------------
-
-    if(!query_.exec(select))
+    if(!query_.exec())
     {
         qWarning() << query_.lastError().text();
         qWarning() << query_.lastQuery();

@@ -30,7 +30,6 @@ private:
     void addDayToTempHistory();
     bool isCanReturnHistory(const Item &item) const;
     void loadAnalogsTable();
-    QString buildSelectString() const;
     void normalazeTempHistory();
 
 public:
