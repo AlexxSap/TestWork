@@ -10,7 +10,7 @@ private:
 
 public:
     SqliteDataBase();
-    SqliteDataBase(const QString &dbName,
+    SqliteDataBase(const DataBaseInfo &info,
              const QString &connName = "qt_sql_default_connection");
     SqliteDataBase(const DataBase &other);
 

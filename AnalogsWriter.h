@@ -14,7 +14,7 @@ private:
     QPointer<DataBase> db_;
 
 public:
-    explicit AnalogsWriter(const QString &dbName);
+    explicit AnalogsWriter(const DataBaseInfo &info);
     ~AnalogsWriter();
     bool write(const AnalogsTable &table);
     bool importFromFile(const QString &fileName);

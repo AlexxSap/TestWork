@@ -1,33 +1,35 @@
 #ifndef DATABASEINFO_H
 #define DATABASEINFO_H
 
-#include "DataBase.h"
+#include <QString>
 
 class DataBaseInfo
 {
-private:
-    static QString dataBaseName_;
-    static DataBase::Type dataBaseType_;
-    static QString userName_;
-    static QString userPassword_;
-    static QString connectionName_;
-
 public:
-    static QString dataBaseName();
-    static void setDataBaseName(const QString &name);
+    enum Type
+    {
+        SQLITE
+    };
 
-    static DataBase::Type dataBaseType();
-    static void setDataBaseType(const DataBase::Type &type);
+private:
+    QString dataBaseName_;
+    static Type dataBaseType_;
+    QString userName_;
+    QString userPassword_;
+public:
+    DataBaseInfo();
 
-    static QString userName();
-    static void setUserName(const QString &name);
+    QString dataBaseName() const;
+    void setDataBaseName(const QString &name);
 
-    static QString password();
-    static void setPassword(const QString &password);
+    static Type dataBaseType();
+    static void setDataBaseType(const Type &type);
 
-    static QString connectionName();
-    static void setConnectionName(const QString &name);
+    QString userName() const;
+    void setUserName(const QString &name);
 
+    QString password() const;
+    void setPassword(const QString &password);
 };
 
 #endif // DATABASEINFO_H

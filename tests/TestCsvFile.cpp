@@ -13,6 +13,9 @@ void TestCsvFile::testCsvFile()
     const QString fileName(QString(QTest::currentDataTag()) + "Test.csv");
     const QString dbName(QString(QTest::currentDataTag()) + "TestDB.db");
 
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     if(!TestUtility::removeFile(fileName))
     {
         QFAIL("cannot remove test-file in begining of test");
@@ -33,7 +36,7 @@ void TestCsvFile::testCsvFile()
 
     QCOMPARE(actData, expData);
     {
-        SaleHistoryWriter writer(dbName);
+        SaleHistoryWriter writer(info);
         bool isWritedToDb = writer.importFromFile(fileName);
 
         if(!isWritedToDb)
@@ -53,7 +56,7 @@ void TestCsvFile::testCsvFile()
     }
 
     {
-        SalesHistoryStreamReader reader(items, dbName);
+        SalesHistoryStreamReader reader(items, info);
         const bool isOpen = reader.open(Date(), Date());
         if(!isOpen)
         {

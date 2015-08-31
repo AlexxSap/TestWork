@@ -15,6 +15,9 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
 
     const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
 
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     if(!TestUtility::removeFile(dbName))
     {
         QFAIL("cannot remove test-db in begining of test");
@@ -22,7 +25,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
 
     bool result = false;
     {
-        SaleHistoryWriter writer(dbName);
+        SaleHistoryWriter writer(info);
         result = writer.write(data);
     }
 
@@ -32,23 +35,9 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         QFAIL("cannot write data to db");
     }
 
-    //    if(caseItems.isEmpty())
-    //    {
-    //        foreach (const SaleHistoryDay &day, data)
-    //        {
-    //            const Item item = day.item();
-    //            if(!caseItems.contains(item))
-    //            {
-    //                caseItems.append(item);
-    //            }
-    //        }
-    //    }
-
-    //qInfo() << caseItems;
-
     QList<SaleHistory> actList;
     {
-        SalesHistoryStreamReader reader(caseItems, dbName);
+        SalesHistoryStreamReader reader(caseItems, info);
         bool isOpen = reader.open(caseDateFrom, caseDateTo);
         if(isOpen)
         {

@@ -20,6 +20,9 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
                            + QString::number(analogsInGroupNum) + "_"
                            + "_BARWA_TestFile.csv");
 
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
 
@@ -70,7 +73,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
             }
         }
 
-        SaleHistoryWriter writer(dbName);
+        SaleHistoryWriter writer(info);
         timer.start();
         const double sWrite = Utils::_runBenchmarking("write");
         result = writer.importFromFile(fileName);
@@ -94,7 +97,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
                                                                   analogsInGroupNum,
                                                                   products);
 //        qInfo() << table;
-        AnalogsWriter writer(dbName);
+        AnalogsWriter writer(info);
         if(!writer.write(table))
         {
             qWarning() << "cannot write AnalogsTable to db";
@@ -106,7 +109,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
     //---чтение из БД
     {
         const QList<Item> items = TestUtility::genRandomItemList(storages, products);
-        SalesHistoryStreamReader reader(items, dbName);
+        SalesHistoryStreamReader reader(items, info);
         timer.start();
         bool isOpen = reader.open(Date(), Date());
         const int openTime = timer.elapsed();

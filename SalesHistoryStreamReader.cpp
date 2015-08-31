@@ -1,9 +1,9 @@
 #include "SalesHistoryStreamReader.h"
 
 SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
-                                                   const QString &dbName)
+                                                   const DataBaseInfo &info)
     :items_(items),
-      db_(DataBase::getDataBase(dbName)),
+      db_(DataBase::getDataBase(info)),
       query_(),
       from_(),
       to_(),
@@ -189,7 +189,7 @@ bool SalesHistoryStreamReader::isCanReturnHistory(const Item &item) const
 
 void SalesHistoryStreamReader::loadAnalogsTable()
 {
-    AnalogsReader reader(db_->name());
+    AnalogsReader reader(db_->info());
     QList<ID> idList;
     foreach (const Item &item, items_)
     {

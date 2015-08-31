@@ -6,12 +6,12 @@ SqliteDataBase::SqliteDataBase()
 
 }
 
-SqliteDataBase::SqliteDataBase(const QString &dbName,
+SqliteDataBase::SqliteDataBase(const DataBaseInfo &info,
                                const QString &connName)
-    :DataBase(dbName, connName)
+    :DataBase(info, connName)
 {
     db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
-    db_.setDatabaseName(dbName_);
+    db_.setDatabaseName(info.dataBaseName());
 }
 
 SqliteDataBase::SqliteDataBase(const DataBase &other)
@@ -19,7 +19,7 @@ SqliteDataBase::SqliteDataBase(const DataBase &other)
 {
     db_ = QSqlDatabase::addDatabase("QSQLITE",
                                     other.connectionName());
-    db_.setDatabaseName(dbName_);
+    db_.setDatabaseName(info_.dataBaseName());
 }
 
 SqliteDataBase::~SqliteDataBase()
@@ -32,7 +32,7 @@ bool SqliteDataBase::createEmptyDB()
     const QString connName("createEmptyDB");
     {
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
-        db.setDatabaseName(name());
+        db.setDatabaseName(info_.dataBaseName());
         if(!db.open())
         {
             return false;

@@ -70,6 +70,9 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     const QString dbName(prefix + "TestDBase.db");
     const QString fileName(prefix + "testFile.csv");
 
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     Q_UNUSED(toDate)
     Q_UNUSED(fileName)
 
@@ -117,7 +120,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     //            }
     //        }
 
-    //        SaleHistoryWriter writer(dbName);
+    //        SaleHistoryWriter writer(info);
     //        timer.start();
     //        const double sWrite = Utils::_runBenchmarking("write");
     //        result = writer.importFromFile(fileName);
@@ -136,7 +139,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
     {
         const QList<Item> items = TestUtility::genRandomItemList(storages, products);
-        SalesHistoryStreamReader reader(items, dbName);
+        SalesHistoryStreamReader reader(items, info);
 
         timer.start();
         bool isOpen = reader.open(Date(), Date());
@@ -223,6 +226,9 @@ void BenchmarkWriteRead::runForBuffer(const int bufferSize)
     const QString dbName("TestDBase_buffer.db");
     const QString fileName("testFile_buffer.csv");
 
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     qInfo() << "-------Benchmark for import from file -------";
     qInfo() << days << " days, "
             << storages << " storages, "
@@ -279,7 +285,7 @@ void BenchmarkWriteRead::runForBuffer(const int bufferSize)
         }
         //        qInfo() << "will select " <<  items.count() << "items";
 
-        SaleHistoryWriter writer(dbName);
+        SaleHistoryWriter writer(info);
         writer.setBufferSize(bufferSize);
         const double sWrite = Utils::_runBenchmarking("write");
         timer.start();

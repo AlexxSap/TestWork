@@ -10,22 +10,15 @@
 #include <QSqlRecord>
 #include <QPointer>
 #include <QDate>
-
 #include <QDebug>
 
+#include "DataBaseInfo.h"
 
 class DataBase : public QObject
 {
-public:
-    enum Type
-    {
-        SQLITE
-    };
-
 protected:
-    QString dbName_;
+    DataBaseInfo info_;
     QSqlDatabase db_;
-    Type type_;
     QString connectionName_;
 
 private:
@@ -36,12 +29,12 @@ protected:
 
 public:
     DataBase();
-    DataBase(const QString &dbName,
+    DataBase(const DataBaseInfo &info,
              const QString &connName = "qt_sql_default_connection");
     DataBase(const DataBase &other);
     virtual ~DataBase();
 
-    const QString name() const;
+    const DataBaseInfo info() const;
     const QString connectionName() const;
 
     void beginTransaction();
@@ -66,13 +59,8 @@ public:
                                                        const bool &forward = true);
 
 
-    static QPointer<DataBase> getDataBase(const QString &dbName,
-                                          const DataBase::Type &type = DataBase::SQLITE,
-                                          const QString &user = "",
-                                          const QString &password = "",
+    static QPointer<DataBase> getDataBase(const DataBaseInfo &info,
                                           const QString &connName = "qt_sql_default_connection");
 };
-
-
 
 #endif // DATABASE_H

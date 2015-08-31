@@ -1,7 +1,7 @@
 #include "SaleHistoryWriter.h"
 
-SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
-    : db_(DataBase::getDataBase(dbName)),
+SaleHistoryWriter::SaleHistoryWriter(const DataBaseInfo &info)
+    : db_(DataBase::getDataBase(info)),
       bufferSize_(1000000),
       queryForWrite_()
 {

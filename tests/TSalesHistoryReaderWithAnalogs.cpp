@@ -15,6 +15,8 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     QFETCH(QList<SaleHistory>, expResult);
 
     const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
 
     if(!TestUtility::removeFile(dbName))
     {
@@ -23,7 +25,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
 
     bool result = false;
     {
-        SaleHistoryWriter writer(dbName);
+        SaleHistoryWriter writer(info);
         result = writer.write(history);
     }
     if(!result)
@@ -33,7 +35,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     }
 
     {
-        AnalogsWriter writer(dbName);
+        AnalogsWriter writer(info);
         result = writer.write(analogsTable);
     }
     if(!result)
@@ -44,7 +46,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
 
     QList<SaleHistory> actResult;
     {
-        SalesHistoryStreamReader reader(caseItems, dbName);
+        SalesHistoryStreamReader reader(caseItems, info);
         bool isOpen = reader.open(caseDateFrom, caseDateTo);
         if(isOpen)
         {

@@ -16,7 +16,7 @@ private:
     AnalogsTable getTable();
 
 public:
-    explicit AnalogsReader(const QString &dbName);
+    explicit AnalogsReader(const DataBaseInfo &info);
     ~AnalogsReader();
     AnalogsTable read(const QList<ID> IdList);
 };

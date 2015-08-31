@@ -34,7 +34,7 @@ private:
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items,
-                             const QString &dbName);
+                             const DataBaseInfo &info);
     ~SalesHistoryStreamReader();
 
     bool open(const Date &from,

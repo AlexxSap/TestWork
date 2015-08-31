@@ -14,6 +14,9 @@ void TAnalogsFromFile::TestImportFromFile()
     const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
     const QString fileName(QString(QTest::currentDataTag()) + "TestFile.csv");
 
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     if(!TestUtility::removeFile(dbName))
     {
         QFAIL("cannot remove test-db in begin of test");
@@ -31,7 +34,7 @@ void TAnalogsFromFile::TestImportFromFile()
 
     bool isWrited = false;
     {
-        AnalogsWriter writer(dbName);
+        AnalogsWriter writer(info);
         isWrited = writer.importFromFile(fileName);
     }
 
@@ -43,7 +46,7 @@ void TAnalogsFromFile::TestImportFromFile()
 
     AnalogsTable actResult;
     {
-        AnalogsReader reader(dbName);
+        AnalogsReader reader(info);
         actResult = reader.read(idList);
     }
 

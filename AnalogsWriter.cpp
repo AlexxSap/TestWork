@@ -1,7 +1,7 @@
 #include "AnalogsWriter.h"
 
-AnalogsWriter::AnalogsWriter(const QString &dbName)
-    : db_(DataBase::getDataBase(dbName))
+AnalogsWriter::AnalogsWriter(const DataBaseInfo &info)
+    : db_(DataBase::getDataBase(info))
 
 {
     db_->connect();

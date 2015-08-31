@@ -33,7 +33,8 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    DataBaseInfo::setDataBaseType(DataBase::SQLITE);
+    DataBaseInfo::setDataBaseType(DataBaseInfo::SQLITE);
+
     TestItemOperators testItemOperators;
     test += QTest::qExec(&testItemOperators);
 
@@ -75,8 +76,8 @@ int main()
 
     if(test == 0)
     {
-//        BenchmarkWriteRead::run(720, 10, 10);
-//        BenchmarkWriteRead::run(720, 10, 100);
+        BenchmarkWriteRead::run(720, 10, 10);
+        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 //        BenchmarkWriteRead::run(720, 10, 10000);
 
@@ -89,9 +90,9 @@ int main()
 //        BenchmarkWriteRead::runForBuffer(100000);
 //        BenchmarkWriteRead::runForBuffer(10000);
 
-//        BenchmarkAnalogsReader::run(5, 10);
+        BenchmarkAnalogsReader::run(5, 10);
 
-//        BenchmarkWriteReadWithAnalogs::run(20, 10, 10, 5, 5);
+        BenchmarkWriteReadWithAnalogs::run(20, 10, 10, 5, 5);
 
     }
     return test;

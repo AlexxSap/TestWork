@@ -12,6 +12,9 @@ void TAnalogsReader::TestReadAnalogs()
     QFETCH(AnalogsTable, expResult);
 
     const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     if(!TestUtility::removeFile(dbName))
     {
         QFAIL("cannot remove test-db in begin of test");
@@ -19,7 +22,7 @@ void TAnalogsReader::TestReadAnalogs()
 
     bool isWrited = false;
     {
-        AnalogsWriter writer(dbName);
+        AnalogsWriter writer(info);
         isWrited = writer.write(table);
     }
 
@@ -31,7 +34,7 @@ void TAnalogsReader::TestReadAnalogs()
 
     AnalogsTable actResult;
     {
-        AnalogsReader reader(dbName);
+        AnalogsReader reader(info);
         actResult = reader.read(IdList);
     }
 

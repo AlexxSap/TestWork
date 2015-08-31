@@ -22,7 +22,7 @@ private:
     bool checkFile(const QString &fileName);
 
 public:
-    explicit SaleHistoryWriter(const QString &dbName);
+    explicit SaleHistoryWriter(const DataBaseInfo &info);
     ~SaleHistoryWriter();
     bool write(const QList<SaleHistoryDay> &days);
     bool importFromFile(const QString &fileName);

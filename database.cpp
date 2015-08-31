@@ -3,12 +3,11 @@
 
 #include "DataBaseInfo.h"
 
-DataBase::DataBase(const QString &dbName,
+DataBase::DataBase(const DataBaseInfo &info,
                    const QString &connName)
     : QObject(0),
-      dbName_(dbName),
+      info_(info),
       db_(),
-      type_(),
       connectionName_(connName)
 {
 
@@ -16,9 +15,8 @@ DataBase::DataBase(const QString &dbName,
 
 DataBase::DataBase(const DataBase &other)
     : QObject(0),
-      dbName_(other.name()),
+      info_(other.info()),
       db_(),
-      type_(),
       connectionName_(other.connectionName())
 {
 
@@ -26,9 +24,8 @@ DataBase::DataBase(const DataBase &other)
 
 DataBase::DataBase()
     : QObject(0),
-      dbName_(),
+      info_(),
       db_(),
-      type_(),
       connectionName_()
 {
 
@@ -55,7 +52,7 @@ bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 
 bool DataBase::connect()
 {
-    if(!QFile::exists(dbName_))
+    if(!QFile::exists(info_.dataBaseName()))
     {
         createEmptyDB();
     }
@@ -87,9 +84,9 @@ QSqlQuery DataBase::getAssociatedQuery() const
     return QSqlQuery(db_);
 }
 
-const QString DataBase::name() const
+const DataBaseInfo DataBase::info() const
 {
-    return dbName_;
+    return info_;
 }
 
 
@@ -243,20 +240,14 @@ QSqlQuery DataBase::queryForSalesHistoryStreamReader(const QDate &from,
     return query;
 }
 
-QPointer<DataBase> DataBase::getDataBase(const QString &dbName,
-                               const DataBase::Type &type,
-                               const QString &user,
-                               const QString &password,
-                               const QString &connName)
+QPointer<DataBase> DataBase::getDataBase(const DataBaseInfo &info,
+                                         const QString &connName)
 {
-    Q_UNUSED(user)
-    Q_UNUSED(password)
-    Q_UNUSED(connName)
 
-    switch (type) {
-    case DataBase::SQLITE:
+    switch (DataBaseInfo::dataBaseType()) {
+    case DataBaseInfo::SQLITE:
     {
-        QPointer<DataBase> db = new SqliteDataBase(dbName, connName);
+        QPointer<DataBase> db = new SqliteDataBase(info, connName);
         return db;
     }
     default:

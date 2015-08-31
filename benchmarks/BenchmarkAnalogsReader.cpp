@@ -10,6 +10,9 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
                            + QString::number(analogsNum) + "_"
                            + "_BAR_TestFile.csv");
 
+    DataBaseInfo info;
+    info.setDataBaseName(dbName);
+
     QThread::msleep(100);
     qInfo() << "-------Benchmark for write and read analogs-------";
     qInfo() << groupNum << " groupNum, "
@@ -45,7 +48,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 
     bool isImported = false;
     {//импорт из файла
-        AnalogsWriter writer(dbName);
+        AnalogsWriter writer(info);
         timer.start();
         isImported = writer.importFromFile(fileName);
         qInfo() << "import from file " << timer.elapsed();
@@ -60,7 +63,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
     }
 
     {//чтение из базы
-        AnalogsReader reader(dbName);
+        AnalogsReader reader(info);
         timer.start();
         const AnalogsTable table = reader.read(IdList);
         Q_UNUSED(table)
