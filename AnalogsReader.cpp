@@ -1,36 +1,5 @@
 #include "AnalogsReader.h"
 
-bool AnalogsReader::createTempIdTable()
-{
-    QSqlQuery query = db_.getAssociatedQuery();
-    db_.beginTransaction();
-    if(!query.exec("create temporary table if not exists t_temp_idmain("
-                   "f_main text, "
-                   "f_id text);"))
-    {
-        db_.rollbackTransaction();
-        return false;
-    }
-
-    if(!query.exec("create temporary table if not exists t_temp_ids("
-                   "f_id text not null);"))
-    {
-        db_.rollbackTransaction();
-        return false;
-    }
-    db_.commitTransaction();
-    return true;
-}
-
-void AnalogsReader::dropTempIdTable()
-{
-    QSqlQuery query = db_.getAssociatedQuery();
-    db_.beginTransaction();
-    query.exec("drop table if exists t_temp_ids;");
-    query.exec("drop table if exists t_temp_idmain;");
-    db_.commitTransaction();
-}
-
 bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
 {
     QSqlQuery query = db_.getAssociatedQuery();
@@ -144,7 +113,7 @@ AnalogsTable AnalogsReader::read(const QList<ID> IdList)
     {
         return table;
     }
-    if(!createTempIdTable())
+    if(!db_.createTempTableForAnalogsReader())
     {
         return table;
     }
@@ -155,7 +124,7 @@ AnalogsTable AnalogsReader::read(const QList<ID> IdList)
 
     table = getTable();
 
-    dropTempIdTable();
+    db_.dropTempTableForAnalogsReader();
     return table;
 }
 

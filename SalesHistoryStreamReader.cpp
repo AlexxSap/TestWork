@@ -14,43 +14,6 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
 
 }
 
-bool SalesHistoryStreamReader::createTempItemsTable()
-{
-    QSqlQuery query = db_.getAssociatedQuery();
-    db_.beginTransaction();
-
-    if(!query.exec("create temporary table t_temp_items("
-                   "f_storage text not null, "
-                   "f_product text not null, "
-                   "f_main_an text);"))
-    {
-        qInfo()  << "cannot create temp table t_temp_items";
-        db_.rollbackTransaction();
-        return false;
-    }
-
-    if(!query.exec("create temporary table t_temp_order("
-                   "f_order integer primary key asc autoincrement, "
-                   "f_storage text not null, "
-                   "f_product text not null, "
-                   "f_main_an text, "
-                   "unique(f_storage, f_product));"))
-    {
-        qInfo()  << "cannot create temp table t_temp_order";
-        db_.rollbackTransaction();
-        return false;
-    }
-
-    db_.commitTransaction();
-
-    if(!fillTempItemsTable())
-    {
-        return false;
-    }
-
-    return true;
-}
-
 void SalesHistoryStreamReader::fillInsLists(QVariantList &stor,
                                             QVariantList &prod,
                                             QVariantList &main) const
@@ -106,7 +69,7 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         db_.rollbackTransaction();
         qInfo() << query.lastError().text();
         qInfo() << query.lastQuery();
-        deleteTempTables();
+        db_.dropTempTableForSalesHistoryStreamReader();
         return false;
     }
 
@@ -120,7 +83,7 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         db_.rollbackTransaction();
         qInfo() << query.lastError().text();
         qInfo() << query.lastQuery();
-        deleteTempTables();
+        db_.dropTempTableForSalesHistoryStreamReader();
         return false;
     }
     //------вывод результатов------
@@ -140,18 +103,8 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
 //    }
     //-----------------------------
 
-    query.exec("drop table if exists t_temp_items;");
     db_.commitTransaction();
     return true;
-}
-
-void SalesHistoryStreamReader::deleteTempTables()
-{
-    QSqlQuery query = db_.getAssociatedQuery();
-    db_.beginTransaction();
-    query.exec("drop table if exists t_temp_items;");
-    query.exec("drop table if exists t_temp_order;");
-    db_.commitTransaction();
 }
 
 QString SalesHistoryStreamReader::buildSelectString() const
@@ -205,7 +158,12 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 
     loadAnalogsTable();
 
-    if(!createTempItemsTable())
+    if(!db_.createTempTableForSalesHistoryStreamReader())
+    {
+        return false;
+    }
+
+    if(!fillTempItemsTable())
     {
         return false;
     }
@@ -261,7 +219,7 @@ bool SalesHistoryStreamReader::next()
     }
     else
     {
-        deleteTempTables();
+        db_.dropTempTableForSalesHistoryStreamReader();
         return false;
     }
 }
@@ -321,7 +279,6 @@ void SalesHistoryStreamReader::normalazeTempHistory()
         mainAnalog = analogsTable_.analogsForProduct(
                     tempHistory_.item().product()).mainAnalog();
     }
-//    qInfo() << "normalazeTempHistory" << from_ << to_ << mainAnalog;
     tempHistory_.normalaze(from_, to_, mainAnalog);
 }
 

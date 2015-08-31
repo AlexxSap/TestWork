@@ -1,7 +1,8 @@
 #include "AnalogsWriter.h"
 
 AnalogsWriter::AnalogsWriter(const QString &dbName)
-    :db_(dbName)
+    : db_(dbName)
+
 {
 
 }

@@ -23,12 +23,10 @@ private:
 
 
 private:
-    bool createTempItemsTable();
     bool fillTempItemsTable();
     void fillInsLists(QVariantList &stor,
                       QVariantList &prod,
                       QVariantList &main) const;
-    void deleteTempTables();
     void addDayToTempHistory();
     bool isCanReturnHistory(const Item &item) const;
     void loadAnalogsTable();

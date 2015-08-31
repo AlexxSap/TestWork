@@ -55,8 +55,8 @@ int main()
 //    TAnalogsTable tAnalogsTable;
 //    test += QTest::qExec(&tAnalogsTable);
 
-//    TAnalogsReader tAnalogsReader;
-//    test += QTest::qExec(&tAnalogsReader);
+    TAnalogsReader tAnalogsReader;
+    test += QTest::qExec(&tAnalogsReader);
 
 //    TAnalogsFromFile tAnalogsFromFile;
 //    test += QTest::qExec(&tAnalogsFromFile);
@@ -88,7 +88,7 @@ int main()
 
 //        BenchmarkAnalogsReader::run(5, 10);
 
-        BenchmarkWriteReadWithAnalogs::run(20, 10, 10, 5, 5);
+//        BenchmarkWriteReadWithAnalogs::run(20, 10, 10, 5, 5);
 
     }
     return test;

@@ -84,27 +84,27 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
 
     QTest::addColumn< QList<SaleHistory> >("expResult");
 
-//    QTest::newRow("simple")
-//            << (QList<SaleHistoryDay>()
-//                << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 10), 1.0, 2.0)
-//                << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 12), 2.0, 4.0)
-//                << SaleHistoryDay(Item(ID("s1"), ID("p2")), Date(2015, 8, 10), 4.0, 0.0)
-//                << SaleHistoryDay(Item(ID("s1"), ID("p2")), Date(2015, 8, 11), 1.0, 3.0))
-//            << (AnalogsTable() << (Analogs("p01")
-//                                   << ID("p1")
-//                                   << ID("p2")))
+    QTest::newRow("simple")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 10), 1.0, 2.0)
+                << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 12), 2.0, 4.0)
+                << SaleHistoryDay(Item(ID("s1"), ID("p2")), Date(2015, 8, 10), 4.0, 0.0)
+                << SaleHistoryDay(Item(ID("s1"), ID("p2")), Date(2015, 8, 11), 1.0, 3.0))
+            << (AnalogsTable() << (Analogs("p01")
+                                   << ID("p1")
+                                   << ID("p2")))
 
-//            << (QList<Item>() << Item(ID("s1"), ID("p1"))
-//                << Item(ID("s1"), ID("p2")))
-//            << Date(2015, 8, 10)
-//            << Date(2015, 8, 13)
+            << (QList<Item>() << Item(ID("s1"), ID("p1"))
+                << Item(ID("s1"), ID("p2")))
+            << Date(2015, 8, 10)
+            << Date(2015, 8, 13)
 
-//            << (QList<SaleHistory>()
-//                << (SaleHistory(Item(ID("s1"), ID("p01")))
-//                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 5.0, 2.0)
-//                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 1.0, 5.0)
-//                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 12), 2.0, 7.0)
-//                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 13), 0.0, 7.0)));
+            << (QList<SaleHistory>()
+                << (SaleHistory(Item(ID("s1"), ID("p01")))
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 5.0, 2.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 1.0, 5.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 12), 2.0, 7.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 13), 0.0, 7.0)));
 
     QTest::newRow("not simple (sorting)")
             << (QList<SaleHistoryDay>()
@@ -126,6 +126,28 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
                     << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 11), 1.0, 5.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 12), 2.0, 7.0)));
+
+    QTest::newRow("not simple (sorting) 2")
+            << (QList<SaleHistoryDay>()
+                << SaleHistoryDay(Item(ID("s1"), ID("p5")), Date(2015, 8, 10), 1.0, 2.0)
+                << SaleHistoryDay(Item(ID("s1"), ID("p5")), Date(2015, 8, 12), 2.0, 4.0)
+                << SaleHistoryDay(Item(ID("s2"), ID("p2")), Date(2015, 8, 10), 4.0, 0.0)
+                << SaleHistoryDay(Item(ID("s1"), ID("p2")), Date(2015, 8, 11), 1.0, 3.0))
+            << (AnalogsTable() << (Analogs("p4")
+                                   << ID("p1")
+                                   << ID("p5")
+                                   << ID("p2")))
+
+            << (QList<Item>() << Item(ID("s1"), ID("p1")))
+            << Date()
+            << Date()
+
+            << (QList<SaleHistory>()
+                << (SaleHistory(Item(ID("s1"), ID("p4")))
+                    << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 10), 1.0, 2.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 11), 1.0, 5.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 12), 2.0, 7.0)));
+
 
     QTest::newRow("by analog")
             << (QList<SaleHistoryDay>()

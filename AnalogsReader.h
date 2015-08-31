@@ -12,8 +12,6 @@ private:
     DataBase db_;
 
 private:
-    bool createTempIdTable();
-    void dropTempIdTable();
     bool fillTempIdTable(const QList<ID> IdList);
     AnalogsTable getTable();
 

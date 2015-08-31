@@ -17,15 +17,17 @@ private:
     QString dbName_;
     QSqlDatabase db_;
 
+
 private:
-    bool createEmptyDB();
+    virtual bool createEmptyDB();
     bool executeQuery(QSqlDatabase &db, const QString &request);
     bool connect();
     bool disconnect();
     void setPragmaParameters(QSqlDatabase &db);
 
 public:
-    explicit DataBase(const QString &dbName, const QString &connName = "qt_sql_default_connection");
+    DataBase(const QString &dbName,
+             const QString &connName = "qt_sql_default_connection");
 
     ~DataBase();
 
@@ -37,6 +39,20 @@ public:
     void beginTransaction();
     void rollbackTransaction();
     void commitTransaction();
+
+    virtual bool createTempTableForAnalogsReader();
+    virtual void dropTempTableForAnalogsReader();
+
+    virtual bool createTempTableForSalesHistoryStreamReader();
+    virtual void dropTempTableForSalesHistoryStreamReader();
 };
 
 #endif // DATABASE_H
+
+/*
+отличия sqlite от mysql
+тип данных для даты
+QSqlDatabase::addDatabase
+setPragmaParameters
+
+*/
