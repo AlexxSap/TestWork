@@ -4,7 +4,12 @@ AnalogsWriter::AnalogsWriter(const QString &dbName)
     : db_(dbName)
 
 {
+    db_.connect();
+}
 
+AnalogsWriter::~AnalogsWriter()
+{
+    db_.disconnect();
 }
 
 bool AnalogsWriter::write(const AnalogsTable &table)

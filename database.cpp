@@ -2,7 +2,9 @@
 
 DataBase::DataBase(const QString &dbName,
                    const QString &connName)
-    :dbName_(dbName)
+    :dbName_(dbName),
+      db_(),
+      type_()
 {
     if(!QFile::exists(dbName))
     {
@@ -10,14 +12,28 @@ DataBase::DataBase(const QString &dbName,
     }
     db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
     db_.setDatabaseName(dbName_);
-    connect();
 }
 
+DataBase::DataBase(const DataBase &other)
+    :dbName_(other.name()),
+      db_(),
+      type_()
+{
+    db_ = QSqlDatabase::addDatabase("QSQLITE", other.db_.connectionName());
+    db_.setDatabaseName(dbName_);
+}
 
+DataBase::DataBase()
+    :dbName_(),
+      db_(),
+      type_()
+{
+
+}
 
 DataBase::~DataBase()
 {
-    disconnect();
+
 }
 
 bool DataBase::createEmptyDB()
@@ -78,7 +94,6 @@ void DataBase::setPragmaParameters(QSqlDatabase &db)
     query.exec("PRAGMA foreign_keys = ON;");
     db.commit();
 }
-
 
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 {
@@ -141,6 +156,11 @@ void DataBase::rollbackTransaction()
 void DataBase::commitTransaction()
 {
     db_.commit();
+}
+
+DataBase::Type DataBase::type()
+{
+    return type_;
 }
 
 bool DataBase::createTempTableForAnalogsReader()
@@ -213,4 +233,21 @@ void DataBase::dropTempTableForSalesHistoryStreamReader()
     query.exec("drop table if exists t_temp_items;");
     query.exec("drop table if exists t_temp_order;");
     db_.commit();
+}
+
+DataBase& getDataBase(const QString &dbName,
+                      const DataBase::Type &type,
+                      const QString &connName)
+{
+    switch (type) {
+    case DataBase::SQLITE:
+    {
+        DataBase db(dbName, connName);
+        return db;
+    }
+
+
+    default:
+        break;
+    }
 }

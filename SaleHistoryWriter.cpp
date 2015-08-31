@@ -5,9 +5,15 @@ SaleHistoryWriter::SaleHistoryWriter(const QString &dbName)
       bufferSize_(1000000),
       queryForWrite_()
 {
+    db_.connect();
     queryForWrite_ = db_.getAssociatedQuery();
     queryForWrite_.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
                            "values(?, ?, ?, ?, ?);");
+}
+
+SaleHistoryWriter::~SaleHistoryWriter()
+{
+    db_.disconnect();
 }
 
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)

@@ -15,6 +15,7 @@ private:
 
 public:
     explicit AnalogsWriter(const QString &dbName);
+    ~AnalogsWriter();
     bool write(const AnalogsTable &table);
     bool importFromFile(const QString &fileName);
 };

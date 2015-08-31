@@ -13,32 +13,42 @@
 
 class DataBase
 {
+public:
+    enum Type
+    {
+        SQLITE
+    };
+
 private:
     QString dbName_;
     QSqlDatabase db_;
+    Type type_;
 
 
 private:
     virtual bool createEmptyDB();
     bool executeQuery(QSqlDatabase &db, const QString &request);
-    bool connect();
-    bool disconnect();
     void setPragmaParameters(QSqlDatabase &db);
 
 public:
+    DataBase();
     DataBase(const QString &dbName,
              const QString &connName = "qt_sql_default_connection");
+    DataBase(const DataBase &other);
+    virtual ~DataBase();
 
-    ~DataBase();
-
-    bool isConnected();
-
-    QSqlQuery getAssociatedQuery() const;
     const QString name() const;
+    Type type();
 
     void beginTransaction();
     void rollbackTransaction();
     void commitTransaction();
+
+    bool connect();
+    bool disconnect();
+    bool isConnected();
+
+    QSqlQuery getAssociatedQuery() const;
 
     virtual bool createTempTableForAnalogsReader();
     virtual void dropTempTableForAnalogsReader();
@@ -47,6 +57,10 @@ public:
     virtual void dropTempTableForSalesHistoryStreamReader();
 };
 
+DataBase& getDataBase(const QString &dbName,
+                     const DataBase::Type &type = DataBase::SQLITE,
+                     const QString &connName = "qt_sql_default_connection");
+
 #endif // DATABASE_H
 
 /*
@@ -54,5 +68,4 @@ public:
 тип данных для даты
 QSqlDatabase::addDatabase
 setPragmaParameters
-
 */

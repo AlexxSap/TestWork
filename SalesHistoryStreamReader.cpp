@@ -3,7 +3,7 @@
 SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
                                                    const QString &dbName)
     :items_(items),
-      db_(dbName),
+      db_(getDataBase(dbName)),
       query_(),
       from_(),
       to_(),
@@ -11,7 +11,12 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       isCanNext_(false),
       analogsTable_()
 {
+    db_.connect();
+}
 
+SalesHistoryStreamReader::~SalesHistoryStreamReader()
+{
+    db_.disconnect();
 }
 
 void SalesHistoryStreamReader::fillInsLists(QVariantList &stor,

@@ -100,9 +100,16 @@ AnalogsTable AnalogsReader::getTable()
 }
 
 AnalogsReader::AnalogsReader(const QString &dbName)
-    :db_(dbName, "con_for_analogs_reader")
+    : db_(getDataBase(dbName,
+                      DataBase::SQLITE,
+                      "con_for_analogs_reader"))
 {
+    db_.connect();
+}
 
+AnalogsReader::~AnalogsReader()
+{
+    db_.disconnect();
 }
 
 
