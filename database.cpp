@@ -39,22 +39,27 @@ DataBase::~DataBase()
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 {
     QSqlQuery query(db);
-    db.transaction();
+//    db.transaction();
     bool res = query.exec(request);
     if(!res)
     {
-        db.rollback();
+        qInfo() << query.lastQuery();
+        qInfo() << query.lastError().text();
+//        db.rollback();
         return false;
     }
-    db.commit();
+//    db.commit();
     return res;
 }
 
 bool DataBase::connect()
 {
-    if(!QFile::exists(info_.dataBaseName()))
+    if(!isExist())
     {
-        createEmptyDB();
+        if(!createEmptyDB())
+        {
+            return false;
+        }
     }
 
     return db_.open();

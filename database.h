@@ -45,6 +45,9 @@ public:
     bool disconnect();
     bool isConnected();
 
+    virtual bool isExist() = 0;
+//    virtual bool remove() = 0;
+
     QSqlQuery associatedQuery() const;
 
     virtual bool createTempTableForAnalogsReader();

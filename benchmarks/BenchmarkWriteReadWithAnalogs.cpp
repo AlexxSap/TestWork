@@ -14,7 +14,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
 {
     const QString dbName(QString::number(analogsGroupNum) + "_"
                          + QString::number(analogsInGroupNum) + "_"
-                         + "_BARWA_TestDBase.db");
+                         + "_BARWA_tdb");
 
     const QString fileName(QString::number(analogsGroupNum) + "_"
                            + QString::number(analogsInGroupNum) + "_"
@@ -22,6 +22,8 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
@@ -37,7 +39,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
             << analogsGroupNum << " analogsGroupNum, "
             << analogsInGroupNum << " analogsInGroupNum";
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         qWarning() << "cannot remove test-db in begin of benchmark";
         return;
@@ -66,7 +68,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
             bool isWrited = CsvFile::write(list, fileName);
             if(!isWrited)
             {
-                TestUtility::removeFile(dbName);
+                TestUtility::removeFile(info.dataBaseName());
                 TestUtility::removeFile(fileName);
                 qWarning() << "cannot write to file";
                 return;
@@ -84,7 +86,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
     }
     if(!result)
     {
-        TestUtility::removeFile(dbName);
+        TestUtility::removeFile(info.dataBaseName());
         TestUtility::removeFile(fileName);
         qWarning() << "cannot write data to db";
         return;
@@ -152,7 +154,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
 //        }
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         qWarning() << "cannot remove test-db in end of benchmark";
         return;

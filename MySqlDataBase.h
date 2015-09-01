@@ -6,7 +6,7 @@
 class MySqlDataBase : public DataBase
 {
 private:
-    bool createEmptyDB();
+    bool createEmptyDB(); 
 
 public:
     MySqlDataBase();
@@ -15,6 +15,8 @@ public:
     MySqlDataBase(const DataBase &other);
 
     ~MySqlDataBase();
+
+    bool isExist();
 
     bool createTempTableForSalesHistoryStreamReader();
 };

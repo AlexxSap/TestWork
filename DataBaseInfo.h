@@ -17,6 +17,8 @@ private:
     static Type dataBaseType_;
     QString userName_;
     QString userPassword_;
+    QString hostName_;
+
 public:
     DataBaseInfo();
 
@@ -31,6 +33,9 @@ public:
 
     QString password() const;
     void setPassword(const QString &password);
+
+    QString hostName() const;
+    void setHostName(const QString &host);
 };
 
 #endif // DATABASEINFO_H

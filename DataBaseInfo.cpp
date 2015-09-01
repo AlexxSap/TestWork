@@ -5,14 +5,20 @@ DataBaseInfo::Type DataBaseInfo::dataBaseType_ = DataBaseInfo::SQLITE;
 DataBaseInfo::DataBaseInfo()
     : dataBaseName_(),
       userName_("testUser"),
-      userPassword_("testPassword")
+      userPassword_("testPassword"),
+      hostName_("localhost")
 {
 
 }
 
 QString DataBaseInfo::dataBaseName() const
 {
-    return dataBaseName_;
+    QString name = dataBaseName_;
+    if(dataBaseType_ == SQLITE)
+    {
+        name += ".db";
+    }
+    return name;
 }
 
 void DataBaseInfo::setDataBaseName(const QString &name)
@@ -48,4 +54,14 @@ QString DataBaseInfo::password() const
 void DataBaseInfo::setPassword(const QString &password)
 {
     userPassword_ = password;
+}
+
+QString DataBaseInfo::hostName() const
+{
+    return hostName_;
+}
+
+void DataBaseInfo::setHostName(const QString &host)
+{
+    hostName_ = host;
 }

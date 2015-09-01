@@ -8,6 +8,7 @@ class SqliteDataBase : public DataBase
 private:
     bool createEmptyDB();
 
+
 public:
     SqliteDataBase();
     SqliteDataBase(const DataBaseInfo &info,
@@ -16,6 +17,7 @@ public:
 
     ~SqliteDataBase();
 
+    bool isExist();
 };
 
 #endif // SQLITEDATABASE_H

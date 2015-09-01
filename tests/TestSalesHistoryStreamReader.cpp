@@ -13,12 +13,14 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
     QFETCH(Date, caseDateTo);
     QFETCH(QSet<SaleHistory> , expList);
 
-    const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
+    const QString dbName(QString(QTest::currentDataTag()) + "tdb");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in begining of test");
     }
@@ -31,7 +33,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
 
     if(!result)
     {
-        TestUtility::removeFile(dbName);
+        TestUtility::removeFile(info.dataBaseName());
         QFAIL("cannot write data to db");
     }
 
@@ -49,7 +51,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         }
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in ending of test");
     }
@@ -89,7 +91,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
                 << SaleHistoryDay(Item(ID("storage1"), ID("Продукт2©")), Date(2015, 8, 10), 220.0, 11.0)
-                << SaleHistoryDay(Item(ID("storage2"), ID("Продукт2©")), Date(2015, 8, 10), 2.0, 1.0))
+                << SaleHistoryDay(Item(ID("storage2"), ID("Продукт2©")), Date(2015, 8, 11), 2.0, 1.0))
 
             << (QList<Item>() << Item(ID("storage1"), ID("product1"))
                 << Item(ID("storage1"), ID("Продукт2©")))
@@ -308,4 +310,5 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader_data()
                     << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 2, 28), 50.0, 10.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 3, 1), 10.0, 0.0)
                     << SaleHistoryDay(Item(ID("storage1"), ID("product3")), Date(2015, 3, 2), 11.0, 3.0)));
+
 }

@@ -11,11 +11,13 @@ void TAnalogsReader::TestReadAnalogs()
     QFETCH(QList<ID>, IdList);
     QFETCH(AnalogsTable, expResult);
 
-    const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
+    const QString dbName(QString(QTest::currentDataTag()) + "tdb");
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in begin of test");
     }
@@ -28,7 +30,7 @@ void TAnalogsReader::TestReadAnalogs()
 
     if(!isWrited)
     {
-        TestUtility::removeFile(dbName);
+        TestUtility::removeFile(info.dataBaseName());
         QFAIL("cannot write data to db");
     }
 
@@ -38,7 +40,7 @@ void TAnalogsReader::TestReadAnalogs()
         actResult = reader.fetch(IdList);
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in end of test");
     }
@@ -136,5 +138,5 @@ void TAnalogsReader::TestReadAnalogs_data()
                                        << ID("p02")
                                        << ID("p03")
                                        << ID("p12")));
-}
 
+}

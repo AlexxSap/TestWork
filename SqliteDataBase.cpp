@@ -29,7 +29,7 @@ SqliteDataBase::~SqliteDataBase()
 
 bool SqliteDataBase::createEmptyDB()
 {
-    const QString connName("createEmptyDB");
+    const QString connName("createEmptyDBSqlite");
     {
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connName);
         db.setDatabaseName(info_.dataBaseName());
@@ -80,3 +80,7 @@ bool SqliteDataBase::createEmptyDB()
     return true;
 }
 
+bool SqliteDataBase::isExist()
+{
+    return QFile::exists(info_.dataBaseName());
+}

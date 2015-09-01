@@ -67,11 +67,13 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                          + QString::number(storages)+ "_"
                          + QString::number(products)+ "_");
 
-    const QString dbName(prefix + "TestDBase.db");
+    const QString dbName(prefix + "tdb");
     const QString fileName(prefix + "testFile.csv");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
     Q_UNUSED(toDate)
     Q_UNUSED(fileName)
@@ -85,7 +87,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             << storages << " storages, "
             << products << " products";
 
-    //    if(!TestUtility::removeFile(dbName))
+    //    if(!TestUtility::removeFile(info.dataBaseName()))
     //    {
     //        qWarning() << "cannot remove test-db in begin of benchmark";
     //        return;
@@ -113,7 +115,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     //            bool isWrited = CsvFile::write(list, fileName);
     //            if(!isWrited)
     //            {
-    //                TestUtility::removeFile(dbName);
+    //                TestUtility::removeFile(info.dataBaseName());
     //                TestUtility::removeFile(fileName);
     //                qWarning() << "cannot write to file";
     //                return;
@@ -131,7 +133,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     //    }
     //    if(!result)
     //    {
-    //        TestUtility::removeFile(dbName);
+    //        TestUtility::removeFile(info.dataBaseName());
     //        TestUtility::removeFile(fileName);
     //        qWarning() << "cannot write data to db";
     //        return;
@@ -182,7 +184,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 //        }
 
     }
-    //    if(!TestUtility::removeFile(dbName))
+    //    if(!TestUtility::removeFile(info.dataBaseName()))
     //    {
     //        qWarning() << "cannot remove test-db in end of benchmark";
     //        return;
@@ -223,11 +225,13 @@ void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
 
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
-    const QString dbName("TestDBase_buffer.db");
+    const QString dbName("tdb");
     const QString fileName("testFile_buffer.csv");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
     qInfo() << "-------Benchmark for import from file -------";
     qInfo() << days << " days, "
@@ -235,7 +239,7 @@ void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
             << products << " products, "
             << "buffer = " << bufferSize;
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         qWarning() << "cannot remove test-db in begining of benchmark";
         return;
@@ -299,7 +303,7 @@ void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
         qWarning() << "cannot write data to db";
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         qWarning() << "cannot remove test-db in begining of benchmark";
         return;

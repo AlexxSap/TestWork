@@ -15,6 +15,10 @@ AnalogsWriter::~AnalogsWriter()
 
 bool AnalogsWriter::write(const AnalogsTable &table)
 {
+    if(!db_->isConnected())
+    {
+        return false;
+    }
     const QList<Analogs> anList = table.toList();
     if(anList.isEmpty())
     {

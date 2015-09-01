@@ -11,17 +11,19 @@ void TestCsvFile::testCsvFile()
     QFETCH(QSet<SaleHistoryDay>, expData);
 
     const QString fileName(QString(QTest::currentDataTag()) + "Test.csv");
-    const QString dbName(QString(QTest::currentDataTag()) + "TestDB.db");
+    const QString dbName(QString(QTest::currentDataTag()) + "tdb");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
     if(!TestUtility::removeFile(fileName))
     {
         QFAIL("cannot remove test-file in begining of test");
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in begining of test");
     }
@@ -72,7 +74,7 @@ void TestCsvFile::testCsvFile()
         QCOMPARE(days.toSet(), expData);
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in begining of test");
     }

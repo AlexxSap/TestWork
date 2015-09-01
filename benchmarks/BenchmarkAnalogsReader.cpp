@@ -4,7 +4,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 {
     const QString dbName(QString::number(groupNum) + "_"
                          + QString::number(analogsNum) + "_"
-                         + "_BAR_TestDBase.db");
+                         + "_BAR_tdb");
 
     const QString fileName(QString::number(groupNum) + "_"
                            + QString::number(analogsNum) + "_"
@@ -12,13 +12,15 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
     QThread::msleep(100);
     qInfo() << "-------Benchmark for write and read analogs-------";
     qInfo() << groupNum << " groupNum, "
             << analogsNum << " analogsNum";
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         qWarning() << "cannot remove test-db in begin of Benchmark";
         return;
@@ -56,7 +58,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 
     if(!isImported)
     {
-        TestUtility::removeFile(dbName);
+        TestUtility::removeFile(info.dataBaseName());
         TestUtility::removeFile(fileName);
         qWarning() << "cannot import from file";
         return;
@@ -70,7 +72,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
         qInfo() << "read from db " << timer.elapsed();
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         qWarning() << "cannot remove test-db in end of Benchmark";
         return;

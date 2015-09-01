@@ -14,11 +14,13 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     QFETCH(Date, caseDateTo);
     QFETCH(QSet<SaleHistory>, expResult);
 
-    const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
+    const QString dbName(QString(QTest::currentDataTag()) + "tdb");
     DataBaseInfo info;
     info.setDataBaseName(dbName);
+    info.setUserName("root");
+    info.setPassword("1234");
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in begin of test");
     }
@@ -30,7 +32,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     }
     if(!result)
     {
-        TestUtility::removeFile(dbName);
+        TestUtility::removeFile(info.dataBaseName());
         QFAIL("cannot write history to db");
     }
 
@@ -40,7 +42,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     }
     if(!result)
     {
-        TestUtility::removeFile(dbName);
+        TestUtility::removeFile(info.dataBaseName());
         QFAIL("cannot write analogs to db");
     }
 
@@ -59,7 +61,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
         }
     }
 
-    if(!TestUtility::removeFile(dbName))
+    if(!TestUtility::removeFile(info.dataBaseName()))
     {
         QFAIL("cannot remove test-db in end of test");
     }
