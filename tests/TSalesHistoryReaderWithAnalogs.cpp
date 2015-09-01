@@ -20,7 +20,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     info.setUserName("root");
     info.setPassword("1234");
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in begin of test");
     }
@@ -32,7 +32,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     }
     if(!result)
     {
-        TestUtility::removeFile(info.dataBaseName());
+        DataBase::remDataBase(info);
         QFAIL("cannot write history to db");
     }
 
@@ -42,7 +42,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     }
     if(!result)
     {
-        TestUtility::removeFile(info.dataBaseName());
+        DataBase::remDataBase(info);
         QFAIL("cannot write analogs to db");
     }
 
@@ -61,7 +61,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
         }
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in end of test");
     }

@@ -20,7 +20,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
     info.setUserName("root");
     info.setPassword("1234");
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in begining of test");
     }
@@ -33,7 +33,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
 
     if(!result)
     {
-        TestUtility::removeFile(info.dataBaseName());
+        DataBase::remDataBase(info);
         QFAIL("cannot write data to db");
     }
 
@@ -51,7 +51,7 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
         }
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in ending of test");
     }

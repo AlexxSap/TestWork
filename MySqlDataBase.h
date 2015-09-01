@@ -6,7 +6,8 @@
 class MySqlDataBase : public DataBase
 {
 private:
-    bool createEmptyDB(); 
+    bool createEmptyDB();
+    bool remove();
 
 public:
     MySqlDataBase();

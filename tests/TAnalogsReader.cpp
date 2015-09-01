@@ -17,7 +17,7 @@ void TAnalogsReader::TestReadAnalogs()
     info.setUserName("root");
     info.setPassword("1234");
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in begin of test");
     }
@@ -30,7 +30,7 @@ void TAnalogsReader::TestReadAnalogs()
 
     if(!isWrited)
     {
-        TestUtility::removeFile(info.dataBaseName());
+        DataBase::remDataBase(info);
         QFAIL("cannot write data to db");
     }
 
@@ -40,7 +40,7 @@ void TAnalogsReader::TestReadAnalogs()
         actResult = reader.fetch(IdList);
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in end of test");
     }

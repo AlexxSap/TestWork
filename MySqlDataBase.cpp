@@ -95,6 +95,11 @@ bool MySqlDataBase::createEmptyDB()
     return true;
 }
 
+bool MySqlDataBase::remove()
+{
+
+}
+
 bool MySqlDataBase::isExist()
 {
     QString conn = "isExistConn";

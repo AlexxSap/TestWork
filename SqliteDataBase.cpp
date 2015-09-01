@@ -80,6 +80,19 @@ bool SqliteDataBase::createEmptyDB()
     return true;
 }
 
+bool SqliteDataBase::remove()
+{
+    const QString fileName = info_.dataBaseName();
+    if(QFile::exists(fileName))
+    {
+        if(!QFile::remove(fileName))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool SqliteDataBase::isExist()
 {
     return QFile::exists(info_.dataBaseName());

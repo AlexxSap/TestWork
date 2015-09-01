@@ -87,7 +87,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             << storages << " storages, "
             << products << " products";
 
-    //    if(!TestUtility::removeFile(info.dataBaseName()))
+    //    if(!DataBase::remDataBase(info))
     //    {
     //        qWarning() << "cannot remove test-db in begin of benchmark";
     //        return;
@@ -115,7 +115,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     //            bool isWrited = CsvFile::write(list, fileName);
     //            if(!isWrited)
     //            {
-    //                TestUtility::removeFile(info.dataBaseName());
+    //                DataBase::remDataBase(info);
     //                TestUtility::removeFile(fileName);
     //                qWarning() << "cannot write to file";
     //                return;
@@ -133,7 +133,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
     //    }
     //    if(!result)
     //    {
-    //        TestUtility::removeFile(info.dataBaseName());
+    //        DataBase::remDataBase(info);
     //        TestUtility::removeFile(fileName);
     //        qWarning() << "cannot write data to db";
     //        return;
@@ -184,7 +184,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 //        }
 
     }
-    //    if(!TestUtility::removeFile(info.dataBaseName()))
+    //    if(!DataBase::remDataBase(info))
     //    {
     //        qWarning() << "cannot remove test-db in end of benchmark";
     //        return;
@@ -239,7 +239,7 @@ void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
             << products << " products, "
             << "buffer = " << bufferSize;
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         qWarning() << "cannot remove test-db in begining of benchmark";
         return;
@@ -303,7 +303,7 @@ void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
         qWarning() << "cannot write data to db";
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         qWarning() << "cannot remove test-db in begining of benchmark";
         return;

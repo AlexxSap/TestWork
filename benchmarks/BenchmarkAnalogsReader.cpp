@@ -20,7 +20,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
     qInfo() << groupNum << " groupNum, "
             << analogsNum << " analogsNum";
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         qWarning() << "cannot remove test-db in begin of Benchmark";
         return;
@@ -58,7 +58,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 
     if(!isImported)
     {
-        TestUtility::removeFile(info.dataBaseName());
+        DataBase::remDataBase(info);
         TestUtility::removeFile(fileName);
         qWarning() << "cannot import from file";
         return;
@@ -72,7 +72,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
         qInfo() << "read from db " << timer.elapsed();
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         qWarning() << "cannot remove test-db in end of Benchmark";
         return;

@@ -7,7 +7,7 @@ class SqliteDataBase : public DataBase
 {
 private:
     bool createEmptyDB();
-
+    bool remove();
 
 public:
     SqliteDataBase();

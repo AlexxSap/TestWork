@@ -39,7 +39,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
             << analogsGroupNum << " analogsGroupNum, "
             << analogsInGroupNum << " analogsInGroupNum";
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         qWarning() << "cannot remove test-db in begin of benchmark";
         return;
@@ -68,7 +68,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
             bool isWrited = CsvFile::write(list, fileName);
             if(!isWrited)
             {
-                TestUtility::removeFile(info.dataBaseName());
+                DataBase::remDataBase(info);
                 TestUtility::removeFile(fileName);
                 qWarning() << "cannot write to file";
                 return;
@@ -86,7 +86,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
     }
     if(!result)
     {
-        TestUtility::removeFile(info.dataBaseName());
+        DataBase::remDataBase(info);
         TestUtility::removeFile(fileName);
         qWarning() << "cannot write data to db";
         return;
@@ -154,7 +154,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
 //        }
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         qWarning() << "cannot remove test-db in end of benchmark";
         return;

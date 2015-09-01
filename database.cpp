@@ -39,16 +39,16 @@ DataBase::~DataBase()
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 {
     QSqlQuery query(db);
-//    db.transaction();
+    //    db.transaction();
     bool res = query.exec(request);
     if(!res)
     {
         qInfo() << query.lastQuery();
         qInfo() << query.lastError().text();
-//        db.rollback();
+        //        db.rollback();
         return false;
     }
-//    db.commit();
+    //    db.commit();
     return res;
 }
 
@@ -251,10 +251,33 @@ QSqlQuery DataBase::queryForSalesHistoryStreamReader(const QDate &from,
     return QSqlQuery();
 }
 
+bool DataBase::remDataBase(const DataBaseInfo &info)
+{
+    QPointer<DataBase> db;
+    switch (DataBaseInfo::dataBaseType())
+    {
+    case DataBaseInfo::SQLITE:
+    {
+        db = new SqliteDataBase(info);
+        break;
+    }
+    case DataBaseInfo::MYSQL:
+    {
+        db = new MySqlDataBase(info);
+        break;
+    }
+    default:
+        break;
+    }
+    db->disconnect();
+    return db->remove();
+}
+
 QPointer<DataBase> DataBase::getDataBase(const DataBaseInfo &info,
                                          const QString &connName)
 {
-    switch (DataBaseInfo::dataBaseType()) {
+    switch (DataBaseInfo::dataBaseType())
+    {
     case DataBaseInfo::SQLITE:
     {
         QPointer<DataBase> db = new SqliteDataBase(info, connName);

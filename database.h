@@ -23,6 +23,7 @@ protected:
 
 private:
     virtual bool createEmptyDB() = 0;
+    virtual bool remove() = 0;
 
 protected:
     bool executeQuery(QSqlDatabase &db, const QString &request);
@@ -46,7 +47,6 @@ public:
     bool isConnected();
 
     virtual bool isExist() = 0;
-//    virtual bool remove() = 0;
 
     QSqlQuery associatedQuery() const;
 
@@ -61,6 +61,7 @@ public:
                                                        const QDate &to,
                                                        const bool &forward = true);
 
+    static bool remDataBase(const DataBaseInfo &info);
     static QPointer<DataBase> getDataBase(const DataBaseInfo &info,
                                           const QString &connName = "qt_sql_default_connection");
 };

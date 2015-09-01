@@ -23,7 +23,7 @@ void TestCsvFile::testCsvFile()
         QFAIL("cannot remove test-file in begining of test");
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in begining of test");
     }
@@ -74,7 +74,7 @@ void TestCsvFile::testCsvFile()
         QCOMPARE(days.toSet(), expData);
     }
 
-    if(!TestUtility::removeFile(info.dataBaseName()))
+    if(!DataBase::remDataBase(info))
     {
         QFAIL("cannot remove test-db in begining of test");
     }
