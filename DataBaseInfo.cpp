@@ -4,8 +4,8 @@ DataBaseInfo::Type DataBaseInfo::dataBaseType_ = DataBaseInfo::SQLITE;
 
 DataBaseInfo::DataBaseInfo()
     : dataBaseName_(),
-      userName_(),
-      userPassword_()
+      userName_("testUser"),
+      userPassword_("testPassword")
 {
 
 }

@@ -8,7 +8,8 @@ class DataBaseInfo
 public:
     enum Type
     {
-        SQLITE
+        SQLITE,
+        MYSQL
     };
 
 private:

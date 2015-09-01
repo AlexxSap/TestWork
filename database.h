@@ -58,7 +58,6 @@ public:
                                                        const QDate &to,
                                                        const bool &forward = true);
 
-
     static QPointer<DataBase> getDataBase(const DataBaseInfo &info,
                                           const QString &connName = "qt_sql_default_connection");
 };

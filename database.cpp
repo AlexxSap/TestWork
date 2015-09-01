@@ -1,7 +1,7 @@
 #include "DataBase.h"
-#include "SqliteDataBase.h"
 
-#include "DataBaseInfo.h"
+#include "SqliteDataBase.h"
+#include "MySqlDataBase.h"
 
 DataBase::DataBase(const DataBaseInfo &info,
                    const QString &connName)
@@ -243,11 +243,15 @@ QSqlQuery DataBase::queryForSalesHistoryStreamReader(const QDate &from,
 QPointer<DataBase> DataBase::getDataBase(const DataBaseInfo &info,
                                          const QString &connName)
 {
-
     switch (DataBaseInfo::dataBaseType()) {
     case DataBaseInfo::SQLITE:
     {
         QPointer<DataBase> db = new SqliteDataBase(info, connName);
+        return db;
+    }
+    case DataBaseInfo::MYSQL:
+    {
+        QPointer<DataBase> db = new MySqlDataBase(info, connName);
         return db;
     }
     default:

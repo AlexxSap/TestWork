@@ -50,7 +50,8 @@ SOURCES += main.cpp\
     tests/TSalesHistoryReaderWithAnalogs.cpp \
     benchmarks/BenchmarkWriteReadWithAnalogs.cpp \
     SqliteDataBase.cpp \
-    DataBaseInfo.cpp
+    DataBaseInfo.cpp \
+    MySqlDataBase.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -87,4 +88,5 @@ HEADERS  += mainwindow.h \
     tests/TSalesHistoryReaderWithAnalogs.h \
     benchmarks/BenchmarkWriteReadWithAnalogs.h \
     SqliteDataBase.h \
-    DataBaseInfo.h
+    DataBaseInfo.h \
+    MySqlDataBase.h
