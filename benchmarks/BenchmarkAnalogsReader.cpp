@@ -34,7 +34,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
     {//запись в файл
         AnalogsTable table = AnalogsTableGenerator::generateTable(groupNum,
                                                                  analogsNum);
-        IdList = AnalogsTableGenerator::getRandomIdList(table);
+        IdList = AnalogsTableGenerator::generateRandomIdList(table);
 
         const bool isWritedToFile = CsvFile::write(table, fileName);
         if(!isWritedToFile)
@@ -65,7 +65,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
     {//чтение из базы
         AnalogsReader reader(info);
         timer.start();
-        const AnalogsTable table = reader.read(IdList);
+        const AnalogsTable table = reader.fetch(IdList);
         Q_UNUSED(table)
         qInfo() << "read from db " << timer.elapsed();
     }

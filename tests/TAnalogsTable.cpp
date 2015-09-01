@@ -9,23 +9,22 @@ void TAnalogsTable::TestAddAnalog()
 {
     QFETCH(AnalogsTable, table);
     QFETCH(Analogs, added);
-    QFETCH(QList<Analogs>, expList);
+    QFETCH(QSet<Analogs>, expList);
     QFETCH(bool, expIsEqual);
 
     table.addAnalogs(added);
 
-    QList<Analogs> actList = table.toList();
+    QSet<Analogs> actList = table.toList().toSet();
+    const bool actIsEqual = actList == expList;
 
-    const bool actIsEqual = TestUtility::compareListWithoutOrder(actList, expList);
     QCOMPARE(actIsEqual, expIsEqual);
-
 }
 
 void TAnalogsTable::TestAddAnalog_data()
 {
     QTest::addColumn<AnalogsTable>("table");
     QTest::addColumn<Analogs>("added");
-    QTest::addColumn<QList<Analogs> >("expList");
+    QTest::addColumn< QSet<Analogs> >("expList");
     QTest::addColumn<bool>("expIsEqual");
 
     QTest::newRow("add") << (AnalogsTable()
@@ -36,7 +35,7 @@ void TAnalogsTable::TestAddAnalog_data()
                                  << ID("p12")))
                          << (Analogs("p21")
                              << ID("p22"))
-                         << (QList<Analogs>()
+                         << (QSet<Analogs>()
                              << (Analogs("p01")
                                  << ID("p02")
                                  << ID("p03"))
@@ -55,7 +54,7 @@ void TAnalogsTable::TestAddAnalog_data()
                                        << ID("p12")))
                                << (Analogs("p21")
                                    << ID("p22"))
-                               << (QList<Analogs>()
+                               << (QSet<Analogs>()
                                    << (Analogs("p01")
                                        << ID("p02")
                                        << ID("p03"))
@@ -119,12 +118,14 @@ void TAnalogsTable::TestAssign()
 void TAnalogsTable::TestAssign_data()
 {
     QTest::addColumn<AnalogsTable>("table");
-    QTest::newRow("") << (AnalogsTable()
+    QTest::newRow("1") << (AnalogsTable()
                           << (Analogs("p01")
                               << ID("p02")
                               << ID("p03"))
                           << (Analogs("p11")
                               << ID("p12")));
+
+    QTest::newRow("2") << AnalogsTable();
 }
 
 void TAnalogsTable::TestAnalogsForProduct()
@@ -143,6 +144,22 @@ void TAnalogsTable::TestAnalogsForProduct_data()
     QTest::addColumn<AnalogsTable>("table");
     QTest::addColumn<ID>("product");
     QTest::addColumn<Analogs>("expResult");
+
+    QTest::newRow("empty id") << (AnalogsTable()
+                                  << (Analogs("p01")
+                                      << ID("p02")
+                                      << ID("p03"))
+                                  << (Analogs("p11")
+                                      << ID("p12"))
+                                  << (Analogs("p21")
+                                      << ID("p22")
+                                      << ID("p23")))
+                              << ID()
+                              << Analogs();
+
+    QTest::newRow("empty table") << AnalogsTable()
+                                 << ID()
+                                 << Analogs();
 
     QTest::newRow("simple") << (AnalogsTable()
                                 << (Analogs("p01")

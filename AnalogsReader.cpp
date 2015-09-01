@@ -1,11 +1,11 @@
 #include "AnalogsReader.h"
 
-bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
+bool AnalogsReader::fillTempIdTable(const QList<ID> &IdList)
 {
-    QSqlQuery query = db_->getAssociatedQuery();
-    query.prepare("insert into t_temp_ids (f_id) values (?);");
+    QSqlQuery query = db_->associatedQuery();
+    query.prepare("insert into tTempIds (fId) values (?);");
     QVariantList lst ;
-    foreach (const ID id, IdList)
+    foreach (const ID &id, IdList)
     {
         lst << id;
     }
@@ -20,13 +20,11 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     db_->commitTransaction();
 
     db_->beginTransaction();
-    if(!query.exec("insert into t_temp_idmain(f_main, f_id) "
-                   "select t_analogs.f_main, t_analogs.f_analog "
-                   "from t_temp_ids left outer join t_analogs "
-                   "on t_analogs.f_analog = t_temp_ids.f_id;"))
+    if(!query.exec("insert into tTempIdMain(fMain, fId) "
+                   "select tAnalogs.fMain, tAnalogs.fAnalog "
+                   "from tTempIds left outer join tAnalogs "
+                   "on tAnalogs.fAnalog = tTempIds.fId;"))
     {
-        qInfo() << query.lastError().text();
-        qInfo() << query.lastQuery();
         db_->rollbackTransaction();
         return false;
     }
@@ -35,7 +33,7 @@ bool AnalogsReader::fillTempIdTable(const QList<ID> IdList)
     return true;
 }
 
-AnalogsTable AnalogsReader::getTable()
+AnalogsTable AnalogsReader::fetchTable()
 {
     QSqlQuery query = db_->queryForAnalogsReader();
     if(!query.exec())
@@ -57,7 +55,7 @@ AnalogsTable AnalogsReader::getTable()
     }
     else
     {
-        return table;
+        return AnalogsTable();
     }
 
     if(!query.next())
@@ -106,23 +104,23 @@ AnalogsReader::~AnalogsReader()
     delete db_;
 }
 
-AnalogsTable AnalogsReader::read(const QList<ID> IdList)
+AnalogsTable AnalogsReader::fetch(const QList<ID> &IdList)
 {
     AnalogsTable table;
     if(IdList.isEmpty())
     {
-        return table;
+        return AnalogsTable();
     }
     if(!db_->createTempTableForAnalogsReader())
     {
-        return table;
+        return AnalogsTable();
     }
     if(!fillTempIdTable(IdList))
     {
-        return table;
+        return AnalogsTable();
     }
 
-    table = getTable();
+    table = fetchTable();
 
     db_->dropTempTableForAnalogsReader();
     return table;

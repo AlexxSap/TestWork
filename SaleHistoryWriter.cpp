@@ -6,8 +6,8 @@ SaleHistoryWriter::SaleHistoryWriter(const DataBaseInfo &info)
       queryForWrite_()
 {
     db_->connect();
-    queryForWrite_ = db_->getAssociatedQuery();
-    queryForWrite_.prepare("insert into t_datas(f_storage, f_product, f_date, f_sold, f_rest) "
+    queryForWrite_ = db_->associatedQuery();
+    queryForWrite_.prepare("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
                            "values(?, ?, ?, ?, ?);");
 }
 
@@ -156,7 +156,7 @@ bool SaleHistoryWriter::importFromFile(const QString &fileName)
     return true;
 }
 
-void SaleHistoryWriter::setBufferSize(const int size)
+void SaleHistoryWriter::setBufferSize(const int &size)
 {
     bufferSize_ = size;
 }

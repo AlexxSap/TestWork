@@ -79,7 +79,7 @@ bool DataBase::isConnected()
     return db_.isOpen();
 }
 
-QSqlQuery DataBase::getAssociatedQuery() const
+QSqlQuery DataBase::associatedQuery() const
 {
     return QSqlQuery(db_);
 }
@@ -114,16 +114,16 @@ bool DataBase::createTempTableForAnalogsReader()
 {
     QSqlQuery query(db_);
     db_.transaction();
-    if(!query.exec("create temporary table if not exists t_temp_idmain("
-                   "f_main text, "
-                   "f_id text);"))
+    if(!query.exec("create temporary table if not exists tTempIdMain("
+                   "fMain text, "
+                   "fId text);"))
     {
         db_.rollback();
         return false;
     }
 
-    if(!query.exec("create temporary table if not exists t_temp_ids("
-                   "f_id text not null);"))
+    if(!query.exec("create temporary table if not exists tTempIds("
+                   "fId text not null);"))
     {
         db_.rollback();
         return false;
@@ -136,8 +136,8 @@ void DataBase::dropTempTableForAnalogsReader()
 {
     QSqlQuery query(db_);
     db_.transaction();
-    query.exec("drop table if exists t_temp_ids;");
-    query.exec("drop table if exists t_temp_idmain;");
+    query.exec("drop table if exists tTempIds;");
+    query.exec("drop table if exists tTempIdMain;");
     db_.commit();
 }
 
@@ -146,24 +146,24 @@ bool DataBase::createTempTableForSalesHistoryStreamReader()
     QSqlQuery query(db_);
     db_.transaction();
 
-    if(!query.exec("create temporary table t_temp_items("
-                   "f_storage text not null, "
-                   "f_product text not null, "
-                   "f_main_an text);"))
+    if(!query.exec("create temporary table tTempItems("
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text);"))
     {
-        qInfo()  << "cannot create temp table t_temp_items";
+        qInfo()  << "cannot create temp table tTempItems";
         db_.rollback();
         return false;
     }
 
-    if(!query.exec("create temporary table t_temp_order("
-                   "f_order integer primary key asc autoincrement, "
-                   "f_storage text not null, "
-                   "f_product text not null, "
-                   "f_main_an text, "
-                   "unique(f_storage, f_product));"))
+    if(!query.exec("create temporary table tTempOrder("
+                   "fOrder integer primary key asc autoincrement, "
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text, "
+                   "unique(fStorage, fProduct));"))
     {
-        qInfo()  << "cannot create temp table t_temp_order";
+        qInfo()  << "cannot create temp table tTempOrder";
         db_.rollback();
         return false;
     }
@@ -177,8 +177,8 @@ void DataBase::dropTempTableForSalesHistoryStreamReader()
 {
     QSqlQuery query(db_);
     db_.transaction();
-    query.exec("drop table if exists t_temp_items;");
-    query.exec("drop table if exists t_temp_order;");
+    query.exec("drop table if exists tTempItems;");
+    query.exec("drop table if exists tTempOrder;");
     db_.commit();
 }
 
@@ -186,12 +186,15 @@ QSqlQuery DataBase::queryForAnalogsReader(const bool &forward)
 {
     QSqlQuery query(db_);
     query.setForwardOnly(forward);
-    query.prepare("select t_analogs.f_main, t_analogs.f_analog "
-                  "from t_temp_idmain left outer join t_analogs "
-                  "on t_analogs.f_main = t_temp_idmain.f_main "
-                  "where t_temp_idmain.f_main is not null "
-                  "order by t_analogs.f_main;");
-    return query;
+    if(query.prepare("select tAnalogs.fMain, tAnalogs.fAnalog "
+                     "from tTempIdMain left outer join tAnalogs "
+                     "on tAnalogs.fMain = tTempIdMain.fMain "
+                     "where tTempIdMain.fMain is not null "
+                     "order by tAnalogs.fMain;"))
+    {
+        return query;
+    }
+    return QSqlQuery();
 }
 
 QSqlQuery DataBase::queryForSalesHistoryStreamReader(const QDate &from,
@@ -201,43 +204,46 @@ QSqlQuery DataBase::queryForSalesHistoryStreamReader(const QDate &from,
     QSqlQuery query(db_);
     query.setForwardOnly(forward);
 
-    QString select("select t_temp_order.f_storage, "
-                   "t_temp_order.f_product, "
-                   "t_datas.f_date, "
-                   "t_datas.f_sold, "
-                   "t_datas.f_rest "
-                   "from t_temp_order "
-                   "left outer join t_datas "
-                   "on t_temp_order.f_storage = t_datas.f_storage "
-                   "and t_temp_order.f_product = t_datas.f_product "
+    QString select("select tTempOrder.fStorage, "
+                   "tTempOrder.fProduct, "
+                   "tDatas.fDate, "
+                   "tDatas.fSold, "
+                   "tDatas.fRest "
+                   "from tTempOrder "
+                   "left outer join tDatas "
+                   "on tTempOrder.fStorage = tDatas.fStorage "
+                   "and tTempOrder.fProduct = tDatas.fProduct "
                    "%1"
-                   "order by t_temp_order.f_order;");
+                   "order by tTempOrder.fOrder;");
 
     QString dateCase;
     if(from != QDate() && to != QDate())
     {
-        dateCase = "where (t_datas.f_date >= '%1' and "
-                   "t_datas.f_date <= '%2') "
-                   "or t_datas.f_date is null ";
+        dateCase = "where (tDatas.fDate >= '%1' and "
+                   "tDatas.fDate <= '%2') "
+                   "or tDatas.fDate is null ";
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"))
                 .arg(to.toString("yyyy.MM.dd"));
     }
     else if (from == QDate() && to != QDate())
     {
-        dateCase = "where t_datas.f_date <= '%1' "
-                   "or t_datas.f_date is null ";
+        dateCase = "where tDatas.fDate <= '%1' "
+                   "or tDatas.fDate is null ";
         dateCase = dateCase.arg(to.toString("yyyy.MM.dd"));
     }
     else if (to == QDate() && from != QDate())
     {
-        dateCase = "where t_datas.f_date >= '%1' "
-                   "or t_datas.f_date is null ";
+        dateCase = "where tDatas.fDate >= '%1' "
+                   "or tDatas.fDate is null ";
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
     }
     select = select.arg(dateCase);
 
-    query.prepare(select);
-    return query;
+    if(query.prepare(select))
+    {
+        return query;
+    }
+    return QSqlQuery();
 }
 
 QPointer<DataBase> DataBase::getDataBase(const DataBaseInfo &info,

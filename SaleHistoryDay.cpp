@@ -1,19 +1,19 @@
 #include "SaleHistoryDay.h"
 
-bool operator != (const SaleHistoryDay &left, const SaleHistoryDay &right)
+bool SaleHistoryDay::operator != (const SaleHistoryDay &other) const
 {
-    return (left.item() != right.item())
-            || (left.date() != right.date())
-            || (left.sold() != right.sold())
-            || (left.rest() != right.rest());
+    return (item_ != other.item())
+            || (date_ != other.date())
+            || (sold_ != other.sold())
+            || (rest_ != other.rest());
 }
 
-bool operator == (const SaleHistoryDay &left, const SaleHistoryDay &right)
+bool SaleHistoryDay::operator == (const SaleHistoryDay &other) const
 {
-    return (left.item() == right.item())
-            && (left.date() == right.date())
-            && (left.sold() == right.sold())
-            && (left.rest() == right.rest());
+    return (item_ == other.item())
+            && (date_ == other.date())
+            && (sold_ == other.sold())
+            && (rest_ == other.rest());
 }
 
 SaleHistoryDay::SaleHistoryDay()
@@ -70,6 +70,7 @@ bool SaleHistoryDay::isValid() const
 {
     return (item().isValid()
             && date() != Date()
+            && date().isValid()
             && sold() >= 0.0
             && rest() >= 0.0);
 }

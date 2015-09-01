@@ -29,17 +29,22 @@ public:
     Item& operator = (const Item &anotherItem);
 
     QString toString() const;
+
+    bool operator != (const Item &other) const;
+    bool operator == (const Item &other) const;
 };
 
 Q_DECLARE_METATYPE(Item)
-
-bool operator!= (const Item &left, const Item &right);
-bool operator== (const Item &left, const Item &right);
 
 inline QDebug operator << (QDebug debug, const Item &item)
 {
    debug << item.toString();
    return debug;
+}
+
+inline uint qHash(const Item &item, uint seed)
+{
+    return qHash(item.storage(), seed) + qHash(item.product(), seed);
 }
 
 #endif // ITEM_H

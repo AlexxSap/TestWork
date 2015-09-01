@@ -40,7 +40,7 @@ void SalesHistoryStreamReader::fillInsLists(QVariantList &stor,
             main << mainAn;
 
             const QList<ID> analogsIDs = analogs.toList();
-            foreach (const ID temp, analogsIDs)
+            foreach (const ID &temp, analogsIDs)
             {
                 stor << storage;
                 prod << temp;
@@ -62,8 +62,8 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
 
     fillInsLists(storageList, productList, mainAnList);
 
-    QSqlQuery query = db_->getAssociatedQuery();
-    query.prepare("insert into t_temp_items(f_storage, f_product, f_main_an) "
+    QSqlQuery query = db_->associatedQuery();
+    query.prepare("insert into tTempItems(fStorage, fProduct, fMainAn) "
                   "values (?, ?, ?);");
     query.addBindValue(storageList);
     query.addBindValue(productList);
@@ -79,12 +79,12 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         return false;
     }
 
-    if(!query.exec("insert into t_temp_order(f_storage, f_product, f_main_an) "
-                  "select distinct f_storage, f_product, f_main_an "
-                   "from t_temp_items "
-                   "order by  t_temp_items.f_main_an, "
-                   "t_temp_items.f_storage, "
-                   "t_temp_items.f_product;"))
+    if(!query.exec("insert into tTempOrder(fStorage, fProduct, fMainAn) "
+                  "select distinct fStorage, fProduct, fMainAn "
+                   "from tTempItems "
+                   "order by  tTempItems.fMainAn, "
+                   "tTempItems.fStorage, "
+                   "tTempItems.fProduct;"))
     {
         db_->rollbackTransaction();
         qInfo() << query.lastError().text();
@@ -104,10 +104,11 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
         isCanNext_ = false;
         return false;
     }
+
     from_ = from;
     to_ = to;
 
-    loadAnalogsTable();
+    fetchAnalogsTable();
 
     if(!db_->createTempTableForSalesHistoryStreamReader())
     {
@@ -187,7 +188,7 @@ bool SalesHistoryStreamReader::isCanReturnHistory(const Item &item) const
     return false;
 }
 
-void SalesHistoryStreamReader::loadAnalogsTable()
+void SalesHistoryStreamReader::fetchAnalogsTable()
 {
     AnalogsReader reader(db_->info());
     QList<ID> idList;
@@ -199,7 +200,7 @@ void SalesHistoryStreamReader::loadAnalogsTable()
             idList.append(product);
         }
     }
-    analogsTable_ = reader.read(idList);
+    analogsTable_ = reader.fetch(idList);
 }
 
 void SalesHistoryStreamReader::normalazeTempHistory()

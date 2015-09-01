@@ -10,7 +10,7 @@ AnalogsTable::AnalogsTable(const AnalogsTable &other)
     :table_()
 {
     const QList<Analogs> list = other.toList();
-    foreach(const Analogs a, list)
+    foreach(const Analogs &a, list)
     {
         table_.insert(a);
     }
@@ -44,7 +44,7 @@ Analogs AnalogsTable::analogsForProduct(const ID &product) const
         return Analogs();
     }
     QList<Analogs> list = table_.toList();
-    foreach(const Analogs a, list)
+    foreach(const Analogs &a, list)
     {
         if(a.contains(product))
         {
@@ -72,7 +72,7 @@ QString AnalogsTable::toString() const
 {
     QString string;
     const QList<Analogs> list = toList();
-    foreach(const Analogs a, list)
+    foreach(const Analogs &a, list)
     {
         string += a.toString() + " ; ";
     }
@@ -85,13 +85,13 @@ bool AnalogsTable::isValid() const
     return !table_.isEmpty();
 }
 
-bool operator !=(const AnalogsTable &left, const AnalogsTable &right)
+bool AnalogsTable::operator != (const AnalogsTable &other) const
 {
-    return (left.table_ != right.table_);
+    return (table_ != other.table_);
 }
 
 
-bool operator ==(const AnalogsTable &left, const AnalogsTable &right)
+bool AnalogsTable::operator == (const AnalogsTable &other) const
 {
-    return (left.table_ == right.table_);
+    return (table_ == other.table_);
 }

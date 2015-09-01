@@ -51,27 +51,27 @@ bool SqliteDataBase::createEmptyDB()
         executeQuery(db,"PRAGMA foreign_keys = ON;");
 
 
-        if(!executeQuery(db, "create table t_datas("
-                         "f_storage text not null, "
-                         "f_product text not null, "
-                         "f_date real not null, "
-                         "f_sold real not null, "
-                         "f_rest real not null, "
-                         "primary key(f_storage, f_product, f_date));"))
+        if(!executeQuery(db, "create table tDatas("
+                         "fStorage text not null, "
+                         "fProduct text not null, "
+                         "fDate real not null, "
+                         "fSold real not null, "
+                         "fRest real not null, "
+                         "primary key(fStorage, fProduct, fDate));"))
         {
             return false;
         }
 
-        if(!executeQuery(db, "create table t_analogs("
-                         "f_main text not null, "
-                         "f_analog text not null);"))
+        if(!executeQuery(db, "create table tAnalogs("
+                         "fMain text not null, "
+                         "fAnalog text not null);"))
         {
             return false;
         }
-        executeQuery(db, "create index i_analogs_analog on t_analogs"
-                         "(f_analog);");
-        executeQuery(db, "create index i_analogs_main on t_analogs"
-                         "(f_main);");
+        executeQuery(db, "create index iAnalogsAnalog on tAnalogs"
+                         "(fAnalog);");
+        executeQuery(db, "create index iAnalogsMain on tAnalogs"
+                         "(fMain);");
 
 
         db.close();

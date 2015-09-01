@@ -4,6 +4,10 @@ AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
                                                   const int &analogsNum,
                                                   const int &maxProdNumFromSHG)
 {
+    if(groupNum <= 0 || analogsNum<= 0 || maxProdNumFromSHG<= 0)
+    {
+        return AnalogsTable();
+    }
     int maxProdNum = maxProdNumFromSHG;
     if(groupNum * (analogsNum + 1) > maxProdNumFromSHG)
     {
@@ -48,11 +52,11 @@ AnalogsTable AnalogsTableGenerator::generateTable(const int &groupNum,
     return table;
 }
 
-QList<ID> AnalogsTableGenerator::getRandomIdList(const AnalogsTable &table)
+QList<ID> AnalogsTableGenerator::generateRandomIdList(const AnalogsTable &table)
 {
     QList<ID> list;
     QList<Analogs> anList = table.toList();
-    foreach (const Analogs an, anList)
+    foreach (const Analogs &an, anList)
     {
         const QList<ID> idList = an.toList();
         const int randIndex = ((rand() + 1) % idList.count());

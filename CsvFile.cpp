@@ -52,7 +52,7 @@ bool CsvFile::write(const AnalogsTable &table, const QString &fileName)
 
         QList<ID> idList = an.toList();
         QString temp;
-        foreach (const ID id, idList)
+        foreach (const ID &id, idList)
         {
             temp += id + ";";
         }

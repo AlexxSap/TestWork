@@ -41,24 +41,24 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     QSqlQuery query(db_);
     db_.transaction();
 
-    if(!query.exec("create temporary table t_temp_items("
-                   "f_storage text not null, "
-                   "f_product text not null, "
-                   "f_main_an text);"))
+    if(!query.exec("create temporary table tTempItems("
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text);"))
     {
-        qInfo()  << "cannot create temp table t_temp_items";
+        qInfo()  << "cannot create temp table tTempItems";
         db_.rollback();
         return false;
     }
 
-    if(!query.exec("create temporary table t_temp_order("
-                   "f_order integer primary key asc auto_increment, "
-                   "f_storage text not null, "
-                   "f_product text not null, "
-                   "f_main_an text, "
-                   "unique(f_storage, f_product));"))
+    if(!query.exec("create temporary table tTempOrder("
+                   "fOrder integer primary key asc auto_increment, "
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text, "
+                   "unique(fStorage, fProduct));"))
     {
-        qInfo()  << "cannot create temp table t_temp_order";
+        qInfo()  << "cannot create temp table tTempOrder";
         db_.rollback();
         return false;
     }

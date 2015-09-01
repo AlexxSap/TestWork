@@ -35,16 +35,13 @@ void TAnalogsReader::TestReadAnalogs()
     AnalogsTable actResult;
     {
         AnalogsReader reader(info);
-        actResult = reader.read(IdList);
+        actResult = reader.fetch(IdList);
     }
 
     if(!TestUtility::removeFile(dbName))
     {
         QFAIL("cannot remove test-db in end of test");
     }
-
-//    qInfo() << actResult;
-//    qInfo() << expResult;
 
     QCOMPARE(actResult, expResult);
 }
@@ -57,7 +54,7 @@ void TAnalogsReader::TestReadAnalogs_data()
 
     QTest::newRow("simple") << (AnalogsTable()
                                 << (Analogs("p01")
-                                    << ID("p02")
+                                    << ID("прод02")
                                     << ID("p03"))
                                 << (Analogs("p11")
                                     << ID("p12"))
@@ -66,12 +63,12 @@ void TAnalogsReader::TestReadAnalogs_data()
                                     << ID("p23")))
                             << (QList<ID>()
                                 << "p12"
-                                << "p02")
+                                << "прод02")
                             << (AnalogsTable()
                                 << (Analogs("p11")
                                     << ID("p12"))
                                 << (Analogs("p01")
-                                    << ID("p02")
+                                    << ID("прод02")
                                     << ID("p03")));
 
     QTest::newRow("empty") << (AnalogsTable()

@@ -1,13 +1,13 @@
 #include "Item.h"
 
-bool operator!= (const Item &left, const Item &right)
+bool Item::operator != (const Item &other) const
 {
-    return left.product() != right.product() || left.storage() != right.storage();
+    return product_ != other.product() || storage_ != other.storage();
 }
 
-bool operator== (const Item &left, const Item &right)
+bool Item::operator == (const Item &other) const
 {
-    return left.product() == right.product() && left.storage() == right.storage();
+    return product_ == other.product() && storage_ == other.storage();
 }
 
 Item::Item()

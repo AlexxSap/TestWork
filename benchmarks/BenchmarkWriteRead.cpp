@@ -215,7 +215,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 первоначальное  354MB (339MB)   65MB (47MB)     23MB (5MB)
 */
 
-void BenchmarkWriteRead::runForBuffer(const int bufferSize)
+void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
 {
     const int days = 720;
     const int storages = 10;

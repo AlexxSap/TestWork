@@ -12,7 +12,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     QFETCH(QList<Item>, caseItems);
     QFETCH(Date, caseDateFrom);
     QFETCH(Date, caseDateTo);
-    QFETCH(QList<SaleHistory>, expResult);
+    QFETCH(QSet<SaleHistory>, expResult);
 
     const QString dbName(QString(QTest::currentDataTag()) + "TestDBase.db");
     DataBaseInfo info;
@@ -64,15 +64,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
         QFAIL("cannot remove test-db in end of test");
     }
 
-    bool res = TestUtility::compareListWithoutOrder(actResult, expResult);
-
-    if(!res)
-    {
-        qInfo() << "actResult - " << actResult;
-        qInfo() << "expResult - " << expResult;
-    }
-    QVERIFY(res);
-//    QCOMPARE(actResult, expResult);
+    QCOMPARE(actResult.toSet(), expResult);
 }
 
 void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
@@ -84,7 +76,25 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
     QTest::addColumn<Date>("caseDateFrom");
     QTest::addColumn<Date>("caseDateTo");
 
-    QTest::addColumn< QList<SaleHistory> >("expResult");
+    QTest::addColumn< QSet<SaleHistory> >("expResult");
+
+    QTest::newRow("empty data")
+            << QList<SaleHistoryDay>()
+            << (AnalogsTable() << (Analogs("p01")
+                                   << ID("p1")
+                                   << ID("p2")))
+
+            << (QList<Item>() << Item(ID("s1"), ID("p1"))
+                << Item(ID("s1"), ID("p2")))
+            << Date(2015, 8, 10)
+            << Date(2015, 8, 13)
+
+            << (QSet<SaleHistory>()
+                << (SaleHistory(Item(ID("s1"), ID("p01")))
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 0.0, 0.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 0.0, 0.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 12), 0.0, 0.0)
+                    << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 13), 0.0, 0.0)));
 
     QTest::newRow("simple")
             << (QList<SaleHistoryDay>()
@@ -101,7 +111,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p01")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 1.0, 5.0)
@@ -123,7 +133,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date()
             << Date()
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p4")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 11), 1.0, 5.0)
@@ -144,7 +154,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date()
             << Date()
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p4")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 10), 1.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p4")), Date(2015, 8, 11), 1.0, 5.0)
@@ -165,7 +175,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p01")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 1.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 0.0, 2.0)
@@ -195,7 +205,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p01")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 1.0, 5.0)
@@ -221,7 +231,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << QList<SaleHistory>();
+            << QSet<SaleHistory>();
 
 
     QTest::newRow("different storage")
@@ -240,7 +250,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p01")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 1.0, 5.0)
@@ -272,7 +282,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p01")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p01")), Date(2015, 8, 11), 3.0, 5.0)
@@ -307,7 +317,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p1")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 11), 1.0, 5.0)
@@ -346,7 +356,7 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs_data()
             << Date(2015, 8, 10)
             << Date(2015, 8, 13)
 
-            << (QList<SaleHistory>()
+            << (QSet<SaleHistory>()
                 << (SaleHistory(Item(ID("s1"), ID("p1")))
                     << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 10), 5.0, 2.0)
                     << SaleHistoryDay(Item(ID("s1"), ID("p1")), Date(2015, 8, 11), 1.0, 5.0)

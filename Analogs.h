@@ -29,15 +29,11 @@ public:
     bool contains(const ID &product) const;
     bool isValid() const;
 
-    friend bool operator != (const Analogs &left, const Analogs &right);
-    friend bool operator == (const Analogs &left, const Analogs &right);
+    bool operator != (const Analogs &other) const;
+    bool operator == (const Analogs &other) const;
 };
 
 Q_DECLARE_METATYPE(Analogs)
-
-bool operator != (const Analogs &left, const Analogs &right);
-bool operator == (const Analogs &left, const Analogs &right);
-
 
 inline QDebug operator<< (QDebug debug, const Analogs &analogs)
 {
@@ -47,7 +43,7 @@ inline QDebug operator<< (QDebug debug, const Analogs &analogs)
 
 inline uint qHash(const Analogs &key, uint seed)
 {
-    return qHash(key.mainAnalog(), seed) ^ key.toList().count();
+    return qHash(key.mainAnalog(), seed);
 }
 
 #endif // ANALOGS_H

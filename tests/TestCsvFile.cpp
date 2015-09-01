@@ -8,7 +8,7 @@ TestCsvFile::TestCsvFile(QObject *parent) : QObject(parent)
 void TestCsvFile::testCsvFile()
 {
     QFETCH(QList<SaleHistoryDay>, inData);
-    QFETCH(QList<SaleHistoryDay>, expData);
+    QFETCH(QSet<SaleHistoryDay>, expData);
 
     const QString fileName(QString(QTest::currentDataTag()) + "Test.csv");
     const QString dbName(QString(QTest::currentDataTag()) + "TestDB.db");
@@ -34,7 +34,8 @@ void TestCsvFile::testCsvFile()
 
     const QList<SaleHistoryDay> actData = CsvFile::read(fileName);
 
-    QCOMPARE(actData, expData);
+    QCOMPARE(actData.toSet(), expData);
+
     {
         SaleHistoryWriter writer(info);
         bool isWritedToDb = writer.importFromFile(fileName);
@@ -56,22 +57,19 @@ void TestCsvFile::testCsvFile()
     }
 
     {
+        QList<SaleHistoryDay> days;
         SalesHistoryStreamReader reader(items, info);
         const bool isOpen = reader.open(Date(), Date());
-        if(!isOpen)
+        if(isOpen)
         {
-            QFAIL(QString("cannot open db " + dbName).toLocal8Bit());
+            do
+            {
+                days.append(reader.current().days());
+            }
+            while(reader.next());
         }
 
-        QList<SaleHistoryDay> days;
-        do
-        {
-            days.append(reader.current().days());
-        }
-        while(reader.next());
-
-        bool isEqual = TestUtility::compareListWithoutOrder(days, expData);
-        QVERIFY(isEqual);
+        QCOMPARE(days.toSet(), expData);
     }
 
     if(!TestUtility::removeFile(dbName))
@@ -88,7 +86,11 @@ void TestCsvFile::testCsvFile()
 void TestCsvFile::testCsvFile_data()
 {
     QTest::addColumn<QList<SaleHistoryDay> >("inData");
-    QTest::addColumn<QList<SaleHistoryDay> >("expData");
+    QTest::addColumn<QSet<SaleHistoryDay> >("expData");
+
+    QTest::newRow("empty1") << QList<SaleHistoryDay>()
+                            << QSet<SaleHistoryDay>();
+
 
     QTest::newRow("simple") << (QList<SaleHistoryDay>()
                                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
@@ -97,7 +99,7 @@ void TestCsvFile::testCsvFile_data()
                                 << SaleHistoryDay(Item(ID("storage1"), ID("product2")), Date(2015, 8, 10), 220.0, 11.0)
                                 << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0))
 
-                            << (QList<SaleHistoryDay>()
+                            << (QSet<SaleHistoryDay>()
                                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
                                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
                                 << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
@@ -105,16 +107,16 @@ void TestCsvFile::testCsvFile_data()
                                 << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0));
 
     QTest::newRow("empty") << (QList<SaleHistoryDay>()
-                                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
-                                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
-                                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
-                                << SaleHistoryDay()
-                                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0))
+                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
+                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
+                               << SaleHistoryDay()
+                               << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0))
 
-                           << (QList<SaleHistoryDay>()
-                                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
-                                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
-                                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
-                                << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0));
+                           << (QSet<SaleHistoryDay>()
+                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 10), 50.0, 20.0)
+                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 20.0, 10.0)
+                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 12), 10.0, 0.0)
+                               << SaleHistoryDay(Item(ID("storage2"), ID("product2")), Date(2015, 8, 10), 2.0, 1.0));
 
 }

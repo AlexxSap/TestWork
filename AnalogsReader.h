@@ -12,13 +12,13 @@ private:
     QPointer<DataBase> db_;
 
 private:
-    bool fillTempIdTable(const QList<ID> IdList);
-    AnalogsTable getTable();
+    bool fillTempIdTable(const QList<ID> &IdList);
+    AnalogsTable fetchTable();
 
 public:
     explicit AnalogsReader(const DataBaseInfo &info);
     ~AnalogsReader();
-    AnalogsTable read(const QList<ID> IdList);
+    AnalogsTable fetch(const QList<ID> &IdList);
 };
 
 #endif // ANALOGSREADER_H

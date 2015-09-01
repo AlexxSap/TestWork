@@ -19,7 +19,7 @@ public:
     static void run(const int &days,
                     const int &storages,
                     const int &products);
-    static void runForBuffer(const int bufferSize);
+    static void runForBuffer(const int &bufferSize);
 };
 
 #endif // BENCHMARKWRITEREAD_H

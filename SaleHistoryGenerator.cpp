@@ -6,6 +6,11 @@ QList<SaleHistoryDay> SaleHistoryGenerator::generateHistory(const Date &from,
                                                             const int &productNum,
                                                             const int &maxVal)
 {
+    if(!from.isValid() || !to.isValid())
+    {
+        return QList<SaleHistoryDay>();
+    }
+
     const QString productPrefix("prod_");
     const QString storagePrefix("stor_");
 

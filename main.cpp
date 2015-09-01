@@ -22,8 +22,6 @@
 
 #include "DataBaseInfo.h"
 
-#include <QVector>
-
 #else
 #include <QApplication>
 #include "mainwindow.h"

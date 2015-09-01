@@ -27,7 +27,7 @@ public:
     bool write(const QList<SaleHistoryDay> &days);
     bool importFromFile(const QString &fileName);
 
-    void setBufferSize(const int size);
+    void setBufferSize(const int &size);
 };
 
 #endif // SALEHISTORYWRITER_H

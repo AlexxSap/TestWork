@@ -10,7 +10,7 @@ public:
                                       const int &analogsNum,
                                       const int &maxProdNumFromSHG = 1000000);
 
-    static QList<ID> getRandomIdList(const AnalogsTable &table);
+    static QList<ID> generateRandomIdList(const AnalogsTable &table);
 };
 
 #endif // ANALOGSTABLEGENERATOR_H

@@ -1,13 +1,14 @@
 #include "Analogs.h"
 
-bool operator != (const Analogs &left, const Analogs &right)
+
+bool Analogs::operator != (const Analogs &other) const
 {
-    return (left.main_ != right.main_ || left.analogs_ != right.analogs_);
+    return (main_ != other.main_ || analogs_ != other.analogs_);
 }
 
-bool operator == (const Analogs &left, const Analogs &right)
+bool Analogs::operator == (const Analogs &other) const
 {
-    return (left.main_ == right.main_ && left.analogs_ == right.analogs_);
+    return (main_ == other.main_ && analogs_ == other.analogs_);
 }
 
 Analogs::Analogs()

@@ -21,18 +21,18 @@ bool AnalogsWriter::write(const AnalogsTable &table)
         return true;
     }
 
-    QSqlQuery query = db_->getAssociatedQuery();
-    query.prepare("insert into t_analogs (f_main, f_analog) "
+    QSqlQuery query = db_->associatedQuery();
+    query.prepare("insert into tAnalogs (fMain, fAnalog) "
                   "values(?, ?);");
 
     QVariantList mains;
     QVariantList anVarLits;
 
-    foreach(const Analogs an, anList)
+    foreach(const Analogs &an, anList)
     {
         const ID mainAn = an.mainAnalog();
         const QList<ID> analogs = an.toList();
-        foreach (const ID id, analogs)
+        foreach (const ID &id, analogs)
         {
             mains << mainAn;
             anVarLits << id;
@@ -74,7 +74,7 @@ bool AnalogsWriter::importFromFile(const QString &fileName)
         }
         const ID mainAnalog = list.at(0);
         Analogs analogs(mainAnalog);
-        foreach (ID a, list)
+        foreach (const ID &a, list)
         {
             analogs.addAnalog(a);
         }

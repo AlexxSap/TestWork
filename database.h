@@ -45,7 +45,7 @@ public:
     bool disconnect();
     bool isConnected();
 
-    QSqlQuery getAssociatedQuery() const;
+    QSqlQuery associatedQuery() const;
 
     virtual bool createTempTableForAnalogsReader();
     virtual void dropTempTableForAnalogsReader();

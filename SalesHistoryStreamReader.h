@@ -29,7 +29,7 @@ private:
                       QVariantList &main) const;
     void addDayToTempHistory();
     bool isCanReturnHistory(const Item &item) const;
-    void loadAnalogsTable();
+    void fetchAnalogsTable();
     void normalazeTempHistory();
 
 public:

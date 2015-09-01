@@ -47,7 +47,7 @@ void TAnalogsFromFile::TestImportFromFile()
     AnalogsTable actResult;
     {
         AnalogsReader reader(info);
-        actResult = reader.read(idList);
+        actResult = reader.fetch(idList);
     }
 
     if(!TestUtility::removeFile(dbName))
@@ -69,31 +69,37 @@ void TAnalogsFromFile::TestImportFromFile_data()
     QTest::addColumn<QList<ID> >("idList");
     QTest::addColumn<AnalogsTable>("expResult");
 
-    QTest::newRow("simple") << (QStringList()
-                                << "prod01;prod02;prod03"
-                                << "prod11"
-                                << "prod21;prod22;prod23;prod24")
+    QTest::newRow("empty") << QStringList()
                             << (QList<ID>()
                                 << "prod03"
                                 << "prod11")
+                            << AnalogsTable();
+
+    QTest::newRow("simple") << (QStringList()
+                                << "prod01;prod02;прод03"
+                                << "prod11_чавой?"
+                                << "prod21;prod22;prod23;prod24")
+                            << (QList<ID>()
+                                << "прод03"
+                                << "prod11_чавой?")
                             << (AnalogsTable()
                                 << (Analogs("prod01")
                                     << ID("prod02")
-                                    << ID("prod03"))
-                                << Analogs("prod11"));
+                                    << ID("прод03"))
+                                << Analogs("prod11_чавой?"));
 
     QTest::newRow("empty str") << (QStringList()
-                                << "prod01;prod02;prod03"
+                                << "prod01;prod02;прод03"
                                 << "prod11"
                                 << ""
                                 << "prod21;prod22;prod23;prod24")
                             << (QList<ID>()
-                                << "prod03"
+                                << "прод03"
                                 << "prod11")
                             << (AnalogsTable()
                                 << (Analogs("prod01")
                                     << ID("prod02")
-                                    << ID("prod03"))
+                                    << ID("прод03"))
                                 << Analogs("prod11"));
 
     QTest::newRow("id not found") << (QStringList()

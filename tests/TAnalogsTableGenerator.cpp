@@ -32,7 +32,10 @@ void TAnalogsTableGenerator::TestGenerate_data()
     QTest::addColumn<int>("groupNum");
     QTest::addColumn<int>("analogsNum");
 
-    QTest::newRow("") << 50
-                      << 23;
+    QTest::newRow("first") << 50
+                           << 23;
+
+    QTest::newRow("second") << 1
+                            << 10;
 }
 

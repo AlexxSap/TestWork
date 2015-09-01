@@ -3,7 +3,7 @@
 SaleHistoryParser::SaleHistoryParser()
     : splitter_(";"),
       dateFormat_("yyyy.MM.dd"),
-      isValid_(true)
+      isValid_(false)
 {
 
 }
@@ -20,11 +20,11 @@ QList<SaleHistoryDay> SaleHistoryParser::parse(const QStringList &rawData)
     foreach (const QString &buf, rawData)
     {
         const SaleHistoryDay day = parseString(buf);
-        list.append(day);
         if(!isValid_)
         {
             return QList<SaleHistoryDay>();
         }
+        list.append(day);
     }
     return list;
 }
@@ -43,10 +43,8 @@ SaleHistoryDay SaleHistoryParser::parseString(const QString &raw)
     const Amount sold = strList.at(3).toDouble();
     const Amount rest = strList.at(4).toDouble();
 
-    return SaleHistoryDay(item,
-                          date,
-                          sold,
-                          rest);
+    isValid_ = true;
+    return SaleHistoryDay(item, date, sold, rest);
 }
 
 Date SaleHistoryParser::strToDate(const QString &str)

@@ -8,34 +8,30 @@ TAnalogs::TAnalogs(QObject *parent) : QObject(parent)
 void TAnalogs::TestAnalogsList()
 {
     QFETCH(Analogs, data);
-    QFETCH(QList<ID>, expList);
+    QFETCH(QSet<ID>, expList);
 
-    QList<ID> actLits = data.toList();
+    QSet<ID> actLits = data.toList().toSet();
 
-    qInfo() << expList;
-    qInfo() << actLits;
-    const bool isEqual = TestUtility::compareListWithoutOrder(actLits, expList);
-
-    QVERIFY(isEqual);
+    QCOMPARE(actLits, expList);
 }
 
 void TAnalogs::TestAnalogsList_data()
 {
     QTest::addColumn<Analogs>("data");
-    QTest::addColumn< QList<ID> >("expList");
+    QTest::addColumn< QSet<ID> >("expList");
 
     QTest::newRow("simple") << (Analogs("product1")
                                 << "product2"
                                 << "product3"
                                 << "product5")
-                            << (QList<ID>()
+                            << (QSet<ID>()
                                 << "product1"
                                 << "product2"
                                 << "product3"
                                 << "product5");
 
     QTest::newRow("empty") << Analogs("product1")
-                           << (QList<ID>()
+                           << (QSet<ID>()
                                << "product1");
 }
 
@@ -73,6 +69,14 @@ void TAnalogs::TestIsAnalog_data()
                             << "product2")
                         << ID("product3")
                         << false;
+
+    QTest::newRow("one") << Analogs("product3")
+                        << ID("product3")
+                        << true;
+
+    QTest::newRow("empty") << Analogs()
+                        << ID("product3")
+                        << false;
 }
 
 void TAnalogs::TestAnalogsAssign()
@@ -80,9 +84,6 @@ void TAnalogs::TestAnalogsAssign()
     QFETCH(Analogs, data);
 
     const Analogs other = data;
-
-    qInfo() << other;
-    qInfo() << data;
 
     bool eq = data == other;
     bool notEq = data != other;
@@ -95,9 +96,11 @@ void TAnalogs::TestAnalogsAssign_data()
 {
     QTest::addColumn<Analogs>("data");
 
-    QTest::newRow("") << (Analogs("product1")
+    QTest::newRow("first") << (Analogs("product1")
                           << "product1"
                           << "product2");
+
+    QTest::newRow("second") << Analogs("product1");
 
 }
 

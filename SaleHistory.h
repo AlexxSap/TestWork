@@ -43,7 +43,7 @@ private:
 
 public:
     SaleHistory();
-    SaleHistory(const Item &item);
+    explicit SaleHistory(const Item &item);
     SaleHistory(const SaleHistory & other);
 
     Item item() const;
@@ -65,17 +65,24 @@ public:
     void normalaze(const Date &nFrom,
                    const Date &nTo,
                    const ID &mainAnalog);
+
+    bool operator != (const SaleHistory &other) const;
+    bool operator == (const SaleHistory &other) const;
 };
 
 Q_DECLARE_METATYPE(SaleHistory)
-
-bool operator != (const SaleHistory &left, const SaleHistory &right);
-bool operator == (const SaleHistory &left, const SaleHistory &right);
 
 inline QDebug operator<<(QDebug debug, const SaleHistory &history)
 {
    debug << history.toString();
    return debug;
+}
+
+inline uint qHash(const SaleHistory &history, uint seed)
+{
+    return qHash(history.item(), seed)
+            + qHash(history.from(), seed)
+            + qHash(history.to(), seed);
 }
 
 #endif // SALEHISTORY_H

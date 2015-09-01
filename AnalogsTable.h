@@ -27,14 +27,11 @@ public:
     QString toString() const;
     bool isValid() const;
 
-    friend bool operator != (const AnalogsTable &left, const AnalogsTable &right);
-    friend bool operator == (const AnalogsTable &left, const AnalogsTable &right);
+    bool operator != (const AnalogsTable &other) const;
+    bool operator == (const AnalogsTable &other) const;
 };
 
 Q_DECLARE_METATYPE(AnalogsTable)
-
-bool operator != (const AnalogsTable &left, const AnalogsTable &right);
-bool operator == (const AnalogsTable &left, const AnalogsTable &right);
 
 inline QDebug operator<< (QDebug debug, const AnalogsTable &table)
 {

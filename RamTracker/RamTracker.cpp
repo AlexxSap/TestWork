@@ -91,7 +91,7 @@ double ListUtilities::min(const QList<double> &list)
         return 0.0;
     }
     double min = list.at(0);
-    foreach (const double val, list)
+    foreach (const double &val, list)
     {
         if(val < min)
         {
@@ -108,7 +108,7 @@ double ListUtilities::max(const QList<double> &list)
         return 0.0;
     }
     double max = list.at(0);
-    foreach (const double val, list)
+    foreach (const double &val, list)
     {
         if(val > max)
         {
@@ -126,7 +126,7 @@ double ListUtilities::median(const QList<double> &list)
     }
     double median = list.at(0);
     double sum = 0.0;
-    foreach (const double val, list)
+    foreach (const double &val, list)
     {
         sum += val;
     }

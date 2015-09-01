@@ -1,13 +1,14 @@
 #include "SaleHistory.h"
 
-bool operator != (const SaleHistory &left, const SaleHistory &right)
+
+bool SaleHistory::operator != (const SaleHistory &other) const
 {
-    return (left.item() != right.item() || left.days() != right.days());
+    return (item_ != other.item() || days() != other.days());
 }
 
-bool operator == (const SaleHistory &left, const SaleHistory &right)
+bool SaleHistory::operator == (const SaleHistory &other) const
 {
-    return (left.item() == right.item() && left.days() == right.days());
+    return (item_ == other.item() && days() == other.days());
 }
 
 SaleHistory::SaleHistory()
@@ -155,7 +156,7 @@ QString SaleHistory::toString() const
     QString str = item().toString();
 
     const QList<SaleHistoryDay> shDays = days();
-    foreach (const SaleHistoryDay day, shDays)
+    foreach (const SaleHistoryDay &day, shDays)
     {
         str += day.toStringWoItem();
     }
@@ -236,7 +237,7 @@ void SaleHistory::addDefaultData()
 {
     Date first = analogData_.at(0).firstKey();
     Date last = analogData_.at(0).lastKey();
-    foreach (const SHData data, analogData_)
+    foreach (const SHData &data, analogData_)
     {
         const Date factFirst = data.firstKey();
         const Date factLast = data.lastKey();
@@ -289,7 +290,7 @@ void SaleHistory::normalaze(const Date &nFrom,
         Day day = days_.take(date);
         Amount sold = day.sold();
         Amount rest = day.rest();
-        foreach (const SHData data, analogData_)
+        foreach (const SHData &data, analogData_)
         {
             const Day temp = data.value(date);
             sold += temp.sold();

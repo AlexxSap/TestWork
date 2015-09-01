@@ -17,7 +17,10 @@ private:
 public:
     SaleHistoryDay();
     SaleHistoryDay(const SaleHistoryDay &other);
-    SaleHistoryDay(const Item &item, const Date &date, const Amount &sold, const Amount &rest);
+    SaleHistoryDay(const Item &item,
+                   const Date &date,
+                   const Amount &sold,
+                   const Amount &rest);
 
     Item item() const;
     Amount sold() const;
@@ -28,17 +31,22 @@ public:
 
     QString toString() const;
     QString toStringWoItem() const;
+
+    bool operator != (const SaleHistoryDay &other) const;
+    bool operator == (const SaleHistoryDay &other) const;
 };
 
 Q_DECLARE_METATYPE(SaleHistoryDay)
 
-bool operator != (const SaleHistoryDay &left, const SaleHistoryDay &right);
-bool operator == (const SaleHistoryDay &left, const SaleHistoryDay &right);
-
-inline QDebug& operator<<(QDebug &debug, const SaleHistoryDay &day)
+inline QDebug operator<<(QDebug debug, const SaleHistoryDay &day)
 {
    debug << day.toString();
    return debug;
+}
+
+inline uint qHash(const SaleHistoryDay &day, uint seed)
+{
+    return qHash(day.item(), seed) + qHash(day.date(), seed);
 }
 
 #endif // SALEHISTORYDAY_H
