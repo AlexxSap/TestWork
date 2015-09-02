@@ -19,6 +19,7 @@
 #include "benchmarks/BenchmarkWriteRead.h"
 #include "benchmarks/BenchmarkAnalogsReader.h"
 #include "benchmarks/BenchmarkWriteReadWithAnalogs.h"
+#include "benchmarks/BenchmarkForComparingSqliteAndMysql.h"
 
 #include "DataBaseInfo.h"
 
@@ -33,7 +34,7 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    DataBaseInfo::setDataBaseType(DataBaseInfo::SQLITE);
+    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
 
     TestItemOperators testItemOperators;
     test += QTest::qExec(&testItemOperators);
@@ -78,38 +79,28 @@ int main()
 
     if(test == 0)
     {
-/*
-    Сравнение версий
-    SQLITE                                  MYSQL
-    BenchmarkWriteRead::run(720, 10, 10);
-    789    63
-    16MB (4MB) 15MB (1MB)
-    BenchmarkWriteRead::runForBuffer(1000000);
-    12971
-    255MB (239MB)
-    BenchmarkWriteReadWithAnalogs::run(720, 10, 100, 5, 10);
-    6944            3944
-    135MB (120MB)   17MB (2MB)
 
-*/
-        BenchmarkWriteRead::run(720, 10, 10);
+//        BenchmarkWriteRead::run(720, 10, 10);
 //        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 //        BenchmarkWriteRead::run(720, 10, 10000);
 
-//        BenchmarkWriteRead::run(30, 1, 100);
-//        BenchmarkWriteRead::run(90, 1, 100);
-//        BenchmarkWriteRead::run(30, 10, 100);
-//        BenchmarkWriteRead::run(30, 1, 1000);
-
-//        BenchmarkWriteRead::runForBuffer(100000);
+//        BenchmarkWriteRead::runForBuffer(1000000);
 //        BenchmarkWriteRead::runForBuffer(100000);
 //        BenchmarkWriteRead::runForBuffer(10000);
 
 //        BenchmarkAnalogsReader::run(5, 10);
 
-//        BenchmarkWriteReadWithAnalogs::run(720, 10, 100, 5, 10);
+//        BenchmarkWriteReadWithAnalogs::run(720, 10, 100, 5, 5);
 
+/*
+Сравнение версий
+SQLITE                                      MYSQL
+BenchmarkWriteRead::run(720, 10, 100);
+12886           647                         49501           825
+255MB (242MB)   17MB (2MB)                  255MB (241MB)   25MB (0MB)
+*/
+        BenchmarkForComparingSqliteAndMysql::run(720, 10, 100);
     }
     return test;
 #else
