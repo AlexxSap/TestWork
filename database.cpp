@@ -269,8 +269,10 @@ bool DataBase::remDataBase(const DataBaseInfo &info)
     default:
         break;
     }
+
+    const bool res = db->remove();
     db->disconnect();
-    return db->remove();
+    return res;
 }
 
 QPointer<DataBase> DataBase::getDataBase(const DataBaseInfo &info,

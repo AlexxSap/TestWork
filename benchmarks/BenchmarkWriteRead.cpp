@@ -67,8 +67,8 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                          + QString::number(storages)+ "_"
                          + QString::number(products)+ "_");
 
-    const QString dbName(prefix + "tdb");
-    const QString fileName(prefix + "testFile.csv");
+    const QString dbName(prefix + "_BRW_tdb");
+    const QString fileName(prefix + "_BRW_tf.csv");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
@@ -225,8 +225,8 @@ void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
 
     const Date fromDate = Date(2015, 1, 1);
     const Date toDate = fromDate.addDays(days - 1);
-    const QString dbName("tdb");
-    const QString fileName("testFile_buffer.csv");
+    const QString dbName("_BFB_tdb");
+    const QString fileName("_BFB_tf.csv");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);

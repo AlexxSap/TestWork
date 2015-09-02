@@ -25,7 +25,7 @@ void TestSaleHistory::testSaleHistoryByDate_data()
     QTest::addColumn<bool>("expValid");
     QTest::addColumn<SaleHistoryDay>("expDay");
 
-    QTest::newRow("good date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
+    QTest::newRow("good_date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
                                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.0, 50.0)
                                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 9), 12.3, 37.7)
                                    << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 10.3, 27.4))
@@ -36,7 +36,7 @@ void TestSaleHistory::testSaleHistoryByDate_data()
                                << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 9), 12.3, 37.7);
 
 
-    QTest::newRow("bad date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
+    QTest::newRow("bad_date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
                                   << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.0, 50.0)
                                   << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 9), 12.3, 37.7)
                                   << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 10.3, 27.4))
@@ -46,7 +46,7 @@ void TestSaleHistory::testSaleHistoryByDate_data()
                               << true
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 9), 12.3, 37.7);
 
-    QTest::newRow("wery bad date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
+    QTest::newRow("wery_bad_date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
                                        << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.0, 50.0)
                                        << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 9), 12.3, 37.7)
                                        << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 10.3, 27.4))
@@ -56,7 +56,7 @@ void TestSaleHistory::testSaleHistoryByDate_data()
                                    << false
                                    << SaleHistoryDay();
 
-    QTest::newRow("invalid date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
+    QTest::newRow("invalid_date") << (SaleHistory(Item(ID("storage1"), ID("product1")))
                                        << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 2, 28), 10.0, 50.0)
                                        << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 3, 1), 12.3, 37.7)
                                        << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 3, 2), 10.3, 27.4))

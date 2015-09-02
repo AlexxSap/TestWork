@@ -8,7 +8,7 @@ void BenchmarkAnalogsReader::run(const int &groupNum, const int &analogsNum)
 
     const QString fileName(QString::number(groupNum) + "_"
                            + QString::number(analogsNum) + "_"
-                           + "_BAR_TestFile.csv");
+                           + "_BAR_tf.csv");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);

@@ -46,7 +46,7 @@ void TAnalogsTable::TestAddAnalog_data()
                          << true;
 
 
-    QTest::newRow("not equal") << (AnalogsTable()
+    QTest::newRow("not_equal") << (AnalogsTable()
                                    << (Analogs("p01")
                                        << ID("p02")
                                        << ID("p03"))
@@ -145,7 +145,7 @@ void TAnalogsTable::TestAnalogsForProduct_data()
     QTest::addColumn<ID>("product");
     QTest::addColumn<Analogs>("expResult");
 
-    QTest::newRow("empty id") << (AnalogsTable()
+    QTest::newRow("empty_id") << (AnalogsTable()
                                   << (Analogs("p01")
                                       << ID("p02")
                                       << ID("p03"))
@@ -157,7 +157,7 @@ void TAnalogsTable::TestAnalogsForProduct_data()
                               << ID()
                               << Analogs();
 
-    QTest::newRow("empty table") << AnalogsTable()
+    QTest::newRow("empty_table") << AnalogsTable()
                                  << ID()
                                  << Analogs();
 
@@ -174,7 +174,7 @@ void TAnalogsTable::TestAnalogsForProduct_data()
                             << (Analogs("p11")
                                 << ID("p12"));
 
-    QTest::newRow("not found") << (AnalogsTable()
+    QTest::newRow("not_found") << (AnalogsTable()
                                    << (Analogs("p01")
                                        << ID("p02")
                                        << ID("p03"))

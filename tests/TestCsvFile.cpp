@@ -10,7 +10,7 @@ void TestCsvFile::testCsvFile()
     QFETCH(QList<SaleHistoryDay>, inData);
     QFETCH(QSet<SaleHistoryDay>, expData);
 
-    const QString fileName(QString(QTest::currentDataTag()) + "Test.csv");
+    const QString fileName(QString(QTest::currentDataTag()) + "tf.csv");
     const QString dbName(QString(QTest::currentDataTag()) + "tdb");
 
     DataBaseInfo info;
@@ -20,12 +20,12 @@ void TestCsvFile::testCsvFile()
 
     if(!TestUtility::removeFile(fileName))
     {
-        QFAIL("cannot remove test-file in begining of test");
+        QFAIL("cannot remove test-file in begin of test");
     }
 
     if(!DataBase::remDataBase(info))
     {
-        QFAIL("cannot remove test-db in begining of test");
+        QFAIL("cannot remove test-db in begin of test");
     }
 
     const bool isWrite = CsvFile::write(inData, fileName);
@@ -37,7 +37,6 @@ void TestCsvFile::testCsvFile()
     const QList<SaleHistoryDay> actData = CsvFile::read(fileName);
 
     QCOMPARE(actData.toSet(), expData);
-
     {
         SaleHistoryWriter writer(info);
         bool isWritedToDb = writer.importFromFile(fileName);
@@ -76,12 +75,12 @@ void TestCsvFile::testCsvFile()
 
     if(!DataBase::remDataBase(info))
     {
-        QFAIL("cannot remove test-db in begining of test");
+        QFAIL("cannot remove test-db in end of test");
     }
 
     if(!TestUtility::removeFile(fileName))
     {
-        QFAIL("cannot remove test-file in ending of test");
+        QFAIL("cannot remove test-file in end of test");
     }
 }
 

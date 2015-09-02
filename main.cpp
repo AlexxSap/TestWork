@@ -31,7 +31,7 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    DataBaseInfo::setDataBaseType(DataBaseInfo::SQLITE);
+    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
 
     TestItemOperators testItemOperators;
     test += QTest::qExec(&testItemOperators);

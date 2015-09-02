@@ -12,7 +12,7 @@ void TAnalogsFromFile::TestImportFromFile()
     QFETCH(AnalogsTable, expResult);
 
     const QString dbName(QString(QTest::currentDataTag()) + "tdb");
-    const QString fileName(QString(QTest::currentDataTag()) + "TestFile.csv");
+    const QString fileName(QString(QTest::currentDataTag()) + "tf.csv");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);
@@ -90,7 +90,7 @@ void TAnalogsFromFile::TestImportFromFile_data()
                                     << ID("прод03"))
                                 << Analogs("prod11_чавой?"));
 
-    QTest::newRow("empty str") << (QStringList()
+    QTest::newRow("empty_str") << (QStringList()
                                 << "prod01;prod02;прод03"
                                 << "prod11"
                                 << ""
@@ -104,7 +104,7 @@ void TAnalogsFromFile::TestImportFromFile_data()
                                     << ID("прод03"))
                                 << Analogs("prod11"));
 
-    QTest::newRow("id not found") << (QStringList()
+    QTest::newRow("id_not_found") << (QStringList()
                                 << "prod01;prod02;prod03"
                                 << "prod11"
                                 << "prod21;prod22;prod23;prod24")

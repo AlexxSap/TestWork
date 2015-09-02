@@ -55,6 +55,8 @@ bool MySqlDataBase::createEmptyDB()
             }
             if(!query.exec())
             {
+
+                qInfo() << query.lastError().text();
                 db.close();
                 return false;
             }
@@ -97,7 +99,36 @@ bool MySqlDataBase::createEmptyDB()
 
 bool MySqlDataBase::remove()
 {
+    if(!isExist())
+    {
+        return true;
+    }
+//    QString conn = "remConn";
+    bool exist = true;
+  //  {
+//        QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL", conn);
+//        db.setHostName(info_.hostName());
+//        db.setUserName(info_.userName());
+//        db.setPassword(info_.password());
+//        db.setDatabaseName(info_.dataBaseName());
 
+        if(!db_.open())
+        {
+            exist = false;
+        }
+        if(exist)
+        {
+            QSqlQuery query(db_);
+            QString req("drop database %1;");
+            if(!query.exec(req.arg(info_.dataBaseName())))
+            {
+                exist = false;
+            }
+        }
+   // }
+    //QSqlDatabase::removeDatabase(db_.connectionName());
+//    disconnect();
+    return exist;
 }
 
 bool MySqlDataBase::isExist()

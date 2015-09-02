@@ -18,7 +18,7 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
 
     const QString fileName(QString::number(analogsGroupNum) + "_"
                            + QString::number(analogsInGroupNum) + "_"
-                           + "_BARWA_TestFile.csv");
+                           + "_BARWA_tf.csv");
 
     DataBaseInfo info;
     info.setDataBaseName(dbName);

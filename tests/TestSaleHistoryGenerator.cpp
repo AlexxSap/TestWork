@@ -49,7 +49,7 @@ void TestSaleHistoryGenerator::testCompareData_data()
                          << 100
                          << true;
 
-    QTest::newRow("no 1") << (QList<SaleHistoryDay>()
+    QTest::newRow("no1") << (QList<SaleHistoryDay>()
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 14), -12.0, 50.0)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.3, 7.7)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 11.3, 27.4)
@@ -59,7 +59,7 @@ void TestSaleHistoryGenerator::testCompareData_data()
                           << 100
                           << false;
 
-    QTest::newRow("no 2") << (QList<SaleHistoryDay>()
+    QTest::newRow("no2") << (QList<SaleHistoryDay>()
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 14), 12.0, 50.0)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.3, 7.7)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 111.3, 27.4)
@@ -69,7 +69,7 @@ void TestSaleHistoryGenerator::testCompareData_data()
                           << 100
                           << false;
 
-    QTest::newRow("no 3") << (QList<SaleHistoryDay>()
+    QTest::newRow("no3") << (QList<SaleHistoryDay>()
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 14), 12.0, 50.0)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.3, 7.7)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 11.3, 27.4)
@@ -79,7 +79,7 @@ void TestSaleHistoryGenerator::testCompareData_data()
                           << 100
                           << false;
 
-    QTest::newRow("no 4") << (QList<SaleHistoryDay>()
+    QTest::newRow("no4") << (QList<SaleHistoryDay>()
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 14), 12.0, 50.0)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 8), 10.3, 7.7)
                               << SaleHistoryDay(Item(ID("storage1"), ID("product1")), Date(2015, 8, 11), 11.3, 127.4)
@@ -120,28 +120,28 @@ void TestSaleHistoryGenerator::testSaleHistoryGenerator_data()
     QTest::addColumn<int>("expNumber");
     QTest::addColumn<int>("maxVal");
 
-    QTest::newRow("gen test 1") << QDate(2015, 3, 1)
+    QTest::newRow("gen_test_1") << QDate(2015, 3, 1)
                                 << QDate(2015, 3, 10)
                                 << 3
                                 << 5
                                 << 3 * 5 * 10
                                 << 10000;
 
-    QTest::newRow("gen test 2") << QDate(2015, 2, 20)
+    QTest::newRow("gen_test_2") << QDate(2015, 2, 20)
                                 << QDate(2015, 3, 4)
                                 << 3
                                 << 15
                                 << 3 * 15 * 13
                                 << 1000;
 
-    QTest::newRow("wronge gen test") << QDate(2015, 3, 20)
+    QTest::newRow("wronge_gen_test") << QDate(2015, 3, 20)
                                      << QDate(2015, 3, 4)
                                      << 3
                                      << 15
                                      << 0
                                      << 1000;
 
-    QTest::newRow("invalid date") << QDate(2015, 2, 20)
+    QTest::newRow("invalid_date") << QDate(2015, 2, 20)
                                      << QDate(2015, 2, 29)
                                      << 0
                                      << 0

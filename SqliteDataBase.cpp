@@ -82,6 +82,7 @@ bool SqliteDataBase::createEmptyDB()
 
 bool SqliteDataBase::remove()
 {
+    disconnect();
     const QString fileName = info_.dataBaseName();
     if(QFile::exists(fileName))
     {
