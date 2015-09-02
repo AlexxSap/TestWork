@@ -2,7 +2,7 @@
 
 SaleHistoryWriter::SaleHistoryWriter(const DataBaseInfo &info)
     : db_(DataBase::getDataBase(info)),
-      bufferSize_(100000),
+      bufferSize_(1000000),
       queryForWrite_()
 {
     db_->connect();

@@ -210,34 +210,55 @@ bool MySqlDataBase::insertValueToTDatas(const QList<QVariantList> &data)
     }
     QSqlQuery query(db_);
 
-    QString request("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
-                    "values");
-    for(int j = 0; j < data.at(0).count() ; j++)
-    {
-        request += "(?, ?, ?, ?, ?),";
-    }
-
-    request = request.left(request.length() - 1);
-    request += ";";
-    query.prepare(request);
-
-    for(int k = 0; k < data.at(0).count(); k++)
-    {
-        query.addBindValue(data.at(0).at(k));
-        query.addBindValue(data.at(1).at(k));
-        query.addBindValue(data.at(2).at(k));
-        query.addBindValue(data.at(3).at(k));
-        query.addBindValue(data.at(4).at(k));
-    }
+    const int bufferSuzeMax = 2000;
+    int counter = 0;
+    const int dataSize = data.at(0).count();
     beginTransaction();
-    if(!query.exec())
-    {
-        qInfo() << query.lastError().text();
-        rollbackTransaction();
-        return false;
-    }
 
+    while(counter < dataSize)
+    {
+        int delta = 0;
+        if(counter + bufferSuzeMax <= dataSize)
+        {
+            delta = bufferSuzeMax;
+        }
+        else
+        {
+            delta = dataSize - counter;
+        }
+
+        QString request("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
+                        "values");
+
+        for(int j = counter; j < counter + delta ; j++)
+        {
+            request += "(?, ?, ?, ?, ?),";
+        }
+
+        request = request.left(request.length() - 1);
+        request += ";";
+        query.prepare(request);
+
+        for(int k = counter; k < counter + delta; k++)
+        {
+            query.addBindValue(data.at(0).at(k));
+            query.addBindValue(data.at(1).at(k));
+            query.addBindValue(data.at(2).at(k));
+            query.addBindValue(data.at(3).at(k));
+            query.addBindValue(data.at(4).at(k));
+        }
+
+        if(!query.exec())
+        {
+            qInfo() << query.lastError().text();
+            rollbackTransaction();
+            return false;
+        }
+
+        counter += delta;
+    }
     commitTransaction();
+
     return true;
 }
 

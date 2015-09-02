@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     benchmarks/BenchmarkWriteReadWithAnalogs.cpp \
     SqliteDataBase.cpp \
     DataBaseInfo.cpp \
-    MySqlDataBase.cpp
+    MySqlDataBase.cpp \
+    benchmarks/BenchmarkForComparingSqliteAndMysql.cpp
 
 HEADERS  += mainwindow.h \
     DataBase.h \
@@ -89,4 +90,5 @@ HEADERS  += mainwindow.h \
     benchmarks/BenchmarkWriteReadWithAnalogs.h \
     SqliteDataBase.h \
     DataBaseInfo.h \
-    MySqlDataBase.h
+    MySqlDataBase.h \
+    benchmarks/BenchmarkForComparingSqliteAndMysql.h

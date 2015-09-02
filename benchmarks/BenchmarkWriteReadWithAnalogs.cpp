@@ -119,13 +119,13 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
         const double sRead = Utils::_runBenchmarking("read");
         timer.start();
 
-                QList<SaleHistory> shList;
+//                QList<SaleHistory> shList;
         if(isOpen)
         {
             do
             {
                 const SaleHistory history = reader.current();
-                                shList.append(history);
+//                                shList.append(history);
             } while (reader.next());
         }
 
@@ -133,24 +133,6 @@ void BenchmarkWriteReadWithAnalogs::run(const int &days,
         Utils::_endBenchmarking("read", sRead);
         qInfo() << "read.............."
                 << readTime << "ms";
-
-        //-----сравнение результатов
-        QList<Item> actList;
-        foreach (const SaleHistory &history, shList)
-        {
-            if(!actList.contains(history.item()))
-            {
-                actList.append(history.item());
-            }
-        }
-        if(actList.toSet() != items.toSet())
-        {
-            qWarning() << "item lists not equal";
-            qWarning() << "writed list-------";
-            qWarning() << items;
-            qWarning() << "readed list-------";
-            qWarning() << actList;
-        }
     }
 
     if(!DataBase::remDataBase(info))

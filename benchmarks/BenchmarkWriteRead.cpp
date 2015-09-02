@@ -102,9 +102,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
         bool result = false;
         {
-
             const int monthCount = 2;
-
 
             for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
             {
@@ -152,14 +150,14 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
         const double sRead = Utils::_runBenchmarking("read");
         timer.start();
 
-        QList<SaleHistory> shList;
+//        QList<SaleHistory> shList;
         if(isOpen)
         {
             do
             {
                 const SaleHistory history = reader.current();
 //                qInfo() << history;
-                shList.append(history);
+//                shList.append(history);
             } while (reader.next());
         }
 
@@ -169,22 +167,22 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                 << readTime << "ms";
 
         //-----сравнение результатов
-        QList<Item> actList;
-        foreach (const SaleHistory &history, shList)
-        {
-            if(!actList.contains(history.item()))
-            {
-                actList.append(history.item());
-            }
-        }
-        if(actList.toSet() != items.toSet())
-        {
-            qWarning() << "item lists not equal";
-            qWarning() << "writed list-------";
-            qWarning() << items;
-            qWarning() << "readed list-------";
-            qWarning() << actList;
-        }
+//        QList<Item> actList;
+//        foreach (const SaleHistory &history, shList)
+//        {
+//            if(!actList.contains(history.item()))
+//            {
+//                actList.append(history.item());
+//            }
+//        }
+//        if(actList.toSet() != items.toSet())
+//        {
+//            qWarning() << "item lists not equal";
+//            qWarning() << "writed list-------";
+//            qWarning() << items;
+//            qWarning() << "readed list-------";
+//            qWarning() << actList;
+//        }
 
     }
         if(!DataBase::remDataBase(info))
