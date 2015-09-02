@@ -156,7 +156,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             do
             {
                 const SaleHistory history = reader.current();
-//                qInfo() << history;
 //                shList.append(history);
             } while (reader.next());
         }
