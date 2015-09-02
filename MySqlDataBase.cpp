@@ -73,8 +73,8 @@ bool MySqlDataBase::createEmptyDB()
                          "fStorage varchar(255) not null, "
                          "fProduct varchar(255) not null, "
                          "fDate date not null, "
-                         "fSold real not null, "
-                         "fRest real not null, "
+                         "fSold numeric(15,2) not null, "
+                         "fRest numeric(15,2) not null, "
                          "primary key(fStorage, fProduct, fDate));"))
         {
             return false;
@@ -103,31 +103,21 @@ bool MySqlDataBase::remove()
     {
         return true;
     }
-//    QString conn = "remConn";
     bool exist = true;
-  //  {
-//        QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL", conn);
-//        db.setHostName(info_.hostName());
-//        db.setUserName(info_.userName());
-//        db.setPassword(info_.password());
-//        db.setDatabaseName(info_.dataBaseName());
 
-        if(!db_.open())
+    if(!db_.open())
+    {
+        exist = false;
+    }
+    if(exist)
+    {
+        QSqlQuery query(db_);
+        QString req("drop database %1;");
+        if(!query.exec(req.arg(info_.dataBaseName())))
         {
             exist = false;
         }
-        if(exist)
-        {
-            QSqlQuery query(db_);
-            QString req("drop database %1;");
-            if(!query.exec(req.arg(info_.dataBaseName())))
-            {
-                exist = false;
-            }
-        }
-   // }
-    //QSqlDatabase::removeDatabase(db_.connectionName());
-//    disconnect();
+    }
     return exist;
 }
 

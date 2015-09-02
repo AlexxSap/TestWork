@@ -71,6 +71,7 @@ void TestCsvFile::testCsvFile()
         }
 
         QCOMPARE(days.toSet(), expData);
+
     }
 
     if(!DataBase::remDataBase(info))

@@ -27,6 +27,8 @@
 #include "mainwindow.h"
 #endif
 
+#include <QSqlDriver>
+
 int main()
 {   
 #ifdef TEST
@@ -72,9 +74,28 @@ int main()
     TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
     test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
 
+    qInfo() << "TEST RESULT = " << test;
+
     if(test == 0)
     {
-//        BenchmarkWriteRead::run(720, 10, 10);
+/*
+    Сравнение версий
+    SQLITE                                  MYSQL
+    BenchmarkWriteRead::run(720, 10, 10);
+    1884    63
+    16MB (4MB) 15MB (1MB)
+    BenchmarkWriteRead::runForBuffer(1000000);
+    12971
+    255MB (239MB)
+    BenchmarkAnalogsReader::run(5, 10);
+    173
+    16MB (1MB)
+    BenchmarkWriteReadWithAnalogs::run(20, 10, 10, 5, 5);
+    6944            3944
+    135MB (120MB)   17MB (2MB)
+
+*/
+        BenchmarkWriteRead::run(720, 10, 10);
 //        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 //        BenchmarkWriteRead::run(720, 10, 10000);
@@ -90,7 +111,7 @@ int main()
 
 //        BenchmarkAnalogsReader::run(5, 10);
 
-//        BenchmarkWriteReadWithAnalogs::run(20, 10, 10, 5, 5);
+//        BenchmarkWriteReadWithAnalogs::run(720, 5, 100, 5, 10);
 
     }
     return test;

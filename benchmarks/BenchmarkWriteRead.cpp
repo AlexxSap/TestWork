@@ -46,8 +46,8 @@
 на проверку каждой строки уходит примерно 1/4 часть времени
 изменение структуры запроса (введение временной таблицы(порядок сорт), сортировка по одному полю)
 процедура записи не менялась
-            14MB (3MB)                     14MB (2MB)                     15MB (2MB)
-            71                             662                            6249
+16MB (4MB)  14MB (3MB)                     14MB (2MB)                     15MB (2MB)
+1884        71                             662                            6249
 
 для 720/10/10000
 25 мин - 1 мин
@@ -87,57 +87,59 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
             << storages << " storages, "
             << products << " products";
 
-    //    if(!DataBase::remDataBase(info))
-    //    {
-    //        qWarning() << "cannot remove test-db in begin of benchmark";
-    //        return;
-    //    }
-    //    if(!TestUtility::removeFile(fileName))
-    //    {
-    //        qWarning() << "cannot remove test-file in begin of benchmark";
-    //        return;
-    //    }
+        if(!DataBase::remDataBase(info))
+        {
+            qWarning() << "cannot remove test-db in begin of benchmark";
+            return;
+        }
+        if(!TestUtility::removeFile(fileName))
+        {
+            qWarning() << "cannot remove test-file in begin of benchmark";
+            return;
+        }
 
     QElapsedTimer timer;
 
-    //    bool result = false;
-    //    {
-    //        const int monthCount = 2;
+        bool result = false;
+        {
+
+            const int monthCount = 2;
 
 
-    //        for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
-    //        {
-    //            const QList<SaleHistoryDay> list = SaleHistoryGenerator::generateHistory(date,
-    //                                                                   date.addMonths(monthCount),
-    //                                                                   storages,
-    //                                                                   products);
+            for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
+            {
+                const QList<SaleHistoryDay> list = SaleHistoryGenerator::generateHistory(date,
+                                                                       date.addMonths(monthCount),
+                                                                       storages,
+                                                                       products);
 
-    //            bool isWrited = CsvFile::write(list, fileName);
-    //            if(!isWrited)
-    //            {
-    //                DataBase::remDataBase(info);
-    //                TestUtility::removeFile(fileName);
-    //                qWarning() << "cannot write to file";
-    //                return;
-    //            }
-    //        }
+                bool isWrited = CsvFile::write(list, fileName);
+                if(!isWrited)
+                {
+                    DataBase::remDataBase(info);
+                    TestUtility::removeFile(fileName);
+                    qWarning() << "cannot write to file";
+                    return;
+                }
+            }
+            qInfo() << "writed to file";
 
-    //        SaleHistoryWriter writer(info);
-    //        timer.start();
-    //        const double sWrite = Utils::_runBenchmarking("write");
-    //        result = writer.importFromFile(fileName);
-    //        Utils::_endBenchmarking("write", sWrite);
-    //        writeTime = timer.elapsed();
+            SaleHistoryWriter writer(info);
+            timer.start();
+            const double sWrite = Utils::_runBenchmarking("write");
+            result = writer.importFromFile(fileName);
+            Utils::_endBenchmarking("write", sWrite);
+            writeTime = timer.elapsed();
 
-    //        qInfo() << "write............." << writeTime << "ms";
-    //    }
-    //    if(!result)
-    //    {
-    //        DataBase::remDataBase(info);
-    //        TestUtility::removeFile(fileName);
-    //        qWarning() << "cannot write data to db";
-    //        return;
-    //    }
+            qInfo() << "write............." << writeTime << "ms";
+        }
+        if(!result)
+        {
+            DataBase::remDataBase(info);
+            TestUtility::removeFile(fileName);
+            qWarning() << "cannot write data to db";
+            return;
+        }
 
     {
         const QList<Item> items = TestUtility::genRandomItemList(storages, products);
@@ -184,17 +186,17 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 //        }
 
     }
-    //    if(!DataBase::remDataBase(info))
-    //    {
-    //        qWarning() << "cannot remove test-db in end of benchmark";
-    //        return;
-    //    }
+        if(!DataBase::remDataBase(info))
+        {
+            qWarning() << "cannot remove test-db in end of benchmark";
+            return;
+        }
 
-    //    if(!TestUtility::removeFile(fileName))
-    //    {
-    //        qWarning() << "cannot remove test-file in end of benchmark";
-    //        return;
-    //    }
+        if(!TestUtility::removeFile(fileName))
+        {
+            qWarning() << "cannot remove test-file in end of benchmark";
+            return;
+        }
 
     qInfo() << "for 10000 products-------";
     writeTime = 10000/products * writeTime;
@@ -233,7 +235,7 @@ void BenchmarkWriteRead::runForBuffer(const int &bufferSize)
     info.setUserName("root");
     info.setPassword("1234");
 
-    qInfo() << "-------Benchmark for import from file -------";
+    qInfo() << "-------Benchmark for buffer -------";
     qInfo() << days << " days, "
             << storages << " storages, "
             << products << " products, "
