@@ -18,6 +18,7 @@ public:
     ~SqliteDataBase();
 
     bool isExist();
+    bool insertValueToTDatas(const QList<QVariantList> &data);
 };
 
 #endif // SQLITEDATABASE_H

@@ -272,6 +272,7 @@ bool DataBase::remDataBase(const DataBaseInfo &info)
 
     const bool res = db->remove();
     db->disconnect();
+    delete db;
     return res;
 }
 

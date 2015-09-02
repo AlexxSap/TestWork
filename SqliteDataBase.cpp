@@ -50,7 +50,6 @@ bool SqliteDataBase::createEmptyDB()
         executeQuery(db,"PRAGMA journal_mode = WAL;");
         executeQuery(db,"PRAGMA foreign_keys = ON;");
 
-
         if(!executeQuery(db, "create table tDatas("
                          "fStorage text not null, "
                          "fProduct text not null, "
@@ -96,4 +95,31 @@ bool SqliteDataBase::remove()
 bool SqliteDataBase::isExist()
 {
     return QFile::exists(info_.dataBaseName());
+}
+
+bool SqliteDataBase::insertValueToTDatas(const QList<QVariantList> &data)
+{
+    if(data.count() != 5)
+    {
+        return false;
+    }
+    QSqlQuery query(db_);
+    query.prepare("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
+                           "values(?, ?, ?, ?, ?);");
+
+    query.addBindValue(data.at(0));
+    query.addBindValue(data.at(1));
+    query.addBindValue(data.at(2));
+    query.addBindValue(data.at(3));
+    query.addBindValue(data.at(4));
+
+    beginTransaction();
+    if(!query.execBatch())
+    {
+        rollbackTransaction();
+        qInfo() << query.lastError().text();
+        return false;
+    }
+    commitTransaction();
+    return true;
 }

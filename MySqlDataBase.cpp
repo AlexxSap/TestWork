@@ -202,4 +202,43 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     return true;
 }
 
+bool MySqlDataBase::insertValueToTDatas(const QList<QVariantList> &data)
+{
+    if(data.count() != 5)
+    {
+        return false;
+    }
+    QSqlQuery query(db_);
+
+    QString request("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
+                    "values");
+    for(int j = 0; j < data.at(0).count() ; j++)
+    {
+        request += "(?, ?, ?, ?, ?),";
+    }
+
+    request = request.left(request.length() - 1);
+    request += ";";
+    query.prepare(request);
+
+    for(int k = 0; k < data.at(0).count(); k++)
+    {
+        query.addBindValue(data.at(0).at(k));
+        query.addBindValue(data.at(1).at(k));
+        query.addBindValue(data.at(2).at(k));
+        query.addBindValue(data.at(3).at(k));
+        query.addBindValue(data.at(4).at(k));
+    }
+    beginTransaction();
+    if(!query.exec())
+    {
+        qInfo() << query.lastError().text();
+        rollbackTransaction();
+        return false;
+    }
+
+    commitTransaction();
+    return true;
+}
+
 

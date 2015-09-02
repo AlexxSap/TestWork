@@ -50,6 +50,8 @@ public:
 
     QSqlQuery associatedQuery() const;
 
+    virtual bool insertValueToTDatas(const QList<QVariantList> &data) = 0;
+
     virtual bool createTempTableForAnalogsReader();
     virtual void dropTempTableForAnalogsReader();
 

@@ -20,6 +20,7 @@ public:
     bool isExist();
 
     bool createTempTableForSalesHistoryStreamReader();
+    bool insertValueToTDatas(const QList<QVariantList> &data);
 };
 
 #endif // MYSQLDATABASE_H
