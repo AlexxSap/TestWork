@@ -171,7 +171,6 @@ bool SqliteDataBase::insertValuesToTAnalogs(const AnalogsTable &table)
     if(!query.execBatch())
     {
         qInfo() << query.lastError().text();
-        qInfo() << query.executedQuery();
         rollbackTransaction();
         return false;
     }

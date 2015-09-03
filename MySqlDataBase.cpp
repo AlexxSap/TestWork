@@ -121,13 +121,11 @@ bool MySqlDataBase::remove()
     return exist;
 }
 
-bool MySqlDataBase::insertWithManyValues(const QString &beginOfRequest,
-                                         const QString &valuesRequet,
+bool MySqlDataBase::insertWithManyValues(const QString &tableDescr,
                                          const QList<QVariantList> &data)
 {
     if(data.count() == 0
-            || beginOfRequest.isEmpty()
-            || valuesRequet.isEmpty())
+            || tableDescr.isEmpty())
     {
         return false;
     }
@@ -136,6 +134,15 @@ bool MySqlDataBase::insertWithManyValues(const QString &beginOfRequest,
     const int bufferSuzeMax = 2000;
     int counter = 0;
     const int dataSize = data.at(0).count();
+
+    QString valuesRequet("(");
+    for(int i = 0; i < data.count(); i++)
+    {
+        valuesRequet += "?, ";
+    }
+    valuesRequet = valuesRequet.left(valuesRequet.length()-2);
+    valuesRequet += "),";
+
     beginTransaction();
 
     while(counter < dataSize)
@@ -150,7 +157,7 @@ bool MySqlDataBase::insertWithManyValues(const QString &beginOfRequest,
             delta = dataSize - counter;
         }
 
-        QString request(beginOfRequest);
+        QString request("insert into " + tableDescr + " values");
 
         for(int j = counter; j < counter + delta ; j++)
         {
@@ -311,10 +318,7 @@ bool MySqlDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
         }
     }
 
-    QString beginOfRequest("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
-                           "values");
-
-    QString valuesRequet("(?, ?, ?, ?, ?),");
+    QString tableDescr("tDatas(fStorage, fProduct, fDate, fSold, fRest)");
 
     QList<QVariantList> data;
     data << storageList
@@ -323,15 +327,12 @@ bool MySqlDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
          << soldList
          << restList;
 
-    return insertWithManyValues(beginOfRequest, valuesRequet, data);
+    return insertWithManyValues(tableDescr, data);
 }
 
 bool MySqlDataBase::insertValuesToTAnalogs(const AnalogsTable &table)
 {
-    QString beginOfRequest("insert into tAnalogs (fMain, fAnalog)  "
-                           "values");
-
-    QString valuesRequet("(?, ?),");
+    QString tableDescr("tAnalogs (fMain, fAnalog)");
 
     QVariantList mains;
     QVariantList anVarLits;
@@ -358,5 +359,5 @@ bool MySqlDataBase::insertValuesToTAnalogs(const AnalogsTable &table)
     data << mains
          << anVarLits;
 
-    return insertWithManyValues(beginOfRequest, valuesRequet, data);
+    return insertWithManyValues(tableDescr, data);
 }

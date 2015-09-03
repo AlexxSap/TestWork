@@ -10,8 +10,7 @@ private:
     bool remove();
 
 private:
-    bool insertWithManyValues(const QString &beginOfRequest,
-                              const QString &valuesRequet,
+    bool insertWithManyValues(const QString &tableDescr,
                               const QList<QVariantList> &data);
 
 public:

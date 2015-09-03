@@ -67,7 +67,7 @@ public:
 
     static bool remDataBase(const DataBaseInfo &info);
     static QPointer<DataBase> getDataBase(const DataBaseInfo &info,
-                                          const QString &connName = "qt_sql_default_connection");
+                                          const QString &connName = "def_conn");
 };
 
 #endif // DATABASE_H
