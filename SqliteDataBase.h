@@ -14,10 +14,10 @@ public:
     SqliteDataBase(const DataBaseInfo &info,
                    const QString &connName = "qt_sql_default_connection");
     SqliteDataBase(const DataBase &other);
-
     ~SqliteDataBase();
 
     bool isExist();
+
     bool insertValueToTDatas(const QList<QVariantList> &data);
 };
 

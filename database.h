@@ -46,10 +46,9 @@ public:
     bool disconnect();
     bool isConnected();
 
-    virtual bool isExist() = 0;
-
     QSqlQuery associatedQuery() const;
 
+    virtual bool isExist() = 0;
     virtual bool insertValueToTDatas(const QList<QVariantList> &data) = 0;
 
     virtual bool createTempTableForAnalogsReader();

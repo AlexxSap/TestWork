@@ -32,7 +32,7 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
+    DataBaseInfo::setDataBaseType(DataBaseInfo::SQLITE);
 
 //    TestItemOperators testItemOperators;
 //    test += QTest::qExec(&testItemOperators);
@@ -73,11 +73,10 @@ int main()
 //    TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
 //    test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
 
-    qInfo() << "TEST RESULT = " << test;
-
     if(test == 0)
     {
 //        BenchmarkWriteRead::run(720, 10, 10);
+
 //        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 //        BenchmarkWriteRead::run(720, 10, 10000);
@@ -98,6 +97,9 @@ BenchmarkWriteRead::run(720, 10, 100);
 */
         BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
         BenchmarkForComparingSqliteAndMysql::run(720, 10, 100);
+
+        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 10, 2, 2);
+        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 100, 5, 5);
     }
     return test;
 #else

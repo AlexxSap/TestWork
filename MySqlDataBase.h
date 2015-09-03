@@ -14,7 +14,6 @@ public:
     MySqlDataBase(const DataBaseInfo &info,
                   const QString &connName = "qt_sql_default_connection");
     MySqlDataBase(const DataBase &other);
-
     ~MySqlDataBase();
 
     bool isExist();
