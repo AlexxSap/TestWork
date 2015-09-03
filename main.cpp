@@ -28,8 +28,6 @@
 #include "mainwindow.h"
 #endif
 
-#include <QSqlDriver>
-
 int main()
 {   
 #ifdef TEST
@@ -95,7 +93,7 @@ BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
 1477           62                           6490           496
 16MB (4MB)     15MB (1MB)                   42MB (26MB)   17MB (0MB)
 BenchmarkWriteRead::run(720, 10, 100);
-12886           647                         54311           1088
+12886           647                         54311           801
 255MB (242MB)   17MB (2MB)                  255MB (241MB)   25MB (0MB)
 */
         BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
