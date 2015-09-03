@@ -108,17 +108,17 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     from_ = from;
     to_ = to;
 
-    fetchAnalogsTable();
+//    fetchAnalogsTable();
 
-    if(!db_->createTempTableForSalesHistoryStreamReader())
-    {
-        return false;
-    }
+//    if(!db_->createTempTableForSalesHistoryStreamReader())
+//    {
+//        return false;
+//    }
 
-    if(!fillTempItemsTable())
-    {
-        return false;
-    }
+//    if(!fillTempItemsTable())
+//    {
+//        return false;
+//    }
 
     query_ = db_->queryForSalesHistoryStreamReader(from_, to_);
 

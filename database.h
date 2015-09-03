@@ -32,8 +32,8 @@ protected:
 
 public:
     DataBase();
-    DataBase(const DataBaseInfo &info,
-             const QString &connName = "qt_sql_default_connection");
+    explicit DataBase(const DataBaseInfo &info,
+             const QString &connName = "def_conn");
     DataBase(const DataBase &other);
     virtual ~DataBase();
 
@@ -63,7 +63,7 @@ public:
     virtual QSqlQuery queryForAnalogsReader(const bool &forward = true);
     virtual QSqlQuery queryForSalesHistoryStreamReader(const QDate &from,
                                                        const QDate &to,
-                                                       const bool &forward = true);
+                                                       const bool &forward = true) = 0;
 
     static bool remDataBase(const DataBaseInfo &info);
     static QPointer<DataBase> getDataBase(const DataBaseInfo &info,

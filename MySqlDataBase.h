@@ -17,8 +17,8 @@ private:
 
 public:
     MySqlDataBase();
-    MySqlDataBase(const DataBaseInfo &info,
-                  const QString &connName = "qt_sql_default_connection");
+    explicit MySqlDataBase(const DataBaseInfo &info,
+                           const QString &connName = "qt_sql_default_connection");
     MySqlDataBase(const DataBase &other);
     ~MySqlDataBase();
 
@@ -29,6 +29,10 @@ public:
 
     bool createTempTableForSalesHistoryStreamReader();
     bool createTempTableForAnalogsReader();
+
+    QSqlQuery queryForSalesHistoryStreamReader(const QDate &from,
+                                                         const QDate &to,
+                                                         const bool &forward);
 };
 
 #endif // MYSQLDATABASE_H

@@ -82,6 +82,9 @@ bool MySqlDataBase::createEmptyDB()
             return false;
         }
 
+        executeQuery(db, "create index iDatas on tDatas"
+                         "(fStorage, fProduct, fDate);");
+
         if(!executeQuery(db, "create table tAnalogs("
                          "fMain varchar(255) not null, "
                          "fAnalog varchar(255) not null);"))
@@ -245,7 +248,7 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     QSqlQuery query(db_);
     db_.transaction();
 
-    if(!query.exec("create temporary table tTempItems("
+    if(!query.exec("create table tTempItems("
                    "fStorage varchar(255) not null, "
                    "fProduct varchar(255) not null, "
                    "fMainAn varchar(255));"))
@@ -255,7 +258,8 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
         return false;
     }
 
-    if(!query.exec("create temporary table tTempOrder("
+    //temporary
+    if(!query.exec("create table tTempOrder("
                    "fOrder integer auto_increment primary key, "
                    "fStorage varchar(255) not null, "
                    "fProduct varchar(255) not null, "
@@ -267,6 +271,9 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
         db_.rollback();
         return false;
     }
+
+    executeQuery(db_, "create index iTempOrder on tTempOrder"
+                     "(fOrder, fStorage, fProduct);");
 
     db_.commit();
 
@@ -293,6 +300,53 @@ bool MySqlDataBase::createTempTableForAnalogsReader()
     }
     db_.commit();
     return true;
+}
+
+QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
+{
+    QSqlQuery query(db_);
+    query.setForwardOnly(forward);
+
+    QString select("select tTempOrder.fStorage, "
+                   "tTempOrder.fProduct, "
+                   "tDatas.fDate, "
+                   "tDatas.fSold, "
+                   "tDatas.fRest "
+                   "from tTempOrder use index (iTempOrder) "
+                   "left outer join tDatas use index (iDatas) "
+                   "on tTempOrder.fStorage = tDatas.fStorage "
+                   "and tTempOrder.fProduct = tDatas.fProduct "
+                   "%1"
+                   "order by tTempOrder.fOrder;");
+
+    QString dateCase;
+    if(from != QDate() && to != QDate())
+    {
+        dateCase = "where (tDatas.fDate >= '%1' and "
+                   "tDatas.fDate <= '%2') "
+                   "or tDatas.fDate is null ";
+        dateCase = dateCase.arg(from.toString("yyyy.MM.dd"))
+                .arg(to.toString("yyyy.MM.dd"));
+    }
+    else if (from == QDate() && to != QDate())
+    {
+        dateCase = "where tDatas.fDate <= '%1' "
+                   "or tDatas.fDate is null ";
+        dateCase = dateCase.arg(to.toString("yyyy.MM.dd"));
+    }
+    else if (to == QDate() && from != QDate())
+    {
+        dateCase = "where tDatas.fDate >= '%1' "
+                   "or tDatas.fDate is null ";
+        dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
+    }
+    select = select.arg(dateCase);
+
+    if(query.prepare(select))
+    {
+        return query;
+    }
+    return QSqlQuery();
 }
 
 bool MySqlDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)

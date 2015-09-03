@@ -235,3 +235,50 @@ bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
 
     return true;
 }
+
+QSqlQuery SqliteDataBase::queryForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
+{
+    QSqlQuery query(db_);
+    query.setForwardOnly(forward);
+
+    QString select("select tTempOrder.fStorage, "
+                   "tTempOrder.fProduct, "
+                   "tDatas.fDate, "
+                   "tDatas.fSold, "
+                   "tDatas.fRest "
+                   "from tTempOrder "
+                   "left outer join tDatas "
+                   "on tTempOrder.fStorage = tDatas.fStorage "
+                   "and tTempOrder.fProduct = tDatas.fProduct "
+                   "%1"
+                   "order by tTempOrder.fOrder;");
+
+    QString dateCase;
+    if(from != QDate() && to != QDate())
+    {
+        dateCase = "where (tDatas.fDate >= '%1' and "
+                   "tDatas.fDate <= '%2') "
+                   "or tDatas.fDate is null ";
+        dateCase = dateCase.arg(from.toString("yyyy.MM.dd"))
+                .arg(to.toString("yyyy.MM.dd"));
+    }
+    else if (from == QDate() && to != QDate())
+    {
+        dateCase = "where tDatas.fDate <= '%1' "
+                   "or tDatas.fDate is null ";
+        dateCase = dateCase.arg(to.toString("yyyy.MM.dd"));
+    }
+    else if (to == QDate() && from != QDate())
+    {
+        dateCase = "where tDatas.fDate >= '%1' "
+                   "or tDatas.fDate is null ";
+        dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
+    }
+    select = select.arg(dateCase);
+
+    if(query.prepare(select))
+    {
+        return query;
+    }
+    return QSqlQuery();
+}
