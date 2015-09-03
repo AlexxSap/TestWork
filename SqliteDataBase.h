@@ -10,6 +10,9 @@ private:
     bool createEmptyDB();
     bool remove();
 
+private:
+    void init(const QString &connName);
+
 public:
     SqliteDataBase();
     SqliteDataBase(const DataBaseInfo &info,

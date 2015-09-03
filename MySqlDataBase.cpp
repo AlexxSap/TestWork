@@ -6,24 +6,26 @@ MySqlDataBase::MySqlDataBase()
 
 }
 
+
+void MySqlDataBase::init(const QString &connName)
+{
+    db_ = QSqlDatabase::addDatabase("QMYSQL", connName);
+    db_.setDatabaseName(info_.dataBaseName());
+    db_.setUserName(info_.userName());
+    db_.setPassword(info_.password());
+}
+
 MySqlDataBase::MySqlDataBase(const DataBaseInfo &info,
                              const QString &connName)
     :DataBase(info, connName)
 {
-    db_ = QSqlDatabase::addDatabase("QMYSQL", connName);
-    db_.setDatabaseName(info.dataBaseName());
-    db_.setUserName(info.userName());
-    db_.setPassword(info.password());
+    init(connName);
 }
 
 MySqlDataBase::MySqlDataBase(const DataBase &other)
     :DataBase(other)
 {
-    db_ = QSqlDatabase::addDatabase("QMYSQL",
-                                    other.connectionName());
-    db_.setDatabaseName(info_.dataBaseName());
-    db_.setUserName(info_.userName());
-    db_.setPassword(info_.password());
+    init(other.connectionName());
 }
 
 MySqlDataBase::~MySqlDataBase()

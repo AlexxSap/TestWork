@@ -9,7 +9,9 @@ private:
     bool createEmptyDB();
     bool remove();
 
+
 private:
+    void init(const QString &connName);
     bool insertWithManyValues(const QString &tableDescr,
                               const QList<QVariantList> &data);
 

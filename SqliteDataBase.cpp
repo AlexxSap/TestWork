@@ -6,20 +6,24 @@ SqliteDataBase::SqliteDataBase()
 
 }
 
+
+void SqliteDataBase::init(const QString &connName)
+{
+    db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
+    db_.setDatabaseName(info_.dataBaseName());
+}
+
 SqliteDataBase::SqliteDataBase(const DataBaseInfo &info,
                                const QString &connName)
     :DataBase(info, connName)
 {
-    db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
-    db_.setDatabaseName(info.dataBaseName());
+    init(connName);
 }
 
 SqliteDataBase::SqliteDataBase(const DataBase &other)
     :DataBase(other)
 {
-    db_ = QSqlDatabase::addDatabase("QSQLITE",
-                                    other.connectionName());
-    db_.setDatabaseName(info_.dataBaseName());
+    init(other.connectionName());
 }
 
 SqliteDataBase::~SqliteDataBase()
@@ -120,7 +124,7 @@ bool SqliteDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
 
     QSqlQuery query(db_);
     query.prepare("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
-                           "values(?, ?, ?, ?, ?);");
+                  "values(?, ?, ?, ?, ?);");
 
     query.addBindValue(storageList);
     query.addBindValue(productList);
