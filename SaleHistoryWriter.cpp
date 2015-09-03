@@ -22,30 +22,31 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         return true;
     }
 
-    QVariantList storageList;
-    QVariantList productList;
-    QVariantList dateList;
-    QVariantList soldList;
-    QVariantList restList;
+//    QVariantList storageList;
+//    QVariantList productList;
+//    QVariantList dateList;
+//    QVariantList soldList;
+//    QVariantList restList;
 
-    for(int j = 0; j <  days.count() ; j++)
-    {
-        const SaleHistoryDay day = days.at(j);
-        if(day.isValid())
-        {
-            storageList << day.item().storage();
-            productList << day.item().product();
-            dateList << day.date().toString("yyyy.MM.dd");
-            soldList << day.sold();
-            restList << day.rest();
-        }
-    }
+//    for(int j = 0; j <  days.count() ; j++)
+//    {
+//        const SaleHistoryDay day = days.at(j);
+//        if(day.isValid())
+//        {
+//            storageList << day.item().storage();
+//            productList << day.item().product();
+//            dateList << day.date().toString("yyyy.MM.dd");
+//            soldList << day.sold();
+//            restList << day.rest();
+//        }
+//    }
 
-    return db_->insertValueToTDatas(QList<QVariantList>() << storageList
-                                 << productList
-                                 << dateList
-                                 << soldList
-                                 << restList);
+    return db_->insertValuesToTDatas(days);
+//    return db_->insertValuesToTDatas(QList<QVariantList>() << storageList
+//                                     << productList
+//                                     << dateList
+//                                     << soldList
+//                                     << restList);
 }
 
 bool SaleHistoryWriter::checkFile(const QString &fileName)

@@ -13,6 +13,8 @@
 #include <QDebug>
 
 #include "DataBaseInfo.h"
+#include "AnalogsTable.h"
+#include "SaleHistoryDay.h"
 
 class DataBase : public QObject
 {
@@ -49,12 +51,13 @@ public:
     QSqlQuery associatedQuery() const;
 
     virtual bool isExist() = 0;
-    virtual bool insertValueToTDatas(const QList<QVariantList> &data) = 0;
+    virtual bool insertValuesToTDatas(const QList<SaleHistoryDay> &days) = 0;
+    virtual bool insertValuesToTAnalogs(const AnalogsTable &table) = 0;
 
-    virtual bool createTempTableForAnalogsReader();
+    virtual bool createTempTableForAnalogsReader() = 0;
     virtual void dropTempTableForAnalogsReader();
 
-    virtual bool createTempTableForSalesHistoryStreamReader();
+    virtual bool createTempTableForSalesHistoryStreamReader() = 0;
     virtual void dropTempTableForSalesHistoryStreamReader();
 
     virtual QSqlQuery queryForAnalogsReader(const bool &forward = true);

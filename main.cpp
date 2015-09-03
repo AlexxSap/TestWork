@@ -32,46 +32,46 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    DataBaseInfo::setDataBaseType(DataBaseInfo::SQLITE);
+    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
 
-//    TestItemOperators testItemOperators;
-//    test += QTest::qExec(&testItemOperators);
+    TestItemOperators testItemOperators;
+    test += QTest::qExec(&testItemOperators);
 
-//    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
-//    test += QTest::qExec(&testSaleHistoryDayOperators);
+    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
+    test += QTest::qExec(&testSaleHistoryDayOperators);
 
-//    TestSaleHistory testSaleHistory;
-//    test += QTest::qExec(&testSaleHistory);
+    TestSaleHistory testSaleHistory;
+    test += QTest::qExec(&testSaleHistory);
 
-//    TestSaleHistoryGenerator testSaleHistoryGenerator;
-//    test += QTest::qExec(&testSaleHistoryGenerator);
+    TestSaleHistoryGenerator testSaleHistoryGenerator;
+    test += QTest::qExec(&testSaleHistoryGenerator);
 
-//    TestSaleHistoryParser testSaleHistoryParser;
-//    test += QTest::qExec(&testSaleHistoryParser);
+    TestSaleHistoryParser testSaleHistoryParser;
+    test += QTest::qExec(&testSaleHistoryParser);
 
-//    TestCsvFile testCsvFile;
-//    test += QTest::qExec(&testCsvFile);
+    TestCsvFile testCsvFile;
+    test += QTest::qExec(&testCsvFile);
 
-//    TAnalogs tAnalogs;
-//    test += QTest::qExec(&tAnalogs);
+    TAnalogs tAnalogs;
+    test += QTest::qExec(&tAnalogs);
 
-//    TAnalogsTable tAnalogsTable;
-//    test += QTest::qExec(&tAnalogsTable);
+    TAnalogsTable tAnalogsTable;
+    test += QTest::qExec(&tAnalogsTable);
 
-//    TAnalogsReader tAnalogsReader;
-//    test += QTest::qExec(&tAnalogsReader);
+    TAnalogsReader tAnalogsReader;
+    test += QTest::qExec(&tAnalogsReader);
 
-//    TAnalogsFromFile tAnalogsFromFile;
-//    test += QTest::qExec(&tAnalogsFromFile);
+    TAnalogsFromFile tAnalogsFromFile;
+    test += QTest::qExec(&tAnalogsFromFile);
 
-//    TAnalogsTableGenerator tAnalogsTableGenerator;
-//    test += QTest::qExec(&tAnalogsTableGenerator);
+    TAnalogsTableGenerator tAnalogsTableGenerator;
+    test += QTest::qExec(&tAnalogsTableGenerator);
 
-//    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-//    test += QTest::qExec(&testSalesHistoryStreamReader);
+    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+    test += QTest::qExec(&testSalesHistoryStreamReader);
 
-//    TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
-//    test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
+    TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
+    test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
 
     if(test == 0)
     {
@@ -98,8 +98,8 @@ BenchmarkWriteRead::run(720, 10, 100);
         BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
         BenchmarkForComparingSqliteAndMysql::run(720, 10, 100);
 
-        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 10, 2, 2);
-        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 100, 5, 5);
+//        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 10, 2, 2);
+//        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 100, 5, 5);
     }
     return test;
 #else

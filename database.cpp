@@ -61,7 +61,6 @@ bool DataBase::connect()
             return false;
         }
     }
-
     return db_.open();
 }
 
@@ -115,28 +114,6 @@ const QString DataBase::connectionName() const
     return connectionName_;
 }
 
-bool DataBase::createTempTableForAnalogsReader()
-{
-    QSqlQuery query(db_);
-    db_.transaction();
-    if(!query.exec("create temporary table if not exists tTempIdMain("
-                   "fMain text, "
-                   "fId text);"))
-    {
-        db_.rollback();
-        return false;
-    }
-
-    if(!query.exec("create temporary table if not exists tTempIds("
-                   "fId text not null);"))
-    {
-        db_.rollback();
-        return false;
-    }
-    db_.commit();
-    return true;
-}
-
 void DataBase::dropTempTableForAnalogsReader()
 {
     QSqlQuery query(db_);
@@ -144,38 +121,6 @@ void DataBase::dropTempTableForAnalogsReader()
     query.exec("drop table if exists tTempIds;");
     query.exec("drop table if exists tTempIdMain;");
     db_.commit();
-}
-
-bool DataBase::createTempTableForSalesHistoryStreamReader()
-{
-    QSqlQuery query(db_);
-    db_.transaction();
-
-    if(!query.exec("create temporary table tTempItems("
-                   "fStorage text not null, "
-                   "fProduct text not null, "
-                   "fMainAn text);"))
-    {
-        qInfo()  << "cannot create temp table tTempItems";
-        db_.rollback();
-        return false;
-    }
-
-    if(!query.exec("create temporary table tTempOrder("
-                   "fOrder integer primary key asc autoincrement, "
-                   "fStorage text not null, "
-                   "fProduct text not null, "
-                   "fMainAn text, "
-                   "unique(fStorage, fProduct));"))
-    {
-        qInfo()  << "cannot create temp table tTempOrder";
-        db_.rollback();
-        return false;
-    }
-
-    db_.commit();
-
-    return true;
 }
 
 void DataBase::dropTempTableForSalesHistoryStreamReader()

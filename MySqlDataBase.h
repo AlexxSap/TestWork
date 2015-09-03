@@ -9,6 +9,11 @@ private:
     bool createEmptyDB();
     bool remove();
 
+private:
+    bool insertWithManyValues(const QString &beginOfRequest,
+                              const QString &valuesRequet,
+                              const QList<QVariantList> &data);
+
 public:
     MySqlDataBase();
     MySqlDataBase(const DataBaseInfo &info,
@@ -18,8 +23,11 @@ public:
 
     bool isExist();
 
+    bool insertValuesToTDatas(const QList<SaleHistoryDay> &days);
+    bool insertValuesToTAnalogs(const AnalogsTable &table);
+
     bool createTempTableForSalesHistoryStreamReader();
-    bool insertValueToTDatas(const QList<QVariantList> &data);
+    bool createTempTableForAnalogsReader();
 };
 
 #endif // MYSQLDATABASE_H

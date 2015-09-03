@@ -97,21 +97,36 @@ bool SqliteDataBase::isExist()
     return QFile::exists(info_.dataBaseName());
 }
 
-bool SqliteDataBase::insertValueToTDatas(const QList<QVariantList> &data)
+bool SqliteDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
 {
-    if(data.count() != 5)
+    QVariantList storageList;
+    QVariantList productList;
+    QVariantList dateList;
+    QVariantList soldList;
+    QVariantList restList;
+
+    for(int j = 0; j <  days.count() ; j++)
     {
-        return false;
+        const SaleHistoryDay day = days.at(j);
+        if(day.isValid())
+        {
+            storageList << day.item().storage();
+            productList << day.item().product();
+            dateList << day.date().toString("yyyy.MM.dd");
+            soldList << day.sold();
+            restList << day.rest();
+        }
     }
+
     QSqlQuery query(db_);
     query.prepare("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
                            "values(?, ?, ?, ?, ?);");
 
-    query.addBindValue(data.at(0));
-    query.addBindValue(data.at(1));
-    query.addBindValue(data.at(2));
-    query.addBindValue(data.at(3));
-    query.addBindValue(data.at(4));
+    query.addBindValue(storageList);
+    query.addBindValue(productList);
+    query.addBindValue(dateList);
+    query.addBindValue(soldList);
+    query.addBindValue(restList);
 
     beginTransaction();
     if(!query.execBatch())
@@ -121,5 +136,99 @@ bool SqliteDataBase::insertValueToTDatas(const QList<QVariantList> &data)
         return false;
     }
     commitTransaction();
+    return true;
+}
+
+bool SqliteDataBase::insertValuesToTAnalogs(const AnalogsTable &table)
+{
+    const QList<Analogs> anList = table.toList();
+    if(anList.isEmpty())
+    {
+        return true;
+    }
+
+    QSqlQuery query(db_);
+    query.prepare("insert into tAnalogs (fMain, fAnalog) "
+                  "values(?, ?);");
+
+    QVariantList mains;
+    QVariantList anVarLits;
+
+    foreach(const Analogs &an, anList)
+    {
+        const ID mainAn = an.mainAnalog();
+        const QList<ID> analogs = an.toList();
+        foreach (const ID &id, analogs)
+        {
+            mains << mainAn;
+            anVarLits << id;
+        }
+    }
+    query.addBindValue(mains);
+    query.addBindValue(anVarLits);
+
+    beginTransaction();
+    if(!query.execBatch())
+    {
+        qInfo() << query.lastError().text();
+        qInfo() << query.executedQuery();
+        rollbackTransaction();
+        return false;
+    }
+    commitTransaction();
+    return true;
+}
+
+bool SqliteDataBase::createTempTableForAnalogsReader()
+{
+    QSqlQuery query(db_);
+    db_.transaction();
+    if(!query.exec("create temporary table if not exists tTempIdMain("
+                   "fMain text, "
+                   "fId text);"))
+    {
+        db_.rollback();
+        return false;
+    }
+
+    if(!query.exec("create temporary table if not exists tTempIds("
+                   "fId text not null);"))
+    {
+        db_.rollback();
+        return false;
+    }
+    db_.commit();
+    return true;
+}
+
+bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
+{
+    QSqlQuery query(db_);
+    db_.transaction();
+
+    if(!query.exec("create temporary table tTempItems("
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text);"))
+    {
+        qInfo()  << "cannot create temp table tTempItems";
+        db_.rollback();
+        return false;
+    }
+
+    if(!query.exec("create temporary table tTempOrder("
+                   "fOrder integer primary key asc autoincrement, "
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text, "
+                   "unique(fStorage, fProduct));"))
+    {
+        qInfo()  << "cannot create temp table tTempOrder";
+        db_.rollback();
+        return false;
+    }
+
+    db_.commit();
+
     return true;
 }

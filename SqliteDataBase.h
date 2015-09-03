@@ -3,6 +3,7 @@
 
 #include "DataBase.h"
 
+
 class SqliteDataBase : public DataBase
 {
 private:
@@ -18,7 +19,11 @@ public:
 
     bool isExist();
 
-    bool insertValueToTDatas(const QList<QVariantList> &data);
+    bool insertValuesToTDatas(const QList<SaleHistoryDay> &days);
+    bool insertValuesToTAnalogs(const AnalogsTable &table);
+
+    bool createTempTableForAnalogsReader();
+    bool createTempTableForSalesHistoryStreamReader();
 };
 
 #endif // SQLITEDATABASE_H
