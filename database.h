@@ -48,10 +48,14 @@ public:
     bool disconnect();
     bool isConnected();
 
+    const QHash<int, Item>& itemsHashTable();
+
     QSqlQuery associatedQuery() const;
 
     virtual bool isExist() = 0;
-    virtual bool insertValuesToTDatas(const QList<SaleHistoryDay> &days) = 0;
+    virtual bool insertValuesToTDatas(const QList<SaleHistoryDay> &days,
+                                      const QHash<int, Item> &items,
+                                      const QHash<int, Item> &newItems) = 0;
     virtual bool insertValuesToTAnalogs(const AnalogsTable &table) = 0;
 
     virtual bool createTempTableForAnalogsReader() = 0;

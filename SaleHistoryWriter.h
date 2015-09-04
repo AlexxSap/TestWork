@@ -18,11 +18,14 @@ private:
     QPointer<DataBase> db_;
     int bufferSize_;
     QSqlQuery queryForWrite_;
-//    QHash<int, Item> itemTable_;
-//    QHash<int, Item> deltaItemTable_;
+    QHash<int, Item> items_;
+    QHash<int, Item> newItems_;
+    bool isFromFile_;
 
 private:
     bool checkFile(const QString &fileName);
+    void fillItemsHashTable();
+    void prepareHashTables(const QList<SaleHistoryDay> &days);
 
 public:
     explicit SaleHistoryWriter(const DataBaseInfo &info);

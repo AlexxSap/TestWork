@@ -79,6 +79,27 @@ bool DataBase::isConnected()
     return db_.isOpen();
 }
 
+const QHash<int, Item> &DataBase::itemsHashTable()
+{
+    QSqlQuery query(db_);
+    query.setForwardOnly(true);
+    if(!query.exec("select fItem, fStorage, fProduct from tItems;"))
+    {
+        qWarning() << query.lastError();
+        return QHash<int, Item>();
+    }
+
+    QHash<int, Item> items;
+    while(query.next())
+    {
+        const int id = query.value(0).toInt();
+        const ID storage = query.value(1).toString();
+        const ID product = query.value(2).toString();
+        items.insert(id, Item(storage, product));
+    }
+    return items;
+}
+
 QSqlQuery DataBase::associatedQuery() const
 {
     return QSqlQuery(db_);

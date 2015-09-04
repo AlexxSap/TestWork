@@ -3,7 +3,10 @@
 SaleHistoryWriter::SaleHistoryWriter(const DataBaseInfo &info)
     : db_(DataBase::getDataBase(info)),
       bufferSize_(1000000),
-      queryForWrite_()
+      queryForWrite_(),
+      items_(),
+      newItems_(),
+      isFromFile_(false)
 {
     db_->connect();
     queryForWrite_ = db_->associatedQuery();
@@ -15,13 +18,38 @@ SaleHistoryWriter::~SaleHistoryWriter()
     delete db_;
 }
 
+
+void SaleHistoryWriter::prepareHashTables(const QList<SaleHistoryDay> &days)
+{
+    QList<int> keys = items_.keys();
+    qSort(keys);
+    int max = keys.last() + 1;
+    foreach (const SaleHistoryDay &day, days)
+    {
+        const int id = items_.key(day.item(), -1);
+        if(id == -1)
+        {
+            items_.insert(max, day.item());
+            newItems_.insert(max, day.item());
+            max++;
+        }
+    }
+}
+
 bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
 {
     if(days.count() == 0)
     {
         return true;
     }
-    return db_->insertValuesToTDatas(days);
+
+    if(!isFromFile_)
+    {
+        fillItemsHashTable();
+    }
+    prepareHashTables(days);
+
+    return db_->insertValuesToTDatas(days, items_, newItems_);
 }
 
 bool SaleHistoryWriter::checkFile(const QString &fileName)
@@ -56,12 +84,21 @@ bool SaleHistoryWriter::checkFile(const QString &fileName)
     return true;
 }
 
+void SaleHistoryWriter::fillItemsHashTable()
+{
+    items_ = db_->itemsHashTable();
+}
+
 bool SaleHistoryWriter::importFromFile(const QString &fileName)
 {
+    isFromFile_ = true;
+
     if(!checkFile(fileName))
     {
         return false;
     }
+
+    fillItemsHashTable();
 
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly))

@@ -114,12 +114,13 @@ bool SqliteDataBase::insertToTItems(const QHash<int, Item> &newItems)
 {
     const QList<int> keys = newItems.keys();
 
-    QVariantList keyList(keys);
+    QVariantList keyList;
     QVariantList storageList;
     QVariantList productList;
 
     foreach (const int &key, keys)
     {
+        keyList << key;
         const Item item =  newItems.value(key);
         storageList << item.storage();
         productList << item.product();
