@@ -39,16 +39,12 @@ DataBase::~DataBase()
 bool DataBase::executeQuery(QSqlDatabase &db, const QString &request)
 {
     QSqlQuery query(db);
-    //    db.transaction();
     bool res = query.exec(request);
     if(!res)
     {
-        qInfo() << query.lastQuery();
         qInfo() << query.lastError().text();
-        //        db.rollback();
         return false;
     }
-    //    db.commit();
     return res;
 }
 
@@ -125,11 +121,15 @@ void DataBase::dropTempTableForAnalogsReader()
 
 void DataBase::dropTempTableForSalesHistoryStreamReader()
 {
-//    QSqlQuery query(db_);
-//    db_.transaction();
-//    query.exec("drop table if exists tTempItems;");
-//    query.exec("drop table if exists tTempOrder;");
-//    db_.commit();
+    QSqlQuery query(db_);
+    query.exec("drop table if exists tTempItems;");
+    query.exec("drop table if exists tTempOrder;");
+}
+
+void DataBase::dropTempTableItemsForSalesHistoryStreamReader()
+{
+    QSqlQuery query(db_);
+    query.exec("drop table if exists tTempItems;");
 }
 
 QSqlQuery DataBase::queryForAnalogsReader(const bool &forward)

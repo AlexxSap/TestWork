@@ -54,13 +54,22 @@ bool SqliteDataBase::createEmptyDB()
         executeQuery(db,"PRAGMA journal_mode = WAL;");
         executeQuery(db,"PRAGMA foreign_keys = ON;");
 
-        if(!executeQuery(db, "create table tDatas("
+        if(!executeQuery(db, "create table tItems("
+                         "f_item integer primary key asc, "
                          "fStorage text not null, "
                          "fProduct text not null, "
+                         "unique(fStorage, fProduct));"))
+        {
+            return false;
+        }
+
+        if(!executeQuery(db, "create table tDatas("
+                         "fItem integer, "
                          "fDate real not null, "
                          "fSold real not null, "
                          "fRest real not null, "
-                         "primary key(fStorage, fProduct, fDate));"))
+                         "primary key(fItem, fDate), "
+                         "foreign key(fItem) references tItems(fItem));"))
         {
             return false;
         }

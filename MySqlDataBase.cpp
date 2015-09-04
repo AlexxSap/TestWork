@@ -71,13 +71,22 @@ bool MySqlDataBase::createEmptyDB()
             return false;
         }
 
-        if(!executeQuery(db, "create table tDatas("
+        if(!executeQuery(db, "create table tItems("
+                         "fItem integer primary key asc, "
                          "fStorage text not null, "
                          "fProduct text not null, "
+                         "unique(fStorage, fProduct));"))
+        {
+            return false;
+        }
+
+        if(!executeQuery(db, "create table tDatas("
+                         "fItem integer, "
                          "fDate date not null, "
                          "fSold numeric(15,2) not null, "
                          "fRest numeric(15,2) not null, "
-                         "primary key(fStorage, fProduct, fDate));"))
+                         "primary key(fItem, fDate), "
+                         "foreign key(fItem) references tItems(fItem));"))
         {
             return false;
         }

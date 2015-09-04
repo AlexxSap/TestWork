@@ -92,7 +92,7 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         db_->dropTempTableForSalesHistoryStreamReader();
         return false;
     }
-
+    db_->dropTempTableItemsForSalesHistoryStreamReader();
     db_->commitTransaction();
     return true;
 }
