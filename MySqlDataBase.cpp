@@ -72,10 +72,9 @@ bool MySqlDataBase::createEmptyDB()
         }
 
         if(!executeQuery(db, "create table tItems("
-                         "fItem integer primary key asc, "
+                         "fItem integer primary key, "
                          "fStorage text not null, "
-                         "fProduct text not null, "
-                         "unique(fStorage, fProduct));"))
+                         "fProduct text not null);"))
         {
             return false;
         }
@@ -258,7 +257,7 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     db_.transaction();
 
     //temporary
-    if(!query.exec("create temporary table tTempItems("
+    if(!query.exec("create table tTempItems("
                    "fItem integer not null, "
                    "fMainAn text);"))
     {
@@ -268,7 +267,7 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     }
 
     //temporary
-    if(!query.exec("create temporary table tTempOrder("
+    if(!query.exec("create table tTempOrder("
                    "fOrder integer auto_increment primary key, "
                    "fItem integer not null, "
                    "fMainAn text);"))
@@ -292,15 +291,15 @@ bool MySqlDataBase::createTempTableForAnalogsReader()
     QSqlQuery query(db_);
     db_.transaction();
     if(!query.exec("create temporary table if not exists tTempIdMain("
-                   "fMain varchar(255), "
-                   "fId varchar(255));"))
+                   "fMain text, "
+                   "fId text);"))
     {
         db_.rollback();
         return false;
     }
 
     if(!query.exec("create temporary table if not exists tTempIds("
-                   "fId varchar(255) not null);"))
+                   "fId text not null);"))
     {
         db_.rollback();
         return false;
@@ -314,15 +313,16 @@ QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, con
     QSqlQuery query(db_);
     query.setForwardOnly(forward);
 
-    QString select("select tTempOrder.fStorage, "
-                   "tTempOrder.fProduct, "
+    QString select("select tItems.fStorage, "
+                   "tItems.fProduct, "
                    "tDatas.fDate, "
                    "tDatas.fSold, "
                    "tDatas.fRest "
-                   "from tTempOrder "
-                   "left outer join tDatas "
-                   "on tTempOrder.fStorage = tDatas.fStorage "
-                   "and tTempOrder.fProduct = tDatas.fProduct "
+                   "from tTempOrder use index (iTempOrder) "
+                   "left outer join tItems "
+                   "on tItems.fItem = tTempOrder.fItem "
+                   "left outer join tDatas use index (iDatas2) "
+                   "on tTempOrder.fItem = tDatas.fItem "
                    "%1"
                    "order by tTempOrder.fOrder;");
 
@@ -348,7 +348,7 @@ QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, con
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
     }
     select = select.arg(dateCase);
-//    qInfo() << select;
+    qInfo() << select;
 
     if(query.prepare(select))
     {

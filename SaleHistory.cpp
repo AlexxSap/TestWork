@@ -265,7 +265,7 @@ void SaleHistory::normalaze(const Date &nFrom,
 
     days_ = normalazeData(days_, nFrom, nTo);
 
-    if(analoglist_.isEmpty())
+    if(analoglist_.isEmpty() && mainAnalog.isEmpty())
     {
         return;
     }

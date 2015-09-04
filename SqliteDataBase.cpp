@@ -292,15 +292,16 @@ QSqlQuery SqliteDataBase::queryForSalesHistoryStreamReader(const QDate &from, co
     QSqlQuery query(db_);
     query.setForwardOnly(forward);
 
-    QString select("select tTempOrder.fStorage, "
-                   "tTempOrder.fProduct, "
+    QString select("select tItems.fStorage, "
+                   "tItems.fProduct, "
                    "tDatas.fDate, "
                    "tDatas.fSold, "
                    "tDatas.fRest "
                    "from tTempOrder "
+                   "left outer join tItems "
+                   "on tItems.fItem = tTempOrder.fItem "
                    "left outer join tDatas "
-                   "on tTempOrder.fStorage = tDatas.fStorage "
-                   "and tTempOrder.fProduct = tDatas.fProduct "
+                   "on tTempOrder.fItem = tDatas.fItem "
                    "%1"
                    "order by tTempOrder.fOrder;");
 

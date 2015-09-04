@@ -48,7 +48,8 @@ public:
     bool disconnect();
     bool isConnected();
 
-    const QHash<int, Item>& itemsHashTable();
+    QHash<int, Item> itemsHashTable();
+    virtual bool insertToTItems(const QHash<int, Item> &newItems) = 0;
 
     QSqlQuery associatedQuery() const;
 

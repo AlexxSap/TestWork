@@ -79,7 +79,7 @@ bool DataBase::isConnected()
     return db_.isOpen();
 }
 
-const QHash<int, Item> &DataBase::itemsHashTable()
+QHash<int, Item> DataBase::itemsHashTable()
 {
     QSqlQuery query(db_);
     query.setForwardOnly(true);
@@ -142,15 +142,15 @@ void DataBase::dropTempTableForAnalogsReader()
 
 void DataBase::dropTempTableForSalesHistoryStreamReader()
 {
-    QSqlQuery query(db_);
-    query.exec("drop table if exists tTempItems;");
-    query.exec("drop table if exists tTempOrder;");
+//    QSqlQuery query(db_);
+//    query.exec("drop table if exists tTempItems;");
+//    query.exec("drop table if exists tTempOrder;");
 }
 
 void DataBase::dropTempTableItemsForSalesHistoryStreamReader()
 {
-    QSqlQuery query(db_);
-    query.exec("drop table if exists tTempItems;");
+//    QSqlQuery query(db_);
+//    query.exec("drop table if exists tTempItems;");
 }
 
 QSqlQuery DataBase::queryForAnalogsReader(const bool &forward)

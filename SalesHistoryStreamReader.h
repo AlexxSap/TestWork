@@ -25,12 +25,13 @@ private:
 
 private:
     bool fillTempItemsTable();
-    void fillInsLists(QVariantList &ids,
-                      QVariantList &main) const;
+    bool fillInsLists(QVariantList &ids,
+                      QVariantList &main);
     void addDayToTempHistory();
     bool isCanReturnHistory(const Item &item) const;
     void fetchAnalogsTable();
     void normalazeTempHistory();
+    QHash<int, Item> insertNewItemsToTItems(const QList<Item> &newItems);
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items,

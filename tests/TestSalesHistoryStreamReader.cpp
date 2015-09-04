@@ -55,7 +55,6 @@ void TestSalesHistoryStreamReader::testSalesHistoryStreamReader()
     {
         QFAIL("cannot remove test-db in ending of test");
     }
-
     QCOMPARE(actList.toSet(), expList);
 }
 

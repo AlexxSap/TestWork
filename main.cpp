@@ -76,7 +76,7 @@ int main()
     if(test == 0)
     {
 //        BenchmarkWriteRead::run(720, 10, 10);
-        BenchmarkWriteRead::run(720, 10, 100);
+//        BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 //        BenchmarkWriteRead::run(720, 10, 10000);
 
@@ -93,9 +93,19 @@ BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
 BenchmarkWriteRead::run(720, 10, 100);
 13886           647                         54311           801
 255MB (242MB)   17MB (1MB)                  255MB (241MB)   25MB (0MB)
+
+с отображением
+BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
+                                            5758            391
+                                            15MB (2MB)      15MB (1MB)
+BenchmarkWriteRead::run(720, 10, 100);
+                                            62361           932
+                                            235MB (220MB)   25MB (10MB)
+
+
 */
 //        BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
-//        BenchmarkForComparingSqliteAndMysql::run(720, 10, 100);
+        BenchmarkForComparingSqliteAndMysql::run(720, 10, 100);
 
 //        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 10, 2, 2);
 //        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 100, 5, 5);

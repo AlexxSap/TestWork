@@ -65,7 +65,6 @@ void TSalesHistoryReaderWithAnalogs::TestSalesHistoryReaderWithAnalogs()
     {
         QFAIL("cannot remove test-db in end of test");
     }
-
     QCOMPARE(actResult.toSet(), expResult);
 }
 
