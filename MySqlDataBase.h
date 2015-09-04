@@ -14,6 +14,7 @@ private:
     void init(const QString &connName);
     bool insertWithManyValues(const QString &tableDescr,
                               const QList<QVariantList> &data);
+    bool insertToTItems(const QHash<int, Item> &newItems);
 
 public:
     MySqlDataBase();
@@ -24,7 +25,9 @@ public:
 
     bool isExist();
 
-    bool insertValuesToTDatas(const QList<SaleHistoryDay> &days);
+    bool insertValuesToTDatas(const QList<SaleHistoryDay> &days,
+                              const QHash<int, Item> &items,
+                              const QHash<int, Item> &newItems);
     bool insertValuesToTAnalogs(const AnalogsTable &table);
 
     bool createTempTableForSalesHistoryStreamReader();

@@ -360,14 +360,46 @@ QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, con
     return QSqlQuery();
 }
 
-bool MySqlDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
+bool MySqlDataBase::insertToTItems(const QHash<int, Item> &newItems)
+{
+    const QList<int> keys = newItems.keys();
+
+    QVariantList keyList(keys);
+    QVariantList storageList;
+    QVariantList productList;
+
+    foreach (const int &key, keys)
+    {
+        const Item item =  newItems.value(key);
+        storageList << item.storage();
+        productList << item.product();
+    }
+
+    QString tableDescr("tItems(fItem, fStorage, fProduct)");
+
+    QList<QVariantList> data;
+    data << keyList
+         << storageList
+         << productList;
+
+    return insertWithManyValues(tableDescr, data);
+
+}
+
+bool MySqlDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days,
+                                         const QHash<int, Item> &items,
+                                         const QHash<int, Item> &newItems)
 {
     if(days.count() == 0)
     {
         return true;
     }
-    QVariantList storageList;
-    QVariantList productList;
+    if(!insertToTItems(newItems))
+    {
+        return false;
+    }
+
+    QVariantList idList;
     QVariantList dateList;
     QVariantList soldList;
     QVariantList restList;
@@ -377,19 +409,18 @@ bool MySqlDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
         const SaleHistoryDay day = days.at(j);
         if(day.isValid())
         {
-            storageList << day.item().storage();
-            productList << day.item().product();
+            const int id = items.key(day.item());
+            idList << id;
             dateList << day.date().toString("yyyy.MM.dd");
             soldList << day.sold();
             restList << day.rest();
         }
     }
 
-    QString tableDescr("tDatas(fStorage, fProduct, fDate, fSold, fRest)");
+    QString tableDescr("tDatas(fItem, fDate, fSold, fRest)");
 
     QList<QVariantList> data;
-    data << storageList
-         << productList
+    data << idList
          << dateList
          << soldList
          << restList;

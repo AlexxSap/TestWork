@@ -55,7 +55,7 @@ bool SqliteDataBase::createEmptyDB()
         executeQuery(db,"PRAGMA foreign_keys = ON;");
 
         if(!executeQuery(db, "create table tItems("
-                         "f_item integer primary key asc, "
+                         "fItem integer primary key asc, "
                          "fStorage text not null, "
                          "fProduct text not null, "
                          "unique(fStorage, fProduct));"))
@@ -110,10 +110,55 @@ bool SqliteDataBase::isExist()
     return QFile::exists(info_.dataBaseName());
 }
 
-bool SqliteDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
+bool SqliteDataBase::insertToTItems(const QHash<int, Item> &newItems)
 {
+    const QList<int> keys = newItems.keys();
+
+    QVariantList keyList(keys);
     QVariantList storageList;
     QVariantList productList;
+
+    foreach (const int &key, keys)
+    {
+        const Item item =  newItems.value(key);
+        storageList << item.storage();
+        productList << item.product();
+    }
+
+    QSqlQuery query(db_);
+    query.prepare("insert into tItems(fItem, fStorage, fProduct) "
+                  "values(?, ?, ?);");
+
+    query.addBindValue(keyList);
+    query.addBindValue(storageList);
+    query.addBindValue(productList);
+
+    beginTransaction();
+    if(!query.execBatch())
+    {
+        rollbackTransaction();
+        qInfo() << query.lastError().text();
+        return false;
+    }
+    commitTransaction();
+    return true;
+
+}
+
+bool SqliteDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days,
+                                          const QHash<int, Item> &items,
+                                          const QHash<int, Item> &newItems)
+{
+    if(days.count() == 0)
+    {
+        return true;
+    }
+    if(!insertToTItems(newItems))
+    {
+        return false;
+    }
+
+    QVariantList idList;
     QVariantList dateList;
     QVariantList soldList;
     QVariantList restList;
@@ -123,8 +168,8 @@ bool SqliteDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
         const SaleHistoryDay day = days.at(j);
         if(day.isValid())
         {
-            storageList << day.item().storage();
-            productList << day.item().product();
+            const int id = items.key(day.item());
+            idList << id;
             dateList << day.date().toString("yyyy.MM.dd");
             soldList << day.sold();
             restList << day.rest();
@@ -132,11 +177,10 @@ bool SqliteDataBase::insertValuesToTDatas(const QList<SaleHistoryDay> &days)
     }
 
     QSqlQuery query(db_);
-    query.prepare("insert into tDatas(fStorage, fProduct, fDate, fSold, fRest) "
-                  "values(?, ?, ?, ?, ?);");
+    query.prepare("insert into tDatas(fItem, fDate, fSold, fRest) "
+                  "values(?, ?, ?, ?);");
 
-    query.addBindValue(storageList);
-    query.addBindValue(productList);
+    query.addBindValue(idList);
     query.addBindValue(dateList);
     query.addBindValue(soldList);
     query.addBindValue(restList);
