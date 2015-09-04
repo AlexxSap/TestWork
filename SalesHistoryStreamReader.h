@@ -20,12 +20,12 @@ private:
     SaleHistory tempHistory_;
     bool isCanNext_;
     AnalogsTable analogsTable_;
+    QHash<int, Item> itemsHashTable_;
 
 
 private:
     bool fillTempItemsTable();
-    void fillInsLists(QVariantList &stor,
-                      QVariantList &prod,
+    void fillInsLists(QVariantList &ids,
                       QVariantList &main) const;
     void addDayToTempHistory();
     bool isCanReturnHistory(const Item &item) const;

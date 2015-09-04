@@ -9,9 +9,11 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       to_(),
       tempHistory_(),
       isCanNext_(false),
-      analogsTable_()
+      analogsTable_(),
+      itemsHashTable_()
 {
     db_->connect();
+    itemsHashTable_ = db_->itemsHashTable();
 }
 
 SalesHistoryStreamReader::~SalesHistoryStreamReader()
@@ -20,31 +22,39 @@ SalesHistoryStreamReader::~SalesHistoryStreamReader()
     delete db_;
 }
 
-void SalesHistoryStreamReader::fillInsLists(QVariantList &stor,
-                                            QVariantList &prod,
+void SalesHistoryStreamReader::fillInsLists(QVariantList &ids,
                                             QVariantList &main) const
 {
     const bool isAnalogs = analogsTable_.isValid();
 
     foreach (const Item &item, items_)
     {
-        const ID product = item.product();
         const ID storage = item.storage();
-        stor << storage;
-        prod << product;
+        const ID product = item.product();
+        const int id = itemsHashTable_.key(Item(storage, product), -1);
+        if(id != -1)    // если такого товара нет, то и искать его мы не будем...
+        {
+            ids << id;
+        }
 
         if(isAnalogs)
         {
             const Analogs analogs =analogsTable_.analogsForProduct(product);
             const ID mainAn = analogs.mainAnalog();
-            main << mainAn;
-
+            if(id != -1)
+            {
+                main << mainAn;
+            }
+            // ... но аналоги посмотрим...
             const QList<ID> analogsIDs = analogs.toList();
             foreach (const ID &temp, analogsIDs)
             {
-                stor << storage;
-                prod << temp;
-                main << mainAn;
+                const int tempId = itemsHashTable_.key(Item(storage, temp), -1);;
+                if(tempId != -1)    //... те которые есть
+                {
+                    ids << tempId;
+                    main << mainAn;
+                }
             }
         }
         else
@@ -56,17 +66,15 @@ void SalesHistoryStreamReader::fillInsLists(QVariantList &stor,
 
 bool SalesHistoryStreamReader::fillTempItemsTable()
 {
-    QVariantList storageList;
-    QVariantList productList;
+    QVariantList idList;
     QVariantList mainAnList;
 
-    fillInsLists(storageList, productList, mainAnList);
+    fillInsLists(idList, mainAnList);
 
     QSqlQuery query = db_->associatedQuery();
-    query.prepare("insert into tTempItems(fStorage, fProduct, fMainAn) "
-                  "values (?, ?, ?);");
-    query.addBindValue(storageList);
-    query.addBindValue(productList);
+    query.prepare("insert into tTempItems(fItem, fMainAn) "
+                  "values (?, ?);");
+    query.addBindValue(idList);
     query.addBindValue(mainAnList);
 
     db_->beginTransaction();
@@ -74,17 +82,15 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
     {
         db_->rollbackTransaction();
         qInfo() << query.lastError().text();
-        qInfo() << query.lastQuery();
         db_->dropTempTableForSalesHistoryStreamReader();
         return false;
     }
 
-    if(!query.exec("insert into tTempOrder(fStorage, fProduct, fMainAn) "
-                  "select distinct fStorage, fProduct, fMainAn "
+    if(!query.exec("insert into tTempOrder(fItem, fMainAn) "
+                  "select distinct fItem, fMainAn "
                    "from tTempItems "
                    "order by  tTempItems.fMainAn, "
-                   "tTempItems.fStorage, "
-                   "tTempItems.fProduct;"))
+                   "tTempItems.fItem;"))
     {
         db_->rollbackTransaction();
         qInfo() << query.lastError().text();

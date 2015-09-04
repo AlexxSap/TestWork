@@ -264,8 +264,7 @@ bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
     db_.transaction();
 
     if(!query.exec("create temporary table tTempItems("
-                   "fStorage text not null, "
-                   "fProduct text not null, "
+                   "fItem integer not null, "
                    "fMainAn text);"))
     {
         qInfo()  << "cannot create temp table tTempItems";
@@ -275,10 +274,8 @@ bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
 
     if(!query.exec("create temporary table tTempOrder("
                    "fOrder integer primary key asc autoincrement, "
-                   "fStorage text not null, "
-                   "fProduct text not null, "
-                   "fMainAn text, "
-                   "unique(fStorage, fProduct));"))
+                   "fItem integer not null, "
+                   "fMainAn text);"))
     {
         qInfo()  << "cannot create temp table tTempOrder";
         db_.rollback();
