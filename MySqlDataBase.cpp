@@ -72,8 +72,8 @@ bool MySqlDataBase::createEmptyDB()
         }
 
         if(!executeQuery(db, "create table tDatas("
-                         "fStorage varchar(255) not null, "
-                         "fProduct varchar(255) not null, "
+                         "fStorage text not null, "
+                         "fProduct text not null, "
                          "fDate date not null, "
                          "fSold numeric(15,2) not null, "
                          "fRest numeric(15,2) not null, "
@@ -82,19 +82,19 @@ bool MySqlDataBase::createEmptyDB()
             return false;
         }
 
-        executeQuery(db, "create index iDatas on tDatas"
-                         "(fStorage, fProduct, fDate);");
+//        executeQuery(db, "create unique index iDatas on tDatas"
+//                         "(fStorage, fProduct, fDate);");
 
         if(!executeQuery(db, "create table tAnalogs("
-                         "fMain varchar(255) not null, "
-                         "fAnalog varchar(255) not null);"))
+                         "fMain text not null, "
+                         "fAnalog text not null);"))
         {
             return false;
         }
-        executeQuery(db, "create index iAnalogsAnalog on tAnalogs"
-                         "(fAnalog);");
-        executeQuery(db, "create index iAnalogsMain on tAnalogs"
-                         "(fMain);");
+//        executeQuery(db, "create index iAnalogsAnalog on tAnalogs"
+//                         "(fAnalog);");
+//        executeQuery(db, "create index iAnalogsMain on tAnalogs"
+//                         "(fMain);");
         db.close();
     }
     QSqlDatabase::removeDatabase(connName);
@@ -248,10 +248,11 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     QSqlQuery query(db_);
     db_.transaction();
 
-    if(!query.exec("create table tTempItems("
-                   "fStorage varchar(255) not null, "
-                   "fProduct varchar(255) not null, "
-                   "fMainAn varchar(255));"))
+    //temporary
+    if(!query.exec("create temporary table tTempItems("
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text);"))
     {
         qInfo()  << "cannot create temp table tTempItems";
         db_.rollback();
@@ -259,11 +260,11 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     }
 
     //temporary
-    if(!query.exec("create table tTempOrder("
+    if(!query.exec("create temporary table tTempOrder("
                    "fOrder integer auto_increment primary key, "
-                   "fStorage varchar(255) not null, "
-                   "fProduct varchar(255) not null, "
-                   "fMainAn varchar(255), "
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text, "
                    "unique(fStorage, fProduct));"))
     {
         qInfo()  << "cannot create temp table tTempOrder";
@@ -272,8 +273,8 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
         return false;
     }
 
-    executeQuery(db_, "create index iTempOrder on tTempOrder"
-                     "(fOrder, fStorage, fProduct);");
+//    executeQuery(db_, "create index iTempOrder on tTempOrder"
+//                     "(fOrder, fStorage, fProduct);");
 
     db_.commit();
 
@@ -312,8 +313,8 @@ QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, con
                    "tDatas.fDate, "
                    "tDatas.fSold, "
                    "tDatas.fRest "
-                   "from tTempOrder use index (iTempOrder) "
-                   "left outer join tDatas use index (iDatas) "
+                   "from tTempOrder "
+                   "left outer join tDatas "
                    "on tTempOrder.fStorage = tDatas.fStorage "
                    "and tTempOrder.fProduct = tDatas.fProduct "
                    "%1"
@@ -341,6 +342,7 @@ QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, con
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
     }
     select = select.arg(dateCase);
+//    qInfo() << select;
 
     if(query.prepare(select))
     {

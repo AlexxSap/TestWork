@@ -6,6 +6,7 @@
 #include <QTextCodec>
 #include <QDebug>
 #include <QRegExp>
+//#include <QHash>
 
 #include "SaleHistoryDay.h"
 #include "DataBase.h"
@@ -17,6 +18,8 @@ private:
     QPointer<DataBase> db_;
     int bufferSize_;
     QSqlQuery queryForWrite_;
+//    QHash<int, Item> itemTable_;
+//    QHash<int, Item> deltaItemTable_;
 
 private:
     bool checkFile(const QString &fileName);

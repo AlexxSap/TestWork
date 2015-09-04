@@ -75,7 +75,7 @@ int main()
 
     if(test == 0)
     {
-        BenchmarkWriteRead::run(720, 10, 10);
+//        BenchmarkWriteRead::run(720, 10, 10);
         BenchmarkWriteRead::run(720, 10, 100);
 //        BenchmarkWriteRead::run(720, 10, 1000);
 //        BenchmarkWriteRead::run(720, 10, 10000);
