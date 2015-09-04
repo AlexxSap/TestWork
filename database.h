@@ -67,7 +67,7 @@ public:
     virtual void dropTempTableItemsForSalesHistoryStreamReader();
 
     virtual QSqlQuery queryForAnalogsReader(const bool &forward = true);
-    virtual QSqlQuery queryForSalesHistoryStreamReader(const QDate &from,
+    virtual QString selectForSalesHistoryStreamReader(const QDate &from,
                                                        const QDate &to,
                                                        const bool &forward = true) = 0;
 

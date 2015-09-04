@@ -183,27 +183,20 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 //        return false;
 //    }
 
-    query_ = db_->queryForSalesHistoryStreamReader(from_, to_);
+    QString select = db_->selectForSalesHistoryStreamReader(from_, to_);
+//    qInfo() << select;
+//    query_ = db_->associatedQuery();
+//    query_->setForwardOnly(true);
 
-    if(!query_.exec())
-    {
-        qWarning() << query_.lastError().text();
-        return false;
-    }
+    QSqlQuery query = db_->associatedQuery();
 
-//    QSqlQuery query = db_->associatedQuery();
-//    qInfo() << 1;
-//    qInfo() << query.exec("select tItems.fStorage, "
-//                          "tItems.fProduct, "
-//                          "tDatas.fDate, "
-//                          "tDatas.fSold, "
-//                          "tDatas.fRest "
-//                          "from tTempOrder "
-//                          "left outer join tItems "
-//                          "on tItems.fItem = tTempOrder.fItem "
-//                          "left outer join tDatas "
-//                          "on tTempOrder.fItem = tDatas.fItem "
-//                          "order by tTempOrder.fOrder;");
+//    if(!query.exec(select))
+//    {
+//        qWarning() << query.lastError().text();
+//               return false;
+//    }
+
+//    QList<QStringList> lst;
 //    while(query.next())
 //    {
 //        const QSqlRecord rec = query.record();
@@ -212,17 +205,25 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 //        {
 //            val << rec.value(i).toString();
 //        }
-//        qInfo() << val;
+//        lst << val;
 //    }
+//    query_ = &query;
 
-    if(!query_.next())
+    if(!query.exec(select))
     {
+        qWarning() << query.lastError().text();
         return false;
     }
 
+    if(!query.next())
+    {
+        return false;
+    }
+    query_ = &query;
+
     isCanNext_ = true;
-    tempHistory_ = SaleHistory(Item(query_.value(0).toString(),
-                                    query_.value(1).toString()));
+    tempHistory_ = SaleHistory(Item(query_->value(0).toString(),
+                                    query_->value(1).toString()));
     addDayToTempHistory();
 
     return true;
@@ -243,11 +244,11 @@ bool SalesHistoryStreamReader::next()
 
 void SalesHistoryStreamReader::addDayToTempHistory()
 {
-    const Item item(query_.value(0).toString(),
-                    query_.value(1).toString());
-    const QVariant date = query_.value(2);
-    const QVariant sold = query_.value(3);
-    const QVariant rest = query_.value(4);
+    const Item item(query_->value(0).toString(),
+                    query_->value(1).toString());
+    const QVariant date = query_->value(2);
+    const QVariant sold = query_->value(3);
+    const QVariant rest = query_->value(4);
 
     if(!date.isNull() && !sold.isNull() && !rest.isNull())
     {
@@ -301,10 +302,12 @@ void SalesHistoryStreamReader::normalazeTempHistory()
 
 SaleHistory SalesHistoryStreamReader::current()
 {
-    while(query_.next())
+    qInfo() << "current";
+    while((*query_).next())
     {
-        const Item tempItemp(query_.value(0).toString(),
-                             query_.value(1).toString());
+        qInfo() << "newxt";
+        const Item tempItemp(query_->value(0).toString(),
+                             query_->value(1).toString());
         if(isCanReturnHistory(tempItemp))
         {
             normalazeTempHistory();

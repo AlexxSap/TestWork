@@ -257,7 +257,7 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     db_.transaction();
 
     //temporary
-    if(!query.exec("create table tTempItems("
+    if(!query.exec("create temporary table tTempItems("
                    "fItem integer not null, "
                    "fMainAn text);"))
     {
@@ -267,7 +267,7 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     }
 
     //temporary
-    if(!query.exec("create table tTempOrder("
+    if(!query.exec("create temporary table tTempOrder("
                    "fOrder integer auto_increment primary key, "
                    "fItem integer not null, "
                    "fMainAn text);"))
@@ -308,20 +308,17 @@ bool MySqlDataBase::createTempTableForAnalogsReader()
     return true;
 }
 
-QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
+QString MySqlDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
 {
-    QSqlQuery query(db_);
-    query.setForwardOnly(forward);
-
     QString select("select tItems.fStorage, "
                    "tItems.fProduct, "
                    "tDatas.fDate, "
                    "tDatas.fSold, "
                    "tDatas.fRest "
-                   "from tTempOrder use index (iTempOrder) "
+                   "from tTempOrder "
                    "left outer join tItems "
                    "on tItems.fItem = tTempOrder.fItem "
-                   "left outer join tDatas use index (iDatas2) "
+                   "left outer join tDatas "
                    "on tTempOrder.fItem = tDatas.fItem "
                    "%1"
                    "order by tTempOrder.fOrder;");
@@ -348,13 +345,7 @@ QSqlQuery MySqlDataBase::queryForSalesHistoryStreamReader(const QDate &from, con
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
     }
     select = select.arg(dateCase);
-    qInfo() << select;
-
-    if(query.prepare(select))
-    {
-        return query;
-    }
-    return QSqlQuery();
+    return select;
 }
 
 bool MySqlDataBase::insertToTItems(const QHash<int, Item> &newItems)

@@ -33,7 +33,7 @@ public:
     bool createTempTableForSalesHistoryStreamReader();
     bool createTempTableForAnalogsReader();
 
-    QSqlQuery queryForSalesHistoryStreamReader(const QDate &from,
+    QString selectForSalesHistoryStreamReader(const QDate &from,
                                                          const QDate &to,
                                                          const bool &forward);
 };

@@ -287,11 +287,8 @@ bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
     return true;
 }
 
-QSqlQuery SqliteDataBase::queryForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
+QString SqliteDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
 {
-    QSqlQuery query(db_);
-    query.setForwardOnly(forward);
-
     QString select("select tItems.fStorage, "
                    "tItems.fProduct, "
                    "tDatas.fDate, "
@@ -328,9 +325,5 @@ QSqlQuery SqliteDataBase::queryForSalesHistoryStreamReader(const QDate &from, co
     }
     select = select.arg(dateCase);
 
-    if(query.prepare(select))
-    {
-        return query;
-    }
-    return QSqlQuery();
+    return select;
 }
