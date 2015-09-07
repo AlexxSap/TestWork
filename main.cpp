@@ -32,7 +32,34 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
+
+//    QSqlDatabase db_ = QSqlDatabase::addDatabase("QMYSQL3");
+//    db_.setDatabaseName("720_10_100__brw_tdb");
+//    db_.setUserName("root");
+//    db_.setPassword("1234");
+
+//    qInfo() << db_.open();
+
+//    QSqlQuery q(db_);
+//    q.setForwardOnly(true);
+//    qInfo() << q.prepare("select fItem, fDate, fSold, fRest from tDatas;");
+//    const double sExec = Utils::_runBenchmarking("exec");
+//    qInfo() << q.exec();
+//    Utils::_endBenchmarking("exec", sExec);
+//    while(q.next())
+//    {}
+
+
+
+//    db_.close();
+
+
+
+
+
+
+
+//    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
 
 //    TestItemOperators testItemOperators;
 //    test += QTest::qExec(&testItemOperators);
@@ -101,11 +128,14 @@ BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
 BenchmarkWriteRead::run(720, 10, 100);
                                             62361           932
                                             235MB (220MB)   25MB (10MB)
-
+BenchmarkForComparingSqliteAndMysql::run(720, 10, 1000);
+                                            3195323         41558
+                                            320MB (306MB)   116MB (99MB)
 
 */
 //        BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
         BenchmarkForComparingSqliteAndMysql::run(720, 10, 100);
+        BenchmarkForComparingSqliteAndMysql::run(720, 10, 1000);
 
 //        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 10, 2, 2);
 //        BenchmarkForComparingSqliteAndMysql::runWithAnalogs(720, 10, 100, 5, 5);

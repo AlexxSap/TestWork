@@ -21,6 +21,7 @@ SaleHistoryWriter::~SaleHistoryWriter()
 
 void SaleHistoryWriter::prepareHashTables(const QList<SaleHistoryDay> &days)
 {
+    newItems_.clear();
     QList<int> keys = items_.keys();
     qSort(keys);
     int max = keys.last() + 1;

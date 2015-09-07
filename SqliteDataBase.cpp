@@ -287,7 +287,7 @@ bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
     return true;
 }
 
-QString SqliteDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
+QString SqliteDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to)
 {
     QString select("select tItems.fStorage, "
                    "tItems.fProduct, "

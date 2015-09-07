@@ -141,8 +141,8 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
         return false;
     }
 
-    if(!query.exec("insert into tTempOrder(fItem, fMainAn) "
-                   "select distinct tTempItems.fItem, tTempItems.fMainAn "
+    if(!query.exec("insert into tTempOrder(fItem, fStorage, fProduct,  fMainAn) "
+                   "select distinct tTempItems.fItem, tItems.fStorage , tItems.fProduct , tTempItems.fMainAn "
                    "from tTempItems "
                    "left join tItems "
                    "on tItems.fItem = tTempItems.fItem "
@@ -173,60 +173,57 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     to_ = to;
     fetchAnalogsTable();
 
-//    if(!db_->createTempTableForSalesHistoryStreamReader())
-//    {
-//        return false;
-//    }
+    if(!db_->createTempTableForSalesHistoryStreamReader())
+    {
+        return false;
+    }
 
-//    if(!fillTempItemsTable())
-//    {
-//        return false;
-//    }
+    if(!fillTempItemsTable())
+    {
+        return false;
+    }
+    itemsHashTable_.clear();
+    items_.clear();
 
     QString select = db_->selectForSalesHistoryStreamReader(from_, to_);
+
+    query_ = db_->associatedQuery();
+    query_.setForwardOnly(true);
+
 //    qInfo() << select;
-//    query_ = db_->associatedQuery();
-//    query_->setForwardOnly(true);
 
-    QSqlQuery query = db_->associatedQuery();
+//    select = "select  tTempOrder.fStorage, tTempOrder.fProduct, tDatas.fDate, tDatas.fSold, tDatas.fRest "
+//            "from tTempOrder use index (iTempOrder2) "
+//            "left join tDatas use index (iDatas) "
+//             "using(fItem);";
 
-//    if(!query.exec(select))
-//    {
-//        qWarning() << query.lastError().text();
-//               return false;
-//    }
+    select = "select fItem, fDate, fSold, fRest from tDatas;";
 
-//    QList<QStringList> lst;
-//    while(query.next())
-//    {
-//        const QSqlRecord rec = query.record();
-//        QStringList val;
-//        for(int i = 0; i< rec.count(); i++)
-//        {
-//            val << rec.value(i).toString();
-//        }
-//        lst << val;
-//    }
-//    query_ = &query;
 
-    if(!query.exec(select))
+    const double sPrep = Utils::_runBenchmarking("prepare");
+    query_.prepare(select);
+    Utils::_endBenchmarking("prepare", sPrep);
+
+    const double sExec = Utils::_runBenchmarking("exec");
+
+    if(!query_.exec())
     {
-        qWarning() << query.lastError().text();
+        qWarning() << query_.lastError().text();
         return false;
     }
+    Utils::_endBenchmarking("exec", sExec);
 
-    if(!query.next())
+    if(!query_.next())
     {
         return false;
     }
-    query_ = &query;
 
     isCanNext_ = true;
-    tempHistory_ = SaleHistory(Item(query_->value(0).toString(),
-                                    query_->value(1).toString()));
-    addDayToTempHistory();
+//    tempHistory_ = SaleHistory(Item(query_.value(0).toString(),
+//                                    query_.value(1).toString()));
+//    addDayToTempHistory();
 
-    return true;
+    return false;
 }
 
 bool SalesHistoryStreamReader::next()
@@ -244,11 +241,11 @@ bool SalesHistoryStreamReader::next()
 
 void SalesHistoryStreamReader::addDayToTempHistory()
 {
-    const Item item(query_->value(0).toString(),
-                    query_->value(1).toString());
-    const QVariant date = query_->value(2);
-    const QVariant sold = query_->value(3);
-    const QVariant rest = query_->value(4);
+    const Item item(query_.value(0).toString(),
+                    query_.value(1).toString());
+    const QVariant date = query_.value(2);
+    const QVariant sold = query_.value(3);
+    const QVariant rest = query_.value(4);
 
     if(!date.isNull() && !sold.isNull() && !rest.isNull())
     {
@@ -302,12 +299,10 @@ void SalesHistoryStreamReader::normalazeTempHistory()
 
 SaleHistory SalesHistoryStreamReader::current()
 {
-    qInfo() << "current";
-    while((*query_).next())
+    while(query_.next())
     {
-        qInfo() << "newxt";
-        const Item tempItemp(query_->value(0).toString(),
-                             query_->value(1).toString());
+        const Item tempItemp(query_.value(0).toString(),
+                             query_.value(1).toString());
         if(isCanReturnHistory(tempItemp))
         {
             normalazeTempHistory();

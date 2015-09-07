@@ -16,7 +16,7 @@ private:
 public:
     SqliteDataBase();
     explicit SqliteDataBase(const DataBaseInfo &info,
-                   const QString &connName = "qt_sql_default_connection");
+                            const QString &connName = "qt_sql_default_connection");
     SqliteDataBase(const DataBase &other);
     ~SqliteDataBase();
 
@@ -32,8 +32,7 @@ public:
     bool createTempTableForSalesHistoryStreamReader();
 
     QString selectForSalesHistoryStreamReader(const QDate &from,
-                                                         const QDate &to,
-                                                         const bool &forward);
+                                              const QDate &to);
 
 };
 

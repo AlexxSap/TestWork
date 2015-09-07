@@ -68,8 +68,7 @@ public:
 
     virtual QSqlQuery queryForAnalogsReader(const bool &forward = true);
     virtual QString selectForSalesHistoryStreamReader(const QDate &from,
-                                                       const QDate &to,
-                                                       const bool &forward = true) = 0;
+                                                       const QDate &to) = 0;
 
     static bool remDataBase(const DataBaseInfo &info);
     static QPointer<DataBase> getDataBase(const DataBaseInfo &info,

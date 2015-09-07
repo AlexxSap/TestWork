@@ -34,8 +34,7 @@ public:
     bool createTempTableForAnalogsReader();
 
     QString selectForSalesHistoryStreamReader(const QDate &from,
-                                                         const QDate &to,
-                                                         const bool &forward);
+                                              const QDate &to);
 };
 
 #endif // MYSQLDATABASE_H

@@ -73,11 +73,14 @@ bool MySqlDataBase::createEmptyDB()
 
         if(!executeQuery(db, "create table tItems("
                          "fItem integer primary key, "
-                         "fStorage text not null, "
-                         "fProduct text not null);"))
+                         "fStorage varchar(255) not null, "
+                         "fProduct varchar(255) not null);"))
         {
             return false;
         }
+
+        executeQuery(db, "create index iItems on tItems"
+                         "(fItem);");
 
         if(!executeQuery(db, "create table tDatas("
                          "fItem integer, "
@@ -90,19 +93,19 @@ bool MySqlDataBase::createEmptyDB()
             return false;
         }
 
-//        executeQuery(db, "create unique index iDatas on tDatas"
-//                         "(fStorage, fProduct, fDate);");
+        executeQuery(db, "create index iDatas on tDatas"
+                         "(fItem);");
 
         if(!executeQuery(db, "create table tAnalogs("
-                         "fMain text not null, "
-                         "fAnalog text not null);"))
+                         "fMain varchar(255) not null, "
+                         "fAnalog varchar(255) not null);"))
         {
             return false;
         }
-//        executeQuery(db, "create index iAnalogsAnalog on tAnalogs"
-//                         "(fAnalog);");
-//        executeQuery(db, "create index iAnalogsMain on tAnalogs"
-//                         "(fMain);");
+        //        executeQuery(db, "create index iAnalogsAnalog on tAnalogs"
+        //                         "(fAnalog);");
+        //        executeQuery(db, "create index iAnalogsMain on tAnalogs"
+        //                         "(fMain);");
         db.close();
     }
     QSqlDatabase::removeDatabase(connName);
@@ -144,7 +147,7 @@ bool MySqlDataBase::insertWithManyValues(const QString &tableDescr,
     }
     QSqlQuery query(db_);
 
-    const int bufferSuzeMax = 2000;
+    const int bufferSizeMax = 2000;
     int counter = 0;
     const int dataSize = data.at(0).count();
 
@@ -161,9 +164,9 @@ bool MySqlDataBase::insertWithManyValues(const QString &tableDescr,
     while(counter < dataSize)
     {
         int delta = 0;
-        if(counter + bufferSuzeMax <= dataSize)
+        if(counter + bufferSizeMax <= dataSize)
         {
-            delta = bufferSuzeMax;
+            delta = bufferSizeMax;
         }
         else
         {
@@ -192,6 +195,7 @@ bool MySqlDataBase::insertWithManyValues(const QString &tableDescr,
         if(!query.exec())
         {
             qInfo() << query.lastError().text();
+            qInfo() << query.lastQuery();
             rollbackTransaction();
             return false;
         }
@@ -259,7 +263,7 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     //temporary
     if(!query.exec("create temporary table tTempItems("
                    "fItem integer not null, "
-                   "fMainAn text);"))
+                   "fMainAn varchar(255));"))
     {
         qInfo()  << "cannot create temp table tTempItems";
         db_.rollback();
@@ -268,9 +272,10 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
 
     //temporary
     if(!query.exec("create temporary table tTempOrder("
-                   "fOrder integer auto_increment primary key, "
-                   "fItem integer not null, "
-                   "fMainAn text);"))
+                   "fItem integer not null primary key, "
+                   "fStorage varchar(255) not null, "
+                   "fProduct varchar(255) not null, "
+                   "fMainAn varchar(255));"))
     {
         qInfo()  << "cannot create temp table tTempOrder";
         qInfo() << query.lastError().text();
@@ -278,8 +283,11 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
         return false;
     }
 
-//    executeQuery(db_, "create index iTempOrder on tTempOrder"
-//                     "(fOrder, fStorage, fProduct);");
+    executeQuery(db_, "create index iTempOrder on tTempOrder"
+                      "(fStorage, fProduct);");
+
+    executeQuery(db_, "create unique index iTempOrder2 on tTempOrder"
+                      "(fItem);");
 
     db_.commit();
 
@@ -291,15 +299,15 @@ bool MySqlDataBase::createTempTableForAnalogsReader()
     QSqlQuery query(db_);
     db_.transaction();
     if(!query.exec("create temporary table if not exists tTempIdMain("
-                   "fMain text, "
-                   "fId text);"))
+                   "fMain varchar(255), "
+                   "fId varchar(255));"))
     {
         db_.rollback();
         return false;
     }
 
     if(!query.exec("create temporary table if not exists tTempIds("
-                   "fId text not null);"))
+                   "fId varchar(255) not null);"))
     {
         db_.rollback();
         return false;
@@ -308,7 +316,7 @@ bool MySqlDataBase::createTempTableForAnalogsReader()
     return true;
 }
 
-QString MySqlDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to, const bool &forward)
+QString MySqlDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to)
 {
     QString select("select tItems.fStorage, "
                    "tItems.fProduct, "
@@ -320,8 +328,7 @@ QString MySqlDataBase::selectForSalesHistoryStreamReader(const QDate &from, cons
                    "on tItems.fItem = tTempOrder.fItem "
                    "left outer join tDatas "
                    "on tTempOrder.fItem = tDatas.fItem "
-                   "%1"
-                   "order by tTempOrder.fOrder;");
+                   "%1;");
 
     QString dateCase;
     if(from != QDate() && to != QDate())
