@@ -33,7 +33,7 @@ protected:
 public:
     DataBase();
     explicit DataBase(const DataBaseInfo &info,
-             const QString &connName = "def_conn");
+             const QString &connName = "defConn");
     DataBase(const DataBase &other);
     virtual ~DataBase();
 
@@ -72,7 +72,7 @@ public:
 
     static bool remDataBase(const DataBaseInfo &info);
     static QPointer<DataBase> getDataBase(const DataBaseInfo &info,
-                                          const QString &connName = "def_conn");
+                                          const QString &connName = "defConn");
 };
 
 #endif // DATABASE_H

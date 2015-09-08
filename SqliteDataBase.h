@@ -16,7 +16,7 @@ private:
 public:
     SqliteDataBase();
     explicit SqliteDataBase(const DataBaseInfo &info,
-                            const QString &connName = "qt_sql_default_connection");
+                            const QString &connName = "defConn");
     SqliteDataBase(const DataBase &other);
     ~SqliteDataBase();
 
@@ -33,7 +33,6 @@ public:
 
     QString selectForSalesHistoryStreamReader(const QDate &from,
                                               const QDate &to);
-
 };
 
 #endif // SQLITEDATABASE_H

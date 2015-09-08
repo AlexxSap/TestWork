@@ -18,7 +18,7 @@ private:
 public:
     MySqlDataBase();
     explicit MySqlDataBase(const DataBaseInfo &info,
-                           const QString &connName = "qt_sql_default_connection");
+                           const QString &connName = "defConn");
     MySqlDataBase(const DataBase &other);
     ~MySqlDataBase();
 

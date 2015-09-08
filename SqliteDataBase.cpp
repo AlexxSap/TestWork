@@ -11,6 +11,7 @@ void SqliteDataBase::init(const QString &connName)
 {
     db_ = QSqlDatabase::addDatabase("QSQLITE", connName);
     db_.setDatabaseName(info_.dataBaseName());
+
 }
 
 SqliteDataBase::SqliteDataBase(const DataBaseInfo &info,
@@ -53,6 +54,7 @@ bool SqliteDataBase::createEmptyDB()
         executeQuery(db,"PRAGMA count_changes = OFF;");
         executeQuery(db,"PRAGMA journal_mode = WAL;");
         executeQuery(db,"PRAGMA foreign_keys = ON;");
+        executeQuery(db,"PRAGMA cache_size = -5;");
 
         if(!executeQuery(db, "create table tItems("
                          "fItem integer primary key asc, "
