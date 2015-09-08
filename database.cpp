@@ -83,7 +83,8 @@ QHash<int, Item> DataBase::itemsHashTable()
 {
     QSqlQuery query(db_);
     query.setForwardOnly(true);
-    if(!query.exec("select fItem, fStorage, fProduct from tItems;"))
+    query.prepare("select fItem, fStorage, fProduct from tItems;");
+    if(!query.exec())
     {
         qWarning() << query.lastError();
         return QHash<int, Item>();
