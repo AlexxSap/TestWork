@@ -23,9 +23,9 @@ private:
     bool isCanNext_;
     AnalogsTable analogsTable_;
     QHash<int, Item> itemsHashTable_;
-    int limitSize_;
-    int limitCounter_;
-
+    int limit_;
+    int offset_;
+    int counter_;
 
 private:
     bool fillTempItemsTable();
@@ -36,6 +36,9 @@ private:
     void fetchAnalogsTable();
     void normalazeTempHistory();
     QHash<int, Item> insertNewItemsToTItems(const QList<Item> &newItems);
+    bool nextQueryByOffset();
+    bool nextRecord();
+    bool bindLimitAndExec();
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items,

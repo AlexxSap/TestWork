@@ -275,6 +275,8 @@ bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
     if(!query.exec("create temporary table tTempOrder("
                    "fOrder integer primary key asc autoincrement, "
                    "fItem integer not null, "
+                   "fStorage text not null, "
+                   "fProduct text not null, "
                    "fMainAn text);"))
     {
         qInfo()  << "cannot create temp table tTempOrder";
@@ -299,28 +301,29 @@ QString SqliteDataBase::selectForSalesHistoryStreamReader(const QDate &from, con
                    "on tItems.fItem = tTempOrder.fItem "
                    "left outer join tDatas "
                    "on tTempOrder.fItem = tDatas.fItem "
-                   "%1"
-                   "order by tTempOrder.fOrder;");
+                   "%1 "
+                   "order by tTempOrder.fOrder "
+                   "limit :limit offset :offset;");
 
     QString dateCase;
     if(from != QDate() && to != QDate())
     {
         dateCase = "where (tDatas.fDate >= '%1' and "
                    "tDatas.fDate <= '%2') "
-                   "or tDatas.fDate is null ";
+                   "or tDatas.fDate is null";
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"))
                 .arg(to.toString("yyyy.MM.dd"));
     }
     else if (from == QDate() && to != QDate())
     {
         dateCase = "where tDatas.fDate <= '%1' "
-                   "or tDatas.fDate is null ";
+                   "or tDatas.fDate is null";
         dateCase = dateCase.arg(to.toString("yyyy.MM.dd"));
     }
     else if (to == QDate() && from != QDate())
     {
         dateCase = "where tDatas.fDate >= '%1' "
-                   "or tDatas.fDate is null ";
+                   "or tDatas.fDate is null";
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
     }
     select = select.arg(dateCase);

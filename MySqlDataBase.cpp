@@ -272,7 +272,8 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
 
     //temporary
     if(!query.exec("create temporary table tTempOrder("
-                   "fItem integer not null primary key, "
+                   "fOrder integer not null auto_increment primary key, "
+                   "fItem integer not null, "
                    "fStorage varchar(255) not null, "
                    "fProduct varchar(255) not null, "
                    "fMainAn varchar(255));"))
@@ -328,27 +329,29 @@ QString MySqlDataBase::selectForSalesHistoryStreamReader(const QDate &from, cons
                    "on tItems.fItem = tTempOrder.fItem "
                    "left outer join tDatas "
                    "on tTempOrder.fItem = tDatas.fItem "
-                   "%1;");
+                   "%1 "
+                   "order by tTempOrder.fOrder "
+                   "limit :limit offset :offset;");
 
     QString dateCase;
     if(from != QDate() && to != QDate())
     {
         dateCase = "where (tDatas.fDate >= '%1' and "
                    "tDatas.fDate <= '%2') "
-                   "or tDatas.fDate is null ";
+                   "or tDatas.fDate is null";
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"))
                 .arg(to.toString("yyyy.MM.dd"));
     }
     else if (from == QDate() && to != QDate())
     {
         dateCase = "where tDatas.fDate <= '%1' "
-                   "or tDatas.fDate is null ";
+                   "or tDatas.fDate is null";
         dateCase = dateCase.arg(to.toString("yyyy.MM.dd"));
     }
     else if (to == QDate() && from != QDate())
     {
         dateCase = "where tDatas.fDate >= '%1' "
-                   "or tDatas.fDate is null ";
+                   "or tDatas.fDate is null";
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
     }
     select = select.arg(dateCase);

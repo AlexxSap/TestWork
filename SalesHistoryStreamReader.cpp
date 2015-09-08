@@ -11,8 +11,9 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       isCanNext_(false),
       analogsTable_(),
       itemsHashTable_(),
-      limitSize_(10000),
-      limitCounter_(0)
+      limit_(1000000),
+      offset_(0),
+      counter_(0)
 {
     db_->connect();
     itemsHashTable_ = db_->itemsHashTable();
@@ -162,6 +163,21 @@ bool SalesHistoryStreamReader::fillTempItemsTable()
     return true;
 }
 
+void SalesHistoryStreamReader::fetchAnalogsTable()
+{
+    AnalogsReader reader(db_->info());
+    QList<ID> idList;
+    foreach (const Item &item, items_)
+    {
+        const ID product = item.product();
+        if(!idList.contains(product))
+        {
+            idList.append(product);
+        }
+    }
+    analogsTable_ = reader.fetch(idList);
+}
+
 bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
 {
     if(items_.isEmpty())
@@ -187,38 +203,70 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     items_.clear();
 
     QString select = db_->selectForSalesHistoryStreamReader(from_, to_);
-
     query_ = db_->associatedQuery();
     query_.setForwardOnly(true);
 
-//    select = "select fItem, fDate, fSold, fRest from tDatas;";
-
-
-//    const double sPrep = Utils::_runBenchmarking("prepare");
-    query_.prepare(select);
-//    Utils::_endBenchmarking("prepare", sPrep);
-
-//    const double sExec = Utils::_runBenchmarking("exec");
-
-    if(!query_.exec())
+    if(!query_.prepare(select))
     {
-        qWarning() << query_.lastError().text();
+        qWarning() << "can't prepare query";
         return false;
     }
-//    Utils::_endBenchmarking("exec", sExec);
 
-    if(!query_.next())
+    if(!bindLimitAndExec())
     {
         return false;
     }
 
-    isCanNext_ = true;
     tempHistory_ = SaleHistory(Item(query_.value(0).toString(),
                                     query_.value(1).toString()));
     addDayToTempHistory();
 
     return true;
 }
+
+bool SalesHistoryStreamReader::nextQueryByOffset()
+{
+    if(counter_ < limit_ )
+    {
+        return false;
+    }
+    counter_ = 0 ;
+
+    return bindLimitAndExec();
+}
+
+bool SalesHistoryStreamReader::bindLimitAndExec()
+{
+    query_.bindValue(":limit", limit_);
+    query_.bindValue(":offset", offset_);
+
+    offset_ += limit_;
+
+    if(!query_.exec())
+    {
+        qWarning() << query_.lastError().text();
+        return false;
+    }
+
+    if(!query_.next())
+    {
+        return false;
+    }
+    counter_++;
+    isCanNext_ = true;
+    return true;
+}
+
+bool SalesHistoryStreamReader::nextRecord()
+{
+    if(!query_.next())
+    {
+        return nextQueryByOffset();
+    }
+    counter_++;
+    return true;
+}
+
 
 bool SalesHistoryStreamReader::next()
 {
@@ -265,21 +313,6 @@ bool SalesHistoryStreamReader::isCanReturnHistory(const Item &item) const
     return false;
 }
 
-void SalesHistoryStreamReader::fetchAnalogsTable()
-{
-    AnalogsReader reader(db_->info());
-    QList<ID> idList;
-    foreach (const Item &item, items_)
-    {
-        const ID product = item.product();
-        if(!idList.contains(product))
-        {
-            idList.append(product);
-        }
-    }
-    analogsTable_ = reader.fetch(idList);
-}
-
 void SalesHistoryStreamReader::normalazeTempHistory()
 {
     ID mainAnalog;
@@ -293,7 +326,7 @@ void SalesHistoryStreamReader::normalazeTempHistory()
 
 SaleHistory SalesHistoryStreamReader::current()
 {
-    while(query_.next())
+    while(nextRecord())
     {
         const Item tempItemp(query_.value(0).toString(),
                              query_.value(1).toString());
