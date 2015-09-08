@@ -10,11 +10,12 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       tempHistory_(),
       isCanNext_(false),
       analogsTable_(),
-      itemsHashTable_()
+      itemsHashTable_(),
+      limitSize_(10000),
+      limitCounter_(0)
 {
     db_->connect();
     itemsHashTable_ = db_->itemsHashTable();
-    //    qInfo() << itemsHashTable_;
 }
 
 SalesHistoryStreamReader::~SalesHistoryStreamReader()
@@ -190,28 +191,21 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     query_ = db_->associatedQuery();
     query_.setForwardOnly(true);
 
-//    qInfo() << select;
-
-//    select = "select  tTempOrder.fStorage, tTempOrder.fProduct, tDatas.fDate, tDatas.fSold, tDatas.fRest "
-//            "from tTempOrder use index (iTempOrder2) "
-//            "left join tDatas use index (iDatas) "
-//             "using(fItem);";
-
-    select = "select fItem, fDate, fSold, fRest from tDatas;";
+//    select = "select fItem, fDate, fSold, fRest from tDatas;";
 
 
-    const double sPrep = Utils::_runBenchmarking("prepare");
+//    const double sPrep = Utils::_runBenchmarking("prepare");
     query_.prepare(select);
-    Utils::_endBenchmarking("prepare", sPrep);
+//    Utils::_endBenchmarking("prepare", sPrep);
 
-    const double sExec = Utils::_runBenchmarking("exec");
+//    const double sExec = Utils::_runBenchmarking("exec");
 
     if(!query_.exec())
     {
         qWarning() << query_.lastError().text();
         return false;
     }
-    Utils::_endBenchmarking("exec", sExec);
+//    Utils::_endBenchmarking("exec", sExec);
 
     if(!query_.next())
     {
@@ -219,11 +213,11 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
     }
 
     isCanNext_ = true;
-//    tempHistory_ = SaleHistory(Item(query_.value(0).toString(),
-//                                    query_.value(1).toString()));
-//    addDayToTempHistory();
+    tempHistory_ = SaleHistory(Item(query_.value(0).toString(),
+                                    query_.value(1).toString()));
+    addDayToTempHistory();
 
-    return false;
+    return true;
 }
 
 bool SalesHistoryStreamReader::next()

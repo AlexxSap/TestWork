@@ -144,7 +144,7 @@ void DataBase::dropTempTableForSalesHistoryStreamReader()
 {
     QSqlQuery query(db_);
     query.exec("drop table if exists tTempItems;");
-//    query.exec("drop table if exists tTempOrder;");
+    query.exec("drop table if exists tTempOrder;");
 }
 
 void DataBase::dropTempTableItemsForSalesHistoryStreamReader()

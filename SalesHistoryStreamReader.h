@@ -23,6 +23,8 @@ private:
     bool isCanNext_;
     AnalogsTable analogsTable_;
     QHash<int, Item> itemsHashTable_;
+    int limitSize_;
+    int limitCounter_;
 
 
 private:
