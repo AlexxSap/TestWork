@@ -32,7 +32,7 @@ int main()
 {   
 #ifdef TEST
     int test = 0;
-    DataBaseInfo::setDataBaseType(DataBaseInfo::SQLITE);
+    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
 
     TestItemOperators testItemOperators;
     test += QTest::qExec(&testItemOperators);
@@ -78,7 +78,6 @@ int main()
         BenchmarkWriteRead::run(720, 10, 10);
         BenchmarkWriteRead::run(720, 10, 100);
         BenchmarkWriteRead::run(720, 10, 1000);
-//        BenchmarkWriteRead::run(720, 10, 10000);
 
 //        BenchmarkWriteRead::runForBuffer(1000000);
 //        BenchmarkAnalogsReader::run(5, 10);
@@ -104,8 +103,8 @@ BenchmarkWriteRead::run(720, 10, 100);
 BenchmarkForComparingSqliteAndMysql::run(720, 10, 1000);
                                             3195323         41558
                                             320MB (306MB)   116MB (99MB)
-
 */
+
 //        BenchmarkForComparingSqliteAndMysql::run(720, 10, 10);
 //        BenchmarkForComparingSqliteAndMysql::run(720, 10, 100);
 //        BenchmarkForComparingSqliteAndMysql::run(720, 10, 1000);

@@ -73,8 +73,8 @@ bool MySqlDataBase::createEmptyDB()
 
         if(!executeQuery(db, "create table tItems("
                          "fItem integer primary key, "
-                         "fStorage varchar(255) not null, "
-                         "fProduct varchar(255) not null);"))
+                         "fStorage text not null, "
+                         "fProduct text not null);"))
         {
             return false;
         }
@@ -97,8 +97,8 @@ bool MySqlDataBase::createEmptyDB()
                          "(fItem);");
 
         if(!executeQuery(db, "create table tAnalogs("
-                         "fMain varchar(255) not null, "
-                         "fAnalog varchar(255) not null);"))
+                         "fMain text not null, "
+                         "fAnalog text not null);"))
         {
             return false;
         }
@@ -263,7 +263,7 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     //temporary
     if(!query.exec("create temporary table tTempItems("
                    "fItem integer not null, "
-                   "fMainAn varchar(255));"))
+                   "fMainAn text);"))
     {
         qInfo()  << "cannot create temp table tTempItems";
         db_.rollback();
@@ -274,9 +274,9 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
     if(!query.exec("create temporary table tTempOrder("
                    "fOrder integer not null auto_increment primary key, "
                    "fItem integer not null, "
-                   "fStorage varchar(255) not null, "
-                   "fProduct varchar(255) not null, "
-                   "fMainAn varchar(255));"))
+                   "fStorage text not null, "
+                   "fProduct text not null, "
+                   "fMainAn text);"))
     {
         qInfo()  << "cannot create temp table tTempOrder";
         qInfo() << query.lastError().text();
@@ -284,11 +284,11 @@ bool MySqlDataBase::createTempTableForSalesHistoryStreamReader()
         return false;
     }
 
-    executeQuery(db_, "create index iTempOrder on tTempOrder"
-                      "(fStorage, fProduct);");
+//    executeQuery(db_, "create index iTempOrder on tTempOrder"
+//                      "(fStorage, fProduct);");
 
-    executeQuery(db_, "create unique index iTempOrder2 on tTempOrder"
-                      "(fItem);");
+//    executeQuery(db_, "create unique index iTempOrder on tTempOrder"
+//                      "(fItem);");
 
     db_.commit();
 
@@ -300,15 +300,15 @@ bool MySqlDataBase::createTempTableForAnalogsReader()
     QSqlQuery query(db_);
     db_.transaction();
     if(!query.exec("create temporary table if not exists tTempIdMain("
-                   "fMain varchar(255), "
-                   "fId varchar(255));"))
+                   "fMain text, "
+                   "fId text);"))
     {
         db_.rollback();
         return false;
     }
 
     if(!query.exec("create temporary table if not exists tTempIds("
-                   "fId varchar(255) not null);"))
+                   "fId text not null);"))
     {
         db_.rollback();
         return false;
@@ -319,14 +319,12 @@ bool MySqlDataBase::createTempTableForAnalogsReader()
 
 QString MySqlDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to)
 {
-    QString select("select tItems.fStorage, "
-                   "tItems.fProduct, "
+    QString select("select tTempOrder.fStorage, "
+                   "tTempOrder.fProduct, "
                    "tDatas.fDate, "
                    "tDatas.fSold, "
                    "tDatas.fRest "
                    "from tTempOrder "
-                   "left outer join tItems "
-                   "on tItems.fItem = tTempOrder.fItem "
                    "left outer join tDatas "
                    "on tTempOrder.fItem = tDatas.fItem "
                    "%1 "
@@ -355,6 +353,8 @@ QString MySqlDataBase::selectForSalesHistoryStreamReader(const QDate &from, cons
         dateCase = dateCase.arg(from.toString("yyyy.MM.dd"));
     }
     select = select.arg(dateCase);
+
+//    qInfo() << select;
     return select;
 }
 

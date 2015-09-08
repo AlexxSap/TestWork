@@ -80,7 +80,6 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
     qint64 writeTime = 0;
     qint64 readTime = 0;
-    QElapsedTimer timer;
 
     QThread::msleep(100);
     qInfo() << "-------Benchmark for write and read saleshistory-------";
@@ -102,6 +101,7 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 //    bool result = false;
 //    {
 //        const int monthCount = 2;
+//        QElapsedTimer timer;
 
 //        for(Date date = fromDate; date < toDate; date = date.addMonths(monthCount).addDays(1))
 //        {
@@ -137,8 +137,10 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 //        qWarning() << "cannot write data to db";
 //        return;
 //    }
+//    QThread::sleep(5);
 
     {
+        QElapsedTimer timer;
         const QList<Item> items = TestUtility::genRandomItemList(storages, products);
         SalesHistoryStreamReader reader(items, info);
 
@@ -150,13 +152,13 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 
         timer.start();
 
-        //        QList<SaleHistory> shList;
+//        QList<SaleHistory> shList;
         if(isOpen)
         {
             do
             {
                 const SaleHistory history = reader.current();
-                //                shList.append(history);
+//                shList.append(history);
             } while (reader.next());
         }
 
@@ -166,35 +168,35 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
                 << readTime << "ms";
 
         //-----сравнение результатов
-        //        QList<Item> actList;
-        //        foreach (const SaleHistory &history, shList)
-        //        {
-        //            if(!actList.contains(history.item()))
-        //            {
-        //                actList.append(history.item());
-        //            }
-        //        }
-        //        if(actList.toSet() != items.toSet())
-        //        {
-        //            qWarning() << "item lists not equal";
-        //            qWarning() << "writed list-------";
-        //            qWarning() << items;
-        //            qWarning() << "readed list-------";
-        //            qWarning() << actList;
-        //        }
+//        QList<Item> actList;
+//        foreach (const SaleHistory &history, shList)
+//        {
+//            if(!actList.contains(history.item()))
+//            {
+//                actList.append(history.item());
+//            }
+//        }
+//        if(actList.toSet() != items.toSet())
+//        {
+//            qWarning() << "item lists not equal";
+//            qWarning() << "writed list-------";
+//            qWarning() << items;
+//            qWarning() << "readed list-------";
+//            qWarning() << actList;
+//        }
 
     }
-//    if(!DataBase::remDataBase(info))
-//    {
-//        qWarning() << "cannot remove test-db in end of benchmark";
-//        return;
-//    }
+    //    if(!DataBase::remDataBase(info))
+    //    {
+    //        qWarning() << "cannot remove test-db in end of benchmark";
+    //        return;
+    //    }
 
-//    if(!TestUtility::removeFile(fileName))
-//    {
-//        qWarning() << "cannot remove test-file in end of benchmark";
-//        return;
-//    }
+    //    if(!TestUtility::removeFile(fileName))
+    //    {
+    //        qWarning() << "cannot remove test-file in end of benchmark";
+    //        return;
+    //    }
 
     qInfo() << "for 10000 products-------";
     writeTime = 10000/products * writeTime;

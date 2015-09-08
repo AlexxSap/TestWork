@@ -49,7 +49,6 @@ bool SaleHistoryWriter::write(const QList<SaleHistoryDay> &days)
         fillItemsHashTable();
     }
     prepareHashTables(days);
-
     return db_->insertValuesToTDatas(days, items_, newItems_);
 }
 

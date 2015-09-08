@@ -291,14 +291,12 @@ bool SqliteDataBase::createTempTableForSalesHistoryStreamReader()
 
 QString SqliteDataBase::selectForSalesHistoryStreamReader(const QDate &from, const QDate &to)
 {
-    QString select("select tItems.fStorage, "
-                   "tItems.fProduct, "
+    QString select("select tTempOrder.fStorage, "
+                   "tTempOrder.fProduct, "
                    "tDatas.fDate, "
                    "tDatas.fSold, "
                    "tDatas.fRest "
                    "from tTempOrder "
-                   "left outer join tItems "
-                   "on tItems.fItem = tTempOrder.fItem "
                    "left outer join tDatas "
                    "on tTempOrder.fItem = tDatas.fItem "
                    "%1 "
