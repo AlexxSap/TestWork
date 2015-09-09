@@ -137,7 +137,8 @@ void BenchmarkWriteRead::run(const int &days, const int &storages, const int &pr
 //        qWarning() << "cannot write data to db";
 //        return;
 //    }
-//    QThread::sleep(5);
+
+    QThread::sleep(5);
 
     {
         QElapsedTimer timer;

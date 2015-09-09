@@ -4,6 +4,10 @@
 #include <QDebug>
 #include <QElapsedTimer>
 
+#include <sysinfoapi.h>
+#include <psapi.h>
+#include <windows.h>
+
 #include "AnalogsReader.h"
 #include "SaleHistory.h"
 #include "DataBase.h"
@@ -24,8 +28,10 @@ private:
     AnalogsTable analogsTable_;
     QHash<int, Item> itemsHashTable_;
     int limit_;
+    int newLimit_;
     int offset_;
     int counter_;
+    int memSize_;
 
 private:
     bool fillTempItemsTable();
@@ -39,6 +45,7 @@ private:
     bool nextQueryByOffset();
     bool nextRecord();
     bool bindLimitAndExec();
+    long long currentMemoryUsage() const;
 
 public:
     SalesHistoryStreamReader(const QList<Item> &items,

@@ -11,9 +11,11 @@ SalesHistoryStreamReader::SalesHistoryStreamReader(const QList<Item> &items,
       isCanNext_(false),
       analogsTable_(),
       itemsHashTable_(),
-      limit_(1000000),
+      limit_(1000),
+      newLimit_(limit_),
       offset_(0),
-      counter_(0)
+      counter_(0),
+      memSize_(128)
 {
     db_->connect();
     itemsHashTable_ = db_->itemsHashTable();
@@ -212,9 +214,16 @@ bool SalesHistoryStreamReader::open(const Date &from, const Date &to)
         return false;
     }
 
+    const long long firstM = currentMemoryUsage();
     if(!bindLimitAndExec())
     {
         return false;
+    }
+    const long long secondM = currentMemoryUsage();
+
+    if(secondM != firstM)
+    {
+        newLimit_ = limit_ * (memSize_ * 1024 * 1024 / (secondM - firstM));
     }
 
     tempHistory_ = SaleHistory(Item(query_.value(0).toString(),
@@ -237,16 +246,19 @@ bool SalesHistoryStreamReader::nextQueryByOffset()
 
 bool SalesHistoryStreamReader::bindLimitAndExec()
 {
+    limit_ = newLimit_;
     query_.bindValue(":limit", limit_);
     query_.bindValue(":offset", offset_);
 
     offset_ += limit_;
 
+//    const double sRead = Utils::_runBenchmarking("exec");
     if(!query_.exec())
     {
         qWarning() << query_.lastError().text();
         return false;
     }
+//    Utils::_endBenchmarking("exec", sRead);
 
     if(!query_.next())
     {
@@ -255,6 +267,16 @@ bool SalesHistoryStreamReader::bindLimitAndExec()
     counter_++;
     isCanNext_ = true;
     return true;
+}
+
+long long SalesHistoryStreamReader::currentMemoryUsage() const
+{
+    PROCESS_MEMORY_COUNTERS memCounter;
+    GetProcessMemoryInfo(GetCurrentProcess(),
+                         &memCounter,
+                         sizeof(memCounter));
+
+    return memCounter.WorkingSetSize;
 }
 
 bool SalesHistoryStreamReader::nextRecord()

@@ -76,7 +76,7 @@ void RAMTracker::run()
 
     while(isStarted_)
     {
-        if(startTime.secsTo(QDateTime::currentDateTime()) > 5)
+        if(startTime.secsTo(QDateTime::currentDateTime()) > 2)
         {
             startTime = QDateTime::currentDateTime();
             ramList_ << checkRAMStatus();

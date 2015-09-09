@@ -23,9 +23,9 @@
 
 #include "DataBaseInfo.h"
 
-#include <sysinfoapi.h>
-#include <psapi.h>
-#include <windows.h>
+//#include <sysinfoapi.h>
+//#include <psapi.h>
+//#include <windows.h>
 
 #else
 #include <QApplication>
@@ -37,93 +37,58 @@ int main()
 #ifdef TEST
     int test = 0;
 
-    MEMORYSTATUSEX buffer;
-    buffer.dwLength = sizeof (buffer);
-    qInfo() << GlobalMemoryStatusEx (&buffer);
-    qInfo() << "Доступно ОП, мБ" << buffer.ullAvailPhys/1024/1024;
-    qInfo() << "Доступно ОП, Б" << buffer.ullAvailPhys;
-    long C1 = buffer.ullAvailPhys;
+//    MEMORYSTATUSEX buffer;
+//    buffer.dwLength = sizeof (buffer);
+//    qInfo() << GlobalMemoryStatusEx (&buffer);
+//    qInfo() << "Доступно ОП, мБ" << buffer.ullAvailPhys/1024/1024;
+//    qInfo() << "Доступно ОП, Б" << buffer.ullAvailPhys;
 
-    QString str;
-    PROCESS_MEMORY_COUNTERS memCounter;
+    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
 
-    GetProcessMemoryInfo(GetCurrentProcess(),
-                         &memCounter,
-                         sizeof(memCounter));
+    TestItemOperators testItemOperators;
+    test += QTest::qExec(&testItemOperators);
 
-    long long A = memCounter.WorkingSetSize ;
+    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
+    test += QTest::qExec(&testSaleHistoryDayOperators);
 
-    for(int i = 0; i< 5000000;i++)
-    {
-        str += "asdshdjkfhksdhfkhsdkhfsdfkshdkhfkshdkfhsdhfksdfksdf";
-    }
+    TestSaleHistory testSaleHistory;
+    test += QTest::qExec(&testSaleHistory);
 
+    TestSaleHistoryGenerator testSaleHistoryGenerator;
+    test += QTest::qExec(&testSaleHistoryGenerator);
 
-    PROCESS_MEMORY_COUNTERS memCounter2;
-    GetProcessMemoryInfo(GetCurrentProcess(),
-                         &memCounter2,
-                         sizeof(memCounter2));
+    TestSaleHistoryParser testSaleHistoryParser;
+    test += QTest::qExec(&testSaleHistoryParser);
 
-    long long B = memCounter2.WorkingSetSize;
-    qInfo() << (B - A) *8 ;
+    TestCsvFile testCsvFile;
+    test += QTest::qExec(&testCsvFile);
 
+    TAnalogs tAnalogs;
+    test += QTest::qExec(&tAnalogs);
 
-//    MEMORYSTATUSEX buffer2;
-//    buffer2.dwLength = sizeof (buffer2);
-//    GlobalMemoryStatusEx (&buffer2);
-//    qInfo() << "Доступно ОП, мБ" << buffer2.ullAvailPhys/1024/1024;
-//    qInfo() << "Доступно ОП, Б" << buffer2.ullAvailPhys;
-//    long C2 = buffer2.ullAvailPhys;
+    TAnalogsTable tAnalogsTable;
+    test += QTest::qExec(&tAnalogsTable);
 
-//    qInfo() << C1 - C2;
+    TAnalogsReader tAnalogsReader;
+    test += QTest::qExec(&tAnalogsReader);
 
+    TAnalogsFromFile tAnalogsFromFile;
+    test += QTest::qExec(&tAnalogsFromFile);
 
-//    DataBaseInfo::setDataBaseType(DataBaseInfo::MYSQL);
+    TAnalogsTableGenerator tAnalogsTableGenerator;
+    test += QTest::qExec(&tAnalogsTableGenerator);
 
-//    TestItemOperators testItemOperators;
-//    test += QTest::qExec(&testItemOperators);
+    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
+    test += QTest::qExec(&testSalesHistoryStreamReader);
 
-//    TestSaleHistoryDayOperators testSaleHistoryDayOperators;
-//    test += QTest::qExec(&testSaleHistoryDayOperators);
-
-//    TestSaleHistory testSaleHistory;
-//    test += QTest::qExec(&testSaleHistory);
-
-//    TestSaleHistoryGenerator testSaleHistoryGenerator;
-//    test += QTest::qExec(&testSaleHistoryGenerator);
-
-//    TestSaleHistoryParser testSaleHistoryParser;
-//    test += QTest::qExec(&testSaleHistoryParser);
-
-//    TestCsvFile testCsvFile;
-//    test += QTest::qExec(&testCsvFile);
-
-//    TAnalogs tAnalogs;
-//    test += QTest::qExec(&tAnalogs);
-
-//    TAnalogsTable tAnalogsTable;
-//    test += QTest::qExec(&tAnalogsTable);
-
-//    TAnalogsReader tAnalogsReader;
-//    test += QTest::qExec(&tAnalogsReader);
-
-//    TAnalogsFromFile tAnalogsFromFile;
-//    test += QTest::qExec(&tAnalogsFromFile);
-
-//    TAnalogsTableGenerator tAnalogsTableGenerator;
-//    test += QTest::qExec(&tAnalogsTableGenerator);
-
-//    TestSalesHistoryStreamReader testSalesHistoryStreamReader;
-//    test += QTest::qExec(&testSalesHistoryStreamReader);
-
-//    TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
-//    test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
+    TSalesHistoryReaderWithAnalogs tSalesHistoryReaderWithAnalogs;
+    test += QTest::qExec(&tSalesHistoryReaderWithAnalogs);
 
     if(test == 0)
     {
 //        BenchmarkWriteRead::run(720, 10, 10);
 //        BenchmarkWriteRead::run(720, 10, 100);
-//        BenchmarkWriteRead::run(720, 10, 1000);
+        BenchmarkWriteRead::run(720, 10, 1000);
 
 //        BenchmarkWriteRead::runForBuffer(1000000);
 //        BenchmarkAnalogsReader::run(5, 10);
